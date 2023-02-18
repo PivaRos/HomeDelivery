@@ -2,20 +2,49 @@ import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
 
 dotenv.config();
-
 const app: Express = express();
-const port = process.env.PORT;
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('Express + TypeScript Server');
-});
+//database init
+import mongodb, {MongoClient} from 'mongodb';
+const mongostring = process.env.MongoCluster || "";
+const client = new MongoClient(mongostring);
+const data = client.db("data");
+const log = client.db("log");
 
-app.get('/aa', (req: Request, res: Response) => {
-  res.send('aaExpress + TypeScript Server');
+// data collections
+const Accounts = data.collection("Accounts");
+const Orders = data.collection("Orders");
+const Applications = data.collection("Applications");
 
-  
-});
+// log collections
+const Transactions = log.collection("Transactions");
+const ClosedApplications = log.collection("ClosedApplications");
 
-app.listen(port, () => {
-  console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
+// MongoDB Object
+// should be passed to every router!
+const MongoObject = {
+  databases:{
+    data:data,
+    log:log
+  }, 
+  collections:{
+    Orders:Orders,
+    Accounts:Accounts,
+    Applications:Applications,
+    Transactions:Transactions,
+    ClosedApplications:ClosedApplications
+  }
+}
+
+//routing
+import AuthorizationRouter from "./routers/authorization";
+import publicRouter from "./routers/public";
+app.use('/public', publicRouter());
+app.use('/public', AuthorizationRouter(Accounts));
+
+
+
+// running
+app.listen(8000, () => {
+  console.log(`⚡️[server]: Server is running at http://localhost:8000`);
 });
