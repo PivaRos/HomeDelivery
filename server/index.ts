@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 const app: Express = express();
+app.use(express.json());
 
 //database init
 import mongodb, {MongoClient} from 'mongodb';
@@ -15,19 +16,21 @@ const log = client.db("log");
 const Accounts = data.collection("Accounts");
 const Orders = data.collection("Orders");
 const Applications = data.collection("Applications");
+const Sellers = data.collection("Sellers");
 
 // log collections
 const Transactions = log.collection("Transactions");
 const ClosedApplications = log.collection("ClosedApplications");
 
 // MongoDB Object
-// should be passed to every router!
+// should be passed to global router!
 const MongoObject = {
   databases:{
     data:data,
     log:log
   }, 
   collections:{
+    Sellers:Sellers,
     Orders:Orders,
     Accounts:Accounts,
     Applications:Applications,
@@ -39,8 +42,8 @@ const MongoObject = {
 //routing
 import AuthorizationRouter from "./routers/authorization";
 import publicRouter from "./routers/public";
-app.use('/public', publicRouter());
-app.use('/public', AuthorizationRouter(Accounts));
+app.use('/public', publicRouter(MongoObject));
+app.use('/authorization', AuthorizationRouter(MongoObject));
 
 
 
