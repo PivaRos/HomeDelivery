@@ -1,5 +1,6 @@
 import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
+import { Account, Order, Seller } from './interfaces';
 
 dotenv.config();
 const app: Express = express();
@@ -13,10 +14,10 @@ const data = client.db("data");
 const log = client.db("log");
 
 // data collections
-const Accounts = data.collection("Accounts");
-const Orders = data.collection("Orders");
+const Accounts = data.collection<Account>("Accounts");
+const Orders = data.collection<Order>("Orders");
 const Applications = data.collection("Applications");
-const Sellers = data.collection("Sellers");
+const Sellers = data.collection<Seller>("Sellers");
 
 // log collections
 const Transactions = log.collection("Transactions");

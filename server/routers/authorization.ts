@@ -1,16 +1,17 @@
 import express, {Request, Response, NextFunction } from 'express';
 import mongodb, { MongoClient, ObjectId } from 'mongodb';
+import { Account, Order, Seller } from '../interfaces';
 
 
 const Router = (MongoObject:{
     databases: {
         data: mongodb.Db;
         log: mongodb.Db;
-    },
+    };
     collections: {
-        Sellers: mongodb.Collection<mongodb.BSON.Document>;
-        Orders: mongodb.Collection<mongodb.BSON.Document>;
-        Accounts: mongodb.Collection<mongodb.BSON.Document>;
+        Sellers: mongodb.Collection<Seller>;
+        Orders: mongodb.Collection<Order>;
+        Accounts: mongodb.Collection<Account>;
         Applications: mongodb.Collection<mongodb.BSON.Document>;
         Transactions: mongodb.Collection<mongodb.BSON.Document>;
         ClosedApplications: mongodb.Collection<mongodb.BSON.Document>;
@@ -33,8 +34,10 @@ const Router = (MongoObject:{
                var updatevar = await MongoObject.collections.Accounts.updateOne({_id:user._id}, {$set:{sessionid:sessionid}})
                 if (updatevar.acknowledged)
                 {
+                    res.status(200);
                     return res.json({
                         err:false,
+                        accountType:user.type,
                         sessionid:sessionid
                     });    
                 }
@@ -42,6 +45,7 @@ const Router = (MongoObject:{
             }
             else
             {
+                res.status(500);
                 return res.json({
                     err:true,
                     msg:"no user found",
@@ -51,7 +55,8 @@ const Router = (MongoObject:{
         }
         catch(exeption)
         {
-           return res.json({
+            res.status(500);
+            return res.json({
                 err:true,
                 msg:"unable to verify user",
                 not:null // number of tries left

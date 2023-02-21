@@ -28,14 +28,17 @@ const Router = (MongoObject) => {
             if (user) {
                 var updatevar = yield MongoObject.collections.Accounts.updateOne({ _id: user._id }, { $set: { sessionid: sessionid } });
                 if (updatevar.acknowledged) {
+                    res.status(200);
                     return res.json({
                         err: false,
+                        accountType: user.type,
                         sessionid: sessionid
                     });
                 }
                 throw new Error("unable to update sessionid");
             }
             else {
+                res.status(500);
                 return res.json({
                     err: true,
                     msg: "no user found",
@@ -44,6 +47,7 @@ const Router = (MongoObject) => {
             }
         }
         catch (exeption) {
+            res.status(500);
             return res.json({
                 err: true,
                 msg: "unable to verify user",
