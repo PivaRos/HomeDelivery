@@ -44,13 +44,13 @@ export interface Order{
 	seller: ObjectId,
 	buyer:ObjectId,
 	date:dateObject
-	products:ProductObject[],
+	products:productOrder[],
 	totalPrice:number,
     location:LocationObject,
 	city:string,
 	street:string,
 	homeNumber:string,
-	delivery:ObjectId,
+	delivery?:ObjectId,
 	status:0|1|2|3|4 //cancelled(0)/pending(1)/accepted(2)/onDelivery(3)/done(4)
 }
 
@@ -61,3 +61,15 @@ export interface dateObject {
 
 
 
+export interface productOrder {
+    productId : ObjectId,
+    details:{
+        
+    }
+}
+
+export interface PaymentLog {
+    accepted:boolean,
+    priceCharged:number,
+    timestamp:string
+}

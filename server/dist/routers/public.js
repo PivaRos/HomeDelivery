@@ -17,7 +17,7 @@ const mongodb_1 = require("mongodb");
 const Router = (MongoObject) => {
     const PublicRouter = express_1.default.Router();
     // checks authorization headers
-    const checkHeaders = (req, res, next) => {
+    const checkValidation = (req, res, next) => {
         if (req.headers.authorization) {
             // more checks should be done!!
             next();
@@ -32,7 +32,7 @@ const Router = (MongoObject) => {
         }
     };
     // loggedin Account tring to get all sellers that are available in his range
-    PublicRouter.get("/sellers", checkHeaders, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    PublicRouter.get("/sellers", checkValidation, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const projection = { authorizedUsers: 0 };
             const user = yield MongoObject.collections.Accounts.findOne({ sessionid: req.headers.authorization });
@@ -66,13 +66,13 @@ const Router = (MongoObject) => {
         }
     }));
     //recives sessionid and returns all open orders that are waiting delivery and within the range
-    PublicRouter.get("/delivery", checkHeaders, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    PublicRouter.get("/delivery", checkValidation, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const user = yield MongoObject.collections.Accounts.findOne({ sessionid: req.headers.authorization });
             if (user && user.type === 2) // only delivery accounts
              {
                 let returnOrders = [];
-                const Orders = yield MongoObject.collections.Orders.find({});
+                const Orders = yield MongoObject.collections.Orders.find({}).toArray();
                 Orders.forEach(Order => {
                     if (Order.status === 2) {
                         const dy = (+Order.location.coordinates[0]) - (+user.location.coordinates[0]);
@@ -100,32 +100,72 @@ const Router = (MongoObject) => {
             });
         }
     }));
+    const processPayment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+        const cardNumber = req.body.cardNumber;
+        const cardExpireDate = req.body.cardExpireDate;
+        const cardCVV = req.body.cardCVV;
+        // make api call to privider of services
+        //get responce of 200
+        //and then call next()
+        next();
+    });
     //first stage when buyer sends order to seller
-    PublicRouter.post("/order/1", checkHeaders, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-        const user = yield MongoObject.collections.Accounts.findOne({ sessionid: req.headers.authorization });
-        if (user && user.type === 1) //only buyer account found
-         {
-            var Order = {
-                seller: new mongodb_1.ObjectId(req.body.seller),
-                buyer: user._id,
-                products: [],
-                date: {
-                    date: new Date(),
-                    timestamp: new Date().getTime()
-                },
-                location: {
-                    type: "point",
-                    coordinates: [32.34234, 32.3421]
-                },
-                totalPrice: 23,
-                status: 1,
-                city: "",
-                street: "",
-                homeNumber: ""
-            };
-            MongoObject.collections.Orders.insertOne(Order);
+    PublicRouter.post("/order/1", checkValidation, processPayment, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            if (res.locals.PaymentLog.accepted) // check if payment has been made
+             {
+                const user = yield MongoObject.collections.Accounts.findOne({ sessionid: req.headers.authorization });
+                if (user && user.type === 1) //only buyer account found
+                 {
+                    //check if user can order
+                    const Seller = yield MongoObject.collections.Sellers.findOne({ _id: new mongodb_1.ObjectId(req.body.seller) });
+                    const distance = getDistance(Seller.location, user.location);
+                    if (distance < Seller.deliveryDistance) // user can order
+                     {
+                        //make order
+                        var theDate = new Date();
+                        var Order = {
+                            seller: new mongodb_1.ObjectId(req.body.seller),
+                            buyer: user._id,
+                            products: req.body.products.map((product) => {
+                                return {
+                                    productId: new mongodb_1.ObjectId(product.productId),
+                                    details: {}
+                                };
+                            }),
+                            date: {
+                                date: theDate,
+                                timestamp: theDate.getTime()
+                            },
+                            location: user.location,
+                            totalPrice: res.locals.totalPrice,
+                            status: 1,
+                            city: req.body.city,
+                            street: req.body.address,
+                            homeNumber: user.phoneNumber
+                        };
+                        MongoObject.collections.Orders.insertOne(Order);
+                    }
+                    throw new Error("out of service distance");
+                }
+            }
+        }
+        catch (e) {
+            res.status(500);
+            return res.json({
+                err: true,
+                msg: "server error",
+                not: null // number of tries left
+            });
         }
     }));
+    //returns distance (km)
+    const getDistance = (Location1, Location2) => {
+        const dy = (+Location1.coordinates[0]) - (+Location2.coordinates[0]);
+        const dx = (+Location1.coordinates[1]) - (+Location2.coordinates[1]);
+        const distance = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 110.574;
+        return distance;
+    };
     return PublicRouter;
 };
 exports.default = Router;

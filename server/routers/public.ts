@@ -1,7 +1,7 @@
 import { Console } from 'console';
 import express, { NextFunction, Request, Response } from 'express';
 import mongodb, { Double, ObjectId, Timestamp } from 'mongodb';
-import { Account, Order, Seller } from '../interfaces';
+import { Account, LocationObject, Order, PaymentLog, productOrder, Seller } from '../interfaces';
 
 const Router = (MongoObject: {
     databases: {
@@ -20,7 +20,7 @@ const Router = (MongoObject: {
     const PublicRouter = express.Router();
 
     // checks authorization headers
-    const checkHeaders = (req:Request, res:Response, next:NextFunction) => {
+    const checkValidation = (req:Request, res:Response, next:NextFunction) => {
         if (req.headers.authorization)
         {
             // more checks should be done!!
@@ -38,7 +38,7 @@ const Router = (MongoObject: {
     }
 
     // loggedin Account tring to get all sellers that are available in his range
-    PublicRouter.get("/sellers", checkHeaders, async (req: Request, res: Response) => {
+    PublicRouter.get("/sellers", checkValidation, async (req: Request, res: Response) => {
         try {
             const projection = { authorizedUsers: 0 };
             const user = await MongoObject.collections.Accounts.findOne({ sessionid: req.headers.authorization });
@@ -75,13 +75,13 @@ const Router = (MongoObject: {
     });
 
     //recives sessionid and returns all open orders that are waiting delivery and within the range
-    PublicRouter.get("/delivery", checkHeaders, async (req:Request, res:Response) => {
+    PublicRouter.get("/delivery", checkValidation, async (req:Request, res:Response) => {
         try{
             const user = await MongoObject.collections.Accounts.findOne({ sessionid: req.headers.authorization });
             if (user && user.type === 2) // only delivery accounts
             {
                 let returnOrders:Order[] = [];
-                const Orders = await MongoObject.collections.Orders.find({});
+                const Orders = await MongoObject.collections.Orders.find({}).toArray();
                 Orders.forEach(Order => {
                     if (Order.status === 2)
                     {
@@ -112,34 +112,79 @@ const Router = (MongoObject: {
         }
     }); 
 
-    //first stage when buyer sends order to seller
-    PublicRouter.post("/order/1", checkHeaders, async (req:Request, res:Response) => {
-        const user = await MongoObject.collections.Accounts.findOne({ sessionid: req.headers.authorization });
-        if (user && user.type === 1) //only buyer account found
-        {
-            var Order: Order = {
-                seller:new ObjectId(req.body.seller),
-                buyer:user._id,
-                products:[
+    const processPayment = async (req:Request, res:Response, next:NextFunction) => {
+        const cardNumber  = req.body.cardNumber;
+        const cardExpireDate = req.body.cardExpireDate;
+        const cardCVV = req.body.cardCVV;
 
-                ],
-                date:{
-                    date:new Date(),
-                    timestamp:new Date().getTime()
-                },
-                location:{
-                    type:"point",
-                    coordinates:[32.34234,32.3421]
-                },
-                totalPrice:23, //set by products
-                status:1,
-                city:"",
-                street:"",
-                homeNumber:""
+        // make api call to privider of services
+        //get responce of 200
+        //and then call next()
+        next();
+    }
+
+    //first stage when buyer sends order to seller
+    PublicRouter.post("/order/1", checkValidation, processPayment, async (req:Request, res:Response) => {
+        try{
+            if (<PaymentLog>res.locals.PaymentLog.accepted) // check if payment has been made
+            {
+            const user = await MongoObject.collections.Accounts.findOne({ sessionid: req.headers.authorization });
+            if (user && user.type === 1) //only buyer account found
+            {
+                //check if user can order
+                const Seller:Seller = <Seller> await MongoObject.collections.Sellers.findOne({_id:new ObjectId(req.body.seller)});
+                const distance = getDistance(Seller.location, user.location);
+                if (distance < Seller.deliveryDistance) // user can order
+                {
+                    //make order
+                    var theDate = new Date();
+                    var Order: Order = {
+                    seller:new ObjectId(req.body.seller),
+                    buyer:user._id,
+                    products:req.body.products.map((product:productOrder) => {
+                        return {
+                            productId:new ObjectId(product.productId),
+                            details:{}
+                        }
+                    }),
+                    date:{
+                        date:theDate,
+                        timestamp:theDate.getTime()
+                    },
+                    location:user.location,
+                    totalPrice:res.locals.totalPrice,
+                    status:1,
+                    city:req.body.city,
+                    street:req.body.address,
+                    homeNumber:user.phoneNumber
+                    }
+                    MongoObject.collections.Orders.insertOne(Order);
+
+                }
+                throw new Error("out of service distance");
+                
+
+                }   
             }
-            MongoObject.collections.Orders.insertOne(Order);
+        }
+        catch (e) {
+            res.status(500);
+            return res.json({
+                err: true,
+                msg: "server error",
+                not: null // number of tries left
+            });
         }
     });
+
+    //returns distance (km)
+   const getDistance = (Location1:LocationObject, Location2:LocationObject ) => {
+    const dy = (+Location1.coordinates[0]) - (+Location2.coordinates[0]);
+    const dx = (+Location1.coordinates[1]) - (+Location2.coordinates[1]);
+    const distance = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 110.574;
+    return distance;
+   }
+
 
     return PublicRouter;
 }
