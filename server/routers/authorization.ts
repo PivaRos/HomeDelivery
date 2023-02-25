@@ -1,6 +1,9 @@
 import express, {Request, Response, NextFunction } from 'express';
 import mongodb, { MongoClient, ObjectId } from 'mongodb';
 import { Account, Order, Seller } from '../interfaces';
+import { body, check, validationResult } from 'express-validator';
+import { makeid } from '../functions';
+
 
 
 const Router = (MongoObject:{
@@ -18,12 +21,10 @@ const Router = (MongoObject:{
     }}) => {
     const AuthorizationRouter = express.Router();
 
-        const InputValidator = async (req:Request, res:Response, next:NextFunction) => {
-            next();
-        };
 
-    AuthorizationRouter.post("/account", InputValidator, async (req:Request, res:Response) => {
+    AuthorizationRouter.post("/account", check('username').exists().isLength({min:4}), check("password").exists().isLength({min:7}),  async (req:Request, res:Response) => {
        try{
+        validationResult(req).throw();
             var user = await MongoObject.collections.Accounts.findOne({$and:[
                 {username:req.body.username},
                 {password:req.body.password}
@@ -64,17 +65,6 @@ const Router = (MongoObject:{
         }
     });
 
-    function makeid(length:number) {
-        let result = '';
-        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        const charactersLength = characters.length;
-        let counter = 0;
-        while (counter < length) {
-          result += characters.charAt(Math.floor(Math.random() * charactersLength));
-          counter += 1;
-        }
-        return result;
-    }
 
     return AuthorizationRouter;
 }

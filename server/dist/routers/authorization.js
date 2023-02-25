@@ -13,18 +13,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const express_validator_1 = require("express-validator");
+const functions_1 = require("../functions");
 const Router = (MongoObject) => {
     const AuthorizationRouter = express_1.default.Router();
-    const InputValidator = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-        next();
-    });
-    AuthorizationRouter.post("/account", InputValidator, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    AuthorizationRouter.post("/account", (0, express_validator_1.check)('username').exists().isLength({ min: 4 }), (0, express_validator_1.check)("password").exists().isLength({ min: 7 }), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
+            (0, express_validator_1.validationResult)(req).throw();
             var user = yield MongoObject.collections.Accounts.findOne({ $and: [
                     { username: req.body.username },
                     { password: req.body.password }
                 ] });
-            var sessionid = makeid(14);
+            var sessionid = (0, functions_1.makeid)(14);
             if (user) {
                 var updatevar = yield MongoObject.collections.Accounts.updateOne({ _id: user._id }, { $set: { sessionid: sessionid } });
                 if (updatevar.acknowledged) {
@@ -55,17 +55,6 @@ const Router = (MongoObject) => {
             });
         }
     }));
-    function makeid(length) {
-        let result = '';
-        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        const charactersLength = characters.length;
-        let counter = 0;
-        while (counter < length) {
-            result += characters.charAt(Math.floor(Math.random() * charactersLength));
-            counter += 1;
-        }
-        return result;
-    }
     return AuthorizationRouter;
 };
 exports.default = Router;

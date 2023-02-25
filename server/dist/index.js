@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Accounts = void 0;
 const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
@@ -15,7 +16,7 @@ const client = new mongodb_1.MongoClient(mongostring);
 const data = client.db("data");
 const log = client.db("log");
 // data collections
-const Accounts = data.collection("Accounts");
+exports.Accounts = data.collection("Accounts");
 const Orders = data.collection("Orders");
 const Applications = data.collection("Applications");
 const Sellers = data.collection("Sellers");
@@ -32,7 +33,7 @@ const MongoObject = {
     collections: {
         Sellers: Sellers,
         Orders: Orders,
-        Accounts: Accounts,
+        Accounts: exports.Accounts,
         Applications: Applications,
         Transactions: Transactions,
         ClosedApplications: ClosedApplications
@@ -40,8 +41,10 @@ const MongoObject = {
 };
 //routing
 const authorization_1 = __importDefault(require("./routers/authorization"));
-const public_1 = __importDefault(require("./routers/public"));
-app.use('/public', (0, public_1.default)(MongoObject));
+const delivery_1 = __importDefault(require("./routers/delivery"));
+const buyer_1 = __importDefault(require("./routers/buyer"));
+app.use('/buyer', (0, buyer_1.default)(MongoObject));
+app.use('/delivery', (0, delivery_1.default)(MongoObject));
 app.use('/authorization', (0, authorization_1.default)(MongoObject));
 // running
 app.listen(8000, () => {
