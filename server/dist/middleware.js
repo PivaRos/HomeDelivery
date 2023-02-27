@@ -15,7 +15,7 @@ const processPayment = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
     const cardNumber = req.body.cardNumber;
     const cardExpireDate = req.body.cardExpireDate;
     const cardCVV = req.body.cardCVV;
-    const project = { products: 1 };
+    const cardHolderId = req.body.cardHolderId;
     // make api call to privider of services
     //get responce of 200
     res.locals.PaymentLog = {
@@ -59,7 +59,7 @@ const isBuyer = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
 exports.isBuyer = isBuyer;
 const isSeller = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     res.locals.account = yield index_1.Accounts.findOne({ sessionid: req.headers.authorization });
-    if (res.locals.account && res.locals.account.type === 3) {
+    if (res.locals.account && res.locals.account.type === "3") {
         next();
     }
     else {

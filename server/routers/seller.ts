@@ -22,9 +22,14 @@ const Router = (MongoObject: {
     SellerRouter.use(isSeller);
 
 
+    // get all orders no metter what status
     SellerRouter.get('/orders', async (req:Request, res:Response) => {
         try{
-       const Orders = await MongoObject.collections.Orders.find({seller:new ObjectId(res.locals.account._id)}).toArray();
+       const Orders = await MongoObject.collections.Orders.find({$and:[
+        {seller:new ObjectId(res.locals.account._id)},
+        {status :{ $ne: 0 }}
+        
+        ]}).toArray();
        if (Orders.length)
        {
         return res.json({
@@ -50,12 +55,29 @@ const Router = (MongoObject: {
         })
     }
     });
-    
+
+    //accept new order
+    SellerRouter.post('/order/accept', async (req:Request, res:Response) => {
+        try{
+            const Orders = await MongoObject.collections.Orders.find({$and:[
+                {status:1},
+                {seller:new ObjectId(res.locals.account._id)}
+            ]}).toArray();
+            if (Orders.length)
+            {
+
+            }
+        }
+        catch{
+
+        }
+    });
 
 
 
     return SellerRouter;
 }
+
 
 
 

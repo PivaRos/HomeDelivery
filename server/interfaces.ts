@@ -1,9 +1,9 @@
-import { Double, ObjectId, Timestamp, WithId, Document } from "mongodb"
+import { ObjectId, Timestamp, WithId, Document } from "mongodb"
 
 
 
 
-export interface ProductObject {
+export interface productObject {
     name: string,
     price: number,
     info: string,
@@ -21,7 +21,7 @@ export interface Seller extends WithId<Document> {
     _id: ObjectId,
     logo: string,
     name: string,
-    products: ProductObject[],
+    products: productObject[],
     authorizedUsers: string[],
     location: LocationObject,
     deliveryDistance: number
@@ -49,7 +49,8 @@ export interface Order{
     location:LocationObject,
 	city:string,
 	street:string,
-	homeNumber:string,
+	homenumber:string,
+    zipcode:string,
 	delivery?:ObjectId,
 	status:0|1|2|3|4 //cancelled(0)/pending(1)/accepted(2)/onDelivery(3)/done(4)
 }
@@ -71,5 +72,5 @@ export interface productOrder {
 export interface PaymentLog {
     accepted:boolean,
     priceCharged:number,
-    timestamp:string
+    timestamp:number
 }

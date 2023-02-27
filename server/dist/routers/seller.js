@@ -18,9 +18,13 @@ const middleware_1 = require("../middleware");
 const Router = (MongoObject) => {
     const SellerRouter = express_1.default.Router();
     SellerRouter.use(middleware_1.isSeller);
+    // get all orders no metter what status
     SellerRouter.get('/orders', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const Orders = yield MongoObject.collections.Orders.find({ seller: new mongodb_1.ObjectId(res.locals.account._id) }).toArray();
+            const Orders = yield MongoObject.collections.Orders.find({ $and: [
+                    { seller: new mongodb_1.ObjectId(res.locals.account._id) },
+                    { status: { $ne: 0 } }
+                ] }).toArray();
             if (Orders.length) {
                 return res.json({
                     err: false,
@@ -42,6 +46,22 @@ const Router = (MongoObject) => {
                 err: true,
                 msg: "unable to verify request"
             });
+        }
+    }));
+    //accept new order
+    SellerRouter.post('/order/accept', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const Orders = yield MongoObject.collections.Orders.find({ $and: [
+                    { status: 1 },
+                    { seller: new mongodb_1.ObjectId(res.locals.account._id) }
+                ] }).toArray();
+            if (Orders.length) {
+            }
+            if (0) {
+                console.log("asd");
+            }
+        }
+        catch (_b) {
         }
     }));
     return SellerRouter;

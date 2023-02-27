@@ -19,21 +19,19 @@ const Router = (MongoObject: {
     }
 }) => {
     const buyerRouter = express.Router();
-    buyerRouter.use(isBuyer);
+    buyerRouter.use([checkValidation, isBuyer]);
 
 
 
     // loggedin Account tring to get all sellers that are available in his range
-    buyerRouter.get("/sellers", checkValidation, async (req: Request, res: Response) => {
+    buyerRouter.get("/sellers", async (req: Request, res: Response) => {
         try {
             const projection = { authorizedUsers: 0 };
             const user = res.locals.account;
             let sellers = await MongoObject.collections.Sellers.find({}).project(projection).toArray();
                 let returnSellers:Seller[] = [];
                 sellers.forEach(seller => {  //checks foreach seller the distance
-                    const dy = seller.location.coordinates[0] - (+user.location.coordinates[0]);
-                    const dx = (seller.location.coordinates[1] - (+user.location.coordinates[1]));
-                    const distance = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 110.574;
+                    const distance = getDistance(seller.location, user.location);
                     if (distance < seller.deliveryDistance)
                     {
                         returnSellers.push(<Seller>seller);
@@ -56,53 +54,61 @@ const Router = (MongoObject: {
         }
     });
 
-
-
-
     //first stage when buyer sends order to seller
-    buyerRouter.post("/order", checkValidation, processPayment, async (req:Request, res:Response) => {
+    buyerRouter.post("/order", processPayment, async (req:Request, res:Response) => {
         try{
-            if (<PaymentLog>res.locals.PaymentLog.accepted) // check if payment has been made
+            if (res.locals.PaymentLog.accepted) // check if payment has been made
             {
                 const user = res.locals.account;
+
                 //check if user can order
                 const Seller:Seller = <Seller> await MongoObject.collections.Sellers.findOne({_id:new ObjectId(req.body.seller)});
+                if (!Seller) throw new Error("no seller found");
                 const distance = getDistance(Seller.location, user.location);
                 if (distance < Seller.deliveryDistance) // user can order
                 {
                     //make order
-                    var theDate = new Date();
-                    var Order: Order = {
-                    seller:new ObjectId(req.body.seller),
-                    buyer:user._id,
-                    products:req.body.products.map((product:productOrder) => {
-                        return {
-                            productId:new ObjectId(product.productId),
-                            details:{}
-                        }
-                    }),
-                    date:{
-                        date:theDate,
-                        timestamp:theDate.getTime()
-                    },
-                    location:user.location,
-                    totalPrice:res.locals.totalPrice,
-                    status:1,
-                    city:req.body.city,
-                    street:req.body.address,
-                    homeNumber:user.phoneNumber
+                    const Order: Order = {
+                        seller:new ObjectId(req.body.seller),
+                        buyer:new ObjectId(user._id),
+                        products:req.body.products.map((product:productOrder) => {
+                            return {
+                                productId:new ObjectId(product.productId),
+                                details:{}
+                            }
+                        }),
+                        date:{
+                            date:new Date(),
+                            timestamp:new Date().getTime()
+                        },
+                        location:user.location,
+                        totalPrice:res.locals.totalPrice,
+                        status:1,
+                        city:req.body.city,
+                        street:req.body.address,
+                        zipcode:req.body.zipcode,
+                        homenumber:user.phonenumber
                     }
-                    MongoObject.collections.Orders.insertOne(Order);
+                    const result = await MongoObject.collections.Orders.insertOne(Order);
+                    return res.json({
+                        err:false,
+                        msg:"ok",
+                        data:{
+                            order:result.insertedId
+                        }
+                    });
+                    
 
                 }
                 throw new Error("out of service distance");
                 
 
-                }   
+            }   
             
         }
-        catch (e) {
+        catch(e){
             res.status(500);
+            console.log(e);
             return res.json({
                 err: true,
                 msg: "server error",
