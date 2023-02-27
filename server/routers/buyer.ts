@@ -19,7 +19,6 @@ const Router = (MongoObject: {
     }
 }) => {
     const buyerRouter = express.Router();
-
     buyerRouter.use(isBuyer);
 
 
@@ -61,7 +60,7 @@ const Router = (MongoObject: {
 
 
     //first stage when buyer sends order to seller
-    buyerRouter.post("/order/1", checkValidation, processPayment, async (req:Request, res:Response) => {
+    buyerRouter.post("/order", checkValidation, processPayment, async (req:Request, res:Response) => {
         try{
             if (<PaymentLog>res.locals.PaymentLog.accepted) // check if payment has been made
             {

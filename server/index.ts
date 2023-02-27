@@ -17,7 +17,7 @@ const log = client.db("log");
 export const Accounts = data.collection<Account>("Accounts");
 const Orders = data.collection<Order>("Orders");
 const Applications = data.collection("Applications");
-const Sellers = data.collection<Seller>("Sellers");
+export const Sellers = data.collection<Seller>("Sellers");
 
 // log collections
 const Transactions = log.collection("Transactions");
@@ -44,9 +44,11 @@ const MongoObject = {
 import AuthorizationRouter from "./routers/authorization";
 import DeliveryRouter from "./routers/delivery";
 import BuyerRouter from "./routers/buyer";
+import SellerRouter from "./routers/seller"
 app.use('/buyer', BuyerRouter(MongoObject));
 app.use('/delivery', DeliveryRouter(MongoObject));
 app.use('/authorization', AuthorizationRouter(MongoObject));
+app.use('/seller', SellerRouter(MongoObject));
 
 
 

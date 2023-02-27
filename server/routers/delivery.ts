@@ -18,7 +18,7 @@ const Router = (MongoObject: {
         ClosedApplications: mongodb.Collection<mongodb.BSON.Document>;
     }
 }) => {
-    const DeliveryRouter = express.Router(); // all http requests that are made with seller
+    const DeliveryRouter = express.Router(); // all http requests that are made with delivery
     DeliveryRouter.use(isDelivery);
 
 

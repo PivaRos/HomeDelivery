@@ -51,7 +51,7 @@ const Router = (MongoObject) => {
         }
     }));
     //first stage when buyer sends order to seller
-    buyerRouter.post("/order/1", middleware_1.checkValidation, middleware_1.processPayment, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    buyerRouter.post("/order", middleware_1.checkValidation, middleware_1.processPayment, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             if (res.locals.PaymentLog.accepted) // check if payment has been made
              {

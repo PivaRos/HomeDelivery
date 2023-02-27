@@ -16,7 +16,7 @@ const express_1 = __importDefault(require("express"));
 const middleware_1 = require("../middleware");
 const functions_1 = require("../functions");
 const Router = (MongoObject) => {
-    const DeliveryRouter = express_1.default.Router(); // all http requests that are made with seller
+    const DeliveryRouter = express_1.default.Router(); // all http requests that are made with delivery
     DeliveryRouter.use(middleware_1.isDelivery);
     //recives sessionid and returns all open orders that are waiting delivery and within the range
     DeliveryRouter.get("/waiting", middleware_1.checkValidation, (req, res) => __awaiter(void 0, void 0, void 0, function* () {

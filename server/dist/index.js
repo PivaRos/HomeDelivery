@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Accounts = void 0;
+exports.Sellers = exports.Accounts = void 0;
 const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
@@ -19,7 +19,7 @@ const log = client.db("log");
 exports.Accounts = data.collection("Accounts");
 const Orders = data.collection("Orders");
 const Applications = data.collection("Applications");
-const Sellers = data.collection("Sellers");
+exports.Sellers = data.collection("Sellers");
 // log collections
 const Transactions = log.collection("Transactions");
 const ClosedApplications = log.collection("ClosedApplications");
@@ -31,7 +31,7 @@ const MongoObject = {
         log: log
     },
     collections: {
-        Sellers: Sellers,
+        Sellers: exports.Sellers,
         Orders: Orders,
         Accounts: exports.Accounts,
         Applications: Applications,
@@ -43,9 +43,11 @@ const MongoObject = {
 const authorization_1 = __importDefault(require("./routers/authorization"));
 const delivery_1 = __importDefault(require("./routers/delivery"));
 const buyer_1 = __importDefault(require("./routers/buyer"));
+const seller_1 = __importDefault(require("./routers/seller"));
 app.use('/buyer', (0, buyer_1.default)(MongoObject));
 app.use('/delivery', (0, delivery_1.default)(MongoObject));
 app.use('/authorization', (0, authorization_1.default)(MongoObject));
+app.use('/seller', (0, seller_1.default)(MongoObject));
 // running
 app.listen(8000, () => {
     console.log(`⚡️[server]: Server is running at http://localhost:8000`);

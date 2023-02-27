@@ -1,14 +1,15 @@
 import { Request, Response, NextFunction } from "express";
-import {Collection} from "mongodb";
+import {Collection, ObjectId} from "mongodb";
 import { Account } from "./interfaces";
-import { Accounts } from ".";
+import { Accounts, Sellers } from "./index";
 
 export const processPayment = async (req:Request, res:Response, next:NextFunction) => {
     const cardNumber  = req.body.cardNumber;
     const cardExpireDate = req.body.cardExpireDate;
     const cardCVV = req.body.cardCVV;
-
+    const project = {products:1};
     // make api call to privider of services
+
     //get responce of 200
     res.locals.PaymentLog = {
         accepted:true,
@@ -47,7 +48,6 @@ export const InputValidator = async (req:Request, res:Response, next:NextFunctio
 export const isBuyer = async (req:Request, res:Response, next:NextFunction) => {
 
    res.locals.account = await Accounts.findOne({sessionid:req.headers.authorization});
-   console.log(res.locals.account);
    if (res.locals.account && res.locals.account.type === 1)
    {
         next();
