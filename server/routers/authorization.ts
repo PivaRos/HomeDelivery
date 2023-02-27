@@ -1,6 +1,6 @@
 import express, {Request, Response, NextFunction } from 'express';
 import mongodb, { MongoClient, ObjectId } from 'mongodb';
-import { Account, Order, Seller } from '../interfaces';
+import { Account, Order, Store } from '../interfaces';
 import { body, check, validationResult } from 'express-validator';
 import { makeid } from '../functions';
 
@@ -12,7 +12,7 @@ const Router = (MongoObject:{
         log: mongodb.Db;
     };
     collections: {
-        Sellers: mongodb.Collection<Seller>;
+        Stores: mongodb.Collection<Store>;
         Orders: mongodb.Collection<Order>;
         Accounts: mongodb.Collection<Account>;
         Applications: mongodb.Collection<mongodb.BSON.Document>;

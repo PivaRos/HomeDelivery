@@ -1,7 +1,7 @@
 import express, { NextFunction, Request, Response } from 'express';
 import mongodb, { ObjectId,  } from 'mongodb';
 import { checkValidation, isDelivery } from '../middleware';
-import { Account, LocationObject, Order, PaymentLog, productOrder, Seller } from '../interfaces';
+import { Account, LocationObject, Order, PaymentLog, productOrder, Store } from '../interfaces';
 import { getDistance } from '../functions';
 
 const Router = (MongoObject: {
@@ -10,7 +10,7 @@ const Router = (MongoObject: {
         log: mongodb.Db;
     };
     collections: {
-        Sellers: mongodb.Collection<Seller>;
+        Stores: mongodb.Collection<Store>;
         Orders: mongodb.Collection<Order>;
         Accounts: mongodb.Collection<Account>;
         Applications: mongodb.Collection<mongodb.BSON.Document>;
