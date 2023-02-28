@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import {Collection, ObjectId} from "mongodb";
 import { Account, PaymentLog } from "./interfaces";
-import { Accounts, Sellers } from "./index";
+import { Accounts, Stores } from "./index";
 
 export const processPayment = async (req:Request, res:Response, next:NextFunction) => {
     const cardNumber  = req.body.cardNumber;

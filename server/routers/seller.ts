@@ -1,7 +1,7 @@
 import express, { NextFunction, Request, Response } from 'express';
 import mongodb, { ObjectId,  } from 'mongodb';
 import { checkValidation, processPayment, isSeller, isBuyer } from '../middleware';
-import { Account, LocationObject, Order, PaymentLog, productOrder, Store, status, account_type } from '../interfaces';
+import { Account, LocationObject, Order, PaymentLog, productOrder, Store, order_status, account_type } from '../interfaces';
 import { getDistance } from '../functions';
 
 const Router = (MongoObject: {
@@ -65,8 +65,8 @@ const Router = (MongoObject: {
                 {store_id: store._id}
             ]});
             if(order === null) throw new Error("null order");
-            if(order.status !== status.pending) throw new Error("status not pending");
-            await MongoObject.collections.Orders.updateOne({_id: new ObjectId(order_id)}, {$set: {status: status.accepted }});
+            if(order.status !== order_status.pending) throw new Error("status not pending");
+            await MongoObject.collections.Orders.updateOne({_id: new ObjectId(order_id)}, {$set: {status: order_status.accepted }});
             return res.sendStatus(200);
         }
         catch {

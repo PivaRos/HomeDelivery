@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const mongodb_1 = require("mongodb");
 const middleware_1 = require("../middleware");
+const interfaces_1 = require("../interfaces");
 const Router = (MongoObject) => {
     const SellerRouter = express_1.default.Router();
     SellerRouter.use(middleware_1.isSeller);
@@ -51,17 +52,21 @@ const Router = (MongoObject) => {
     //accept new order
     SellerRouter.post('/order/accept', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const Orders = yield MongoObject.collections.Orders.find({ $and: [
-                    { status: 1 },
-                    { seller: new mongodb_1.ObjectId(res.locals.account._id) }
-                ] }).toArray();
-            if (Orders.length) {
-            }
-            if (0) {
-                console.log("asd");
-            }
+            const order_id = req.body.Orderid;
+            const store = yield MongoObject.collections.Stores.findOne({ authorizedUsers: { $elemMatch: res.locals.account._id } });
+            const order = yield MongoObject.collections.Orders.findOne({ $and: [
+                    { _id: new mongodb_1.ObjectId(order_id) },
+                    { store_id: store._id }
+                ] });
+            if (order === null)
+                throw new Error("null order");
+            if (order.status !== interfaces_1.order_status.pending)
+                throw new Error("status not pending");
+            yield MongoObject.collections.Orders.updateOne({ _id: new mongodb_1.ObjectId(order_id) }, { $set: { status: interfaces_1.order_status.accepted } });
+            return res.sendStatus(200);
         }
         catch (_b) {
+            res.sendStatus(500);
         }
     }));
     return SellerRouter;

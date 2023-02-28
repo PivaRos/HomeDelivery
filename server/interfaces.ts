@@ -1,7 +1,21 @@
 import { ObjectId, Timestamp, WithId, Document } from "mongodb"
 
 
+export enum account_type{
+    Seller = 2,
+    Buyer = 1,
+    Delivery = 3,
+    Support = 4,
+    Admin = 5
+}
 
+export enum order_status {
+    pending = 1,
+    cancelled = 0,
+    accepted = 2,
+    onDelivery = 3,
+    done = 4
+}
 
 export interface productObject {
     name: string,
@@ -17,7 +31,7 @@ export interface LocationObject {
 }
 
 
-export interface Seller extends WithId<Document> {
+export interface Store extends WithId<Document> {
     _id: ObjectId,
     logo: string,
     name: string,
@@ -28,7 +42,7 @@ export interface Seller extends WithId<Document> {
 }
 
 export interface Account {
-	type:1|2|3|4|5    //"seller"(2)/"buyer"(1)/"delivery"(3)/"support"(4)/"admin"(5),
+	type:account_type,
 	username:string,
 	password:string,
     phoneNumber:string,
@@ -52,7 +66,7 @@ export interface Order{
 	homenumber:string,
     zipcode:string,
 	delivery?:ObjectId,
-	status:0|1|2|3|4 //cancelled(0)/pending(1)/accepted(2)/onDelivery(3)/done(4)
+	status:order_status
 }
 
 export interface dateObject {

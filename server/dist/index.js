@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Sellers = exports.Accounts = void 0;
+exports.Stores = exports.Accounts = void 0;
 const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
@@ -19,7 +19,7 @@ const log = client.db("log");
 exports.Accounts = data.collection("Accounts");
 const Orders = data.collection("Orders");
 const Applications = data.collection("Applications");
-exports.Sellers = data.collection("Sellers");
+exports.Stores = data.collection("Stores");
 // log collections
 const Transactions = log.collection("Transactions");
 const ClosedApplications = log.collection("ClosedApplications");
@@ -31,7 +31,7 @@ const MongoObject = {
         log: log
     },
     collections: {
-        Sellers: exports.Sellers,
+        Stores: exports.Stores,
         Orders: Orders,
         Accounts: exports.Accounts,
         Applications: Applications,

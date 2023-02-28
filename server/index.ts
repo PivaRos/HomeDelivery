@@ -1,6 +1,6 @@
 import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
-import { Account, Order, Seller } from './interfaces';
+import { Account, Order, Store } from './interfaces';
 
 dotenv.config();
 const app: Express = express();
@@ -17,7 +17,7 @@ const log = client.db("log");
 export const Accounts = data.collection<Account>("Accounts");
 const Orders = data.collection<Order>("Orders");
 const Applications = data.collection("Applications");
-export const Sellers = data.collection<Seller>("Sellers");
+export const Stores = data.collection<Store>("Stores");
 
 // log collections
 const Transactions = log.collection("Transactions");
@@ -31,7 +31,7 @@ const MongoObject = {
     log:log
   }, 
   collections:{
-    Sellers:Sellers,
+    Stores:Stores,
     Orders:Orders,
     Accounts:Accounts,
     Applications:Applications,
@@ -55,4 +55,4 @@ app.use('/seller', SellerRouter(MongoObject));
 // running
 app.listen(8000, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:8000`);
-});
+}); 
