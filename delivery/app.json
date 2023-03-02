@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "HomeDelivery_buyer",
-    "slug": "HomeDelivery_buyer",
+    "name": "delivery",
+    "slug": "delivery",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

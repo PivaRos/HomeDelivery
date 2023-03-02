@@ -1,5 +1,5 @@
 {
-  "name": "homedelivery_buyer",
+  "name": "buyer",
   "version": "1.0.0",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
@@ -11,6 +11,7 @@
   "dependencies": {
     "expo": "~48.0.4",
     "expo-status-bar": "~1.4.4",
+    "mongodb": "^5.1.0",
     "react": "18.2.0",
     "react-native": "0.71.3"
   },

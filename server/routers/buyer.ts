@@ -54,36 +54,37 @@ const Router = (MongoObject: {
         }
     });
 
-    const createOrder = async (req:Request, res:Response) => {
-        try{
-            if (!res.locals.PaymentLog.accepted) throw new Error();
-            const user = res.locals.account;
-            //check if user can order
-            const store: Store = <Store> await MongoObject.collections.Stores.findOne({_id:new ObjectId(req.body.store)});
-            if (!store) throw new Error("no store found");
-            const distance = getDistance(store.location, user.location);
-            if (distance > store.deliveryDistance) throw new Error("out of service distance");
-            //make order
-            const Order: Order = {
-                seller: new ObjectId(req.body.store),
-                buyer: new ObjectId(user._id),
-                products:req.body.products.map((product:productOrder) => {
-                    return {
-                        productId:new ObjectId(product.productId),
-                        details:{}
-                    }
-                }),
-                date:{
-                    date:new Date(),
-                    timestamp:new Date().getTime()
-                },
-                location:user.location,
-                totalPrice:res.locals.totalPrice,
-                status:1,
-                city:req.body.city,
-                street:req.body.address,
-                zipcode:req.body.zipcode,
-                homenumber:user.phonenumber
+    async function createOrder(req:Request, res:Response) {
+        try {
+            
+        if (!res.locals.PaymentLog.accepted) throw new Error();
+        const user = res.locals.account;
+        //check if user can order
+        const store: Store = <Store> await MongoObject.collections.Stores.findOne({_id:new ObjectId(req.body.store)});
+        if (!store) throw new Error("no store found");
+        const distance = getDistance(store.location, user.location);
+        if (distance > store.deliveryDistance) throw new Error("out of service distance");
+        //make order
+        const Order: Order = {
+            seller: new ObjectId(req.body.store),
+            buyer: new ObjectId(user._id),
+            products:req.body.products.map((product:productOrder) => {
+                return {
+                    productId:new ObjectId(product.productId),
+                    details:{}
+                }
+            }),
+            date:{
+                date:new Date(),
+                timestamp:new Date().getTime()
+            },
+            location:user.location,
+            totalPrice:res.locals.totalPrice,
+            status:1,
+            city:req.body.city,
+            street:req.body.address,
+            zipcode:req.body.zipcode,
+            homenumber:user.phonenumber
             }
             const result = await MongoObject.collections.Orders.insertOne(Order);
             return res.json({
@@ -104,7 +105,7 @@ const Router = (MongoObject: {
                 not: null // number of tries left
             });
         }
-    }
+}
 
     //first stage when buyer sends order to seller
     buyerRouter.post("/order", processPayment, createOrder);
