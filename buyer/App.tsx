@@ -1,10 +1,13 @@
-
 import { StyleSheet, Text, View, StatusBar, Platform, SafeAreaView } from 'react-native';
+import React from 'react';
+import Navbar from './components/Navbar';
 
 export default function App() {
   return (
     <SafeAreaView style={styles.container}>
-      <Text>Open up App.tsx to start won your app!</Text>
+      <Navbar/>
+
+      <Text>Open up App.tsx to start woSn your app!</Text>
     </SafeAreaView>
   );
 }
