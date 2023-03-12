@@ -1,6 +1,13 @@
 import { ObjectId, Timestamp, WithId, Document } from "mongodb"
 
 
+export enum Pages {
+    Stores = "Stores",
+    Search  = "Search", 
+    Account = "Account",
+    Home = "Home"
+}
+
 export enum account_type{
     Seller = 2,
     Buyer = 1,
