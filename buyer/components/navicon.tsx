@@ -12,6 +12,7 @@ const Navicon = (props:Props) => {
     
 const styles = StyleSheet.create({
     navicon:{
+        paddingTop:5,
     }
 })
 
