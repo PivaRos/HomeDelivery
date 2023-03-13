@@ -1,18 +1,33 @@
 import React, { useState, useEffect } from 'react'; 
-import {StyleSheet, View} from 'react-native';
+import {StyleSheet, View, Text} from 'react-native';
 import { Store } from '../interfaces';
 
 interface Props {
     title:string;
     displayStores:Store[];
 }
-const storesGrid = (props:Props) => {
+const StoresGrid = (props:Props) => {
     
 
-    return (<View>
-
+    return (<View style={styles.view}>
+                <Text style={styles.title}>{props.title}</Text>
             </View>); 
 }
 
-export default storesGrid;
+const styles = StyleSheet.create({
+    view:{
+        width:'100%',
+        height:300,
+        position:'relative',
+
+    },
+
+    title:{
+        paddingLeft:10,
+        fontWeight:'bold',
+        fontSize:'18px',
+    }
+})
+
+export default StoresGrid;
 

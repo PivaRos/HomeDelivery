@@ -20,8 +20,8 @@ const styles = StyleSheet.create({
     return (
         <View style={styles.navicon}>
             <SvgXml style={{ 
-                height:35,
-                width:35,
+                height:30,
+                width:30,
 
             }} xml={props.svgicon} />
         </View>
