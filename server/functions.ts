@@ -9,6 +9,7 @@ export const getDistance = (Location1:LocationObject, Location2:LocationObject )
     return distance;
 }
 
+
 export const makeid = (length:number) => {
     let result = '';
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';

@@ -10,7 +10,7 @@ const storesGrid = (props:Props) => {
     
 
     return (<View>
-
+            
             </View>); 
 }
 
