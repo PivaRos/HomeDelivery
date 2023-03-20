@@ -2,12 +2,11 @@ import { StyleSheet, Text, View, StatusBar, Platform, SafeAreaView } from 'react
 import {useEffect, useState} from 'react'
 import { Pages } from './interfaces';
 import { NavigationContainer } from '@react-navigation/native';
-import Home from './navigation/screens/homeScreen';
-import Navicon from './components/navicon';
 import Tabs from './navigation/tabs';
 import * as Location from 'expo-location';
 import { LocationObject } from './interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Notifications from 'expo-notifications';
 
 
 export default function App() {
@@ -19,6 +18,34 @@ export default function App() {
 interface StorageData {
   sessionid:string;
 }
+
+ 
+
+const registerForPushNotificationsAsync = async () => {
+  let token;
+  try{
+  const { status: existingStatus } = await Notifications.getPermissionsAsync();
+  let finalStatus = existingStatus;
+
+  if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+  }
+  if (finalStatus !== 'granted') {
+      console.log("final is not granted");
+      return;
+  }
+  token = (await Notifications.getExpoPushTokenAsync()).data;
+  console.log(token);
+
+  return token;
+  }catch (e){
+    console.log("his is error");
+    console.log(e);
+    return token;
+  }
+}
+
 
   const SaveData = async (data:StorageData) => {
     try{
@@ -39,15 +66,11 @@ interface StorageData {
 
   
   useEffect(() => {
+    registerForPushNotificationsAsync();
     (async () => {
-     await SaveData({sessionid:"asdasdasd1"});
-      console.log(sessionid);
-     await SaveData({sessionid:"1122"});
-      console.log(sessionid);
-
+    await UpdateData();
 
       try{
-
         let  result  = await Location.requestForegroundPermissionsAsync();
         if (result.status !== 'granted') {
           setErrorMsg('Permission to access location was denied');
