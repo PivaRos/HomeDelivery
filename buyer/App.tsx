@@ -1,6 +1,6 @@
-import { StyleSheet, Text, View, StatusBar, Platform, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, View, StatusBar, Platform, SafeAreaView, ActivityIndicator, Button} from 'react-native';
 import {useEffect, useState} from 'react'
-import { Pages } from './interfaces';
+import { StorageData, Store } from './interfaces';
 import { NavigationContainer } from '@react-navigation/native';
 import Tabs from './navigation/tabs';
 import * as Location from 'expo-location';
@@ -8,60 +8,44 @@ import { LocationObject } from './interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 import { userActions } from './hooks/user';
+import { CheckLocation } from './functions';
+import { storeActions } from './hooks/stores';
 
 export default function App() {
   const [thelocation, setLocation] = useState<LocationObject | null | undefined>();
   const [errorMsg, setErrorMsg] = useState("");
   const [sessionid, setSessionid] = useState<null | undefined | string>();
+  const [loading, setLoading] = useState(false);
+  const [availableStores, setAvailableStores] = useState<Store[] | [{}]>([{}]);
+
+
+const getContent = () => {
+  console.log("the location is: " +thelocation?.coordinates);
+  if (loading) return <ActivityIndicator size="small" style={{opacity:1, marginTop:'100%'}}/>;
+  if (!thelocation) return <SafeAreaView><Text style={{fontWeight:"bold", textAlign:'center'}}>Please Allow HomeDelivery To Use Location In Order To Continue Using The App</Text><Button onPress={CheckForLocation} title='Allow Access'/></SafeAreaView>
+  return (
+  <SafeAreaView style={styles.container}>
+    <NavigationContainer>
+    <Tabs/>
+    </NavigationContainer>
+  </SafeAreaView>
+
+  );
+}
+
+
+
+
+
+
+const CheckForLocation = async () => {
   
-
-interface StorageData {
-  sessionid:string;
-}
-
-
-const registerForPushNotificationsAsync = async () => {
-  let token;
-  try{
-  const { status: existingStatus } = await Notifications.getPermissionsAsync();
-  let finalStatus = existingStatus;
-
-  if (existingStatus !== 'granted') {
-      const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
+  const response =  await Location.requestForegroundPermissionsAsync();
+  if (response.granted)
+  {
+    setLocation(await CheckLocation());
   }
-  if (finalStatus !== 'granted') {
-      console.log("final is not granted");
-      return;
-  }
-  token = (await Notifications.getExpoPushTokenAsync()).data;
-  console.log(token);
 
-  return token;
-  }catch (e){
-    console.log("his is error");
-    console.log(e);
-    return token;
-  }
-}
-
-const CheckLocation = async () => {
-  try{
-    let  result  = await Location.requestForegroundPermissionsAsync();
-    if (result.status !== 'granted') {
-      setErrorMsg('Permission to access location was denied');
-      return;
-    }
-
-    let location = await Location.getCurrentPositionAsync({});
-    setLocation({
-      type:"point",
-      coordinates:[location.coords.latitude, location.coords.longitude]
-    });
-  }
-  catch{
-    return;
-  }
 }
 
   const SaveData = async (data:StorageData) => {
@@ -85,11 +69,27 @@ const CheckLocation = async () => {
   
   useEffect(() => {
     try{
+    setLoading(true);
+    (async () => {
     //registerForPushNotificationsAsync();
     UpdateData();
-    CheckLocation();
-    userActions.GetUserData("asdasdasd");
+    setLocation(await CheckLocation());
+    if (thelocation)
+    {
+      setAvailableStores(await storeActions.GetStores(thelocation));
+      
+
+
+    }
+    setLoading(false);
+
+   })()
+   
+    
+    //userActions.GetUserData("asdasdasd");
+
     }catch{
+
 
     }
 
@@ -99,15 +99,11 @@ const CheckLocation = async () => {
       
     }
 
+
   }, []);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <NavigationContainer>
-      <Tabs/>
-      </NavigationContainer>
-
-    </SafeAreaView>
+    getContent()
   );
 }
 

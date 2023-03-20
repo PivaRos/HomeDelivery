@@ -16,6 +16,10 @@ export enum account_type{
     Admin = 5
 }
 
+export interface StorageData {
+    sessionid:string;
+  }
+
 export enum order_status {
     pending = 1,
     cancelled = 0,

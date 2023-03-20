@@ -48,61 +48,94 @@ const Router = (MongoObject) => {
             });
         }
     }));
-    const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    function createOrder(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                if (!res.locals.PaymentLog.accepted)
+                    throw new Error();
+                const user = res.locals.account;
+                //check if user can order
+                const store = yield MongoObject.collections.Stores.findOne({ _id: new mongodb_1.ObjectId(req.body.store) });
+                if (!store)
+                    throw new Error("no store found");
+                const distance = (0, functions_1.getDistance)(store.location, user.location);
+                if (distance > store.deliveryDistance)
+                    throw new Error("out of service distance");
+                //make order
+                const Order = {
+                    seller: new mongodb_1.ObjectId(req.body.store),
+                    buyer: new mongodb_1.ObjectId(user._id),
+                    products: req.body.products.map((product) => {
+                        return {
+                            productId: new mongodb_1.ObjectId(product.productId),
+                            details: {}
+                        };
+                    }),
+                    date: {
+                        date: new Date(),
+                        timestamp: new Date().getTime()
+                    },
+                    location: user.location,
+                    totalPrice: res.locals.totalPrice,
+                    status: 1,
+                    city: req.body.city,
+                    street: req.body.address,
+                    zipcode: req.body.zipcode,
+                    homenumber: user.phonenumber
+                };
+                const result = yield MongoObject.collections.Orders.insertOne(Order);
+                return res.json({
+                    err: false,
+                    msg: "ok",
+                    data: {
+                        order: result.insertedId
+                    }
+                });
+            }
+            catch (e) {
+                res.status(500);
+                console.log(e);
+                return res.json({
+                    err: true,
+                    msg: "server error",
+                    not: null // number of tries left
+                });
+            }
+        });
+    }
+    //first stage when buyer sends order to seller
+    buyerRouter.post("/order", middleware_1.processPayment, createOrder);
+    buyerRouter.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        return res.json(res.locals.account);
+    }));
+    buyerRouter.post("/new/get/sellers", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        const buyerLocation = req.body.location;
         try {
-            if (!res.locals.PaymentLog.accepted)
-                throw new Error();
-            const user = res.locals.account;
-            //check if user can order
-            const store = yield MongoObject.collections.Stores.findOne({ _id: new mongodb_1.ObjectId(req.body.store) });
-            if (!store)
-                throw new Error("no store found");
-            const distance = (0, functions_1.getDistance)(store.location, user.location);
-            if (distance > store.deliveryDistance)
-                throw new Error("out of service distance");
-            //make order
-            const Order = {
-                seller: new mongodb_1.ObjectId(req.body.store),
-                buyer: new mongodb_1.ObjectId(user._id),
-                products: req.body.products.map((product) => {
-                    return {
-                        productId: new mongodb_1.ObjectId(product.productId),
-                        details: {}
-                    };
-                }),
-                date: {
-                    date: new Date(),
-                    timestamp: new Date().getTime()
-                },
-                location: user.location,
-                totalPrice: res.locals.totalPrice,
-                status: 1,
-                city: req.body.city,
-                street: req.body.address,
-                zipcode: req.body.zipcode,
-                homenumber: user.phonenumber
-            };
-            const result = yield MongoObject.collections.Orders.insertOne(Order);
+            const projection = { authorizedUsers: 0 };
+            let sellers = yield MongoObject.collections.Stores.find({}).project(projection).toArray();
+            let returnSellers = [];
+            sellers.forEach(seller => {
+                const distance = (0, functions_1.getDistance)(seller.location, buyerLocation);
+                if (distance < seller.deliveryDistance) {
+                    returnSellers.push(seller);
+                }
+            });
+            res.status(200);
             return res.json({
                 err: false,
                 msg: "ok",
-                data: {
-                    order: result.insertedId
-                }
+                data: returnSellers
             });
         }
         catch (e) {
             res.status(500);
-            console.log(e);
             return res.json({
                 err: true,
-                msg: "server error",
+                msg: "unable to verify user",
                 not: null // number of tries left
             });
         }
-    });
-    //first stage when buyer sends order to seller
-    buyerRouter.post("/order", middleware_1.processPayment, createOrder);
+    }));
     return buyerRouter;
 };
 exports.default = Router;

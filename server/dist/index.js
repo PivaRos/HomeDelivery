@@ -6,6 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Stores = exports.Accounts = void 0;
 const express_1 = __importDefault(require("express"));
 const dotenv_1 = __importDefault(require("dotenv"));
+const fs_1 = __importDefault(require("fs"));
+var privateKey = fs_1.default.readFileSync('ssl/key.pem', 'utf8');
+var certificate = fs_1.default.readFileSync('ssl/cert.pem', 'utf8');
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
@@ -43,12 +46,14 @@ const MongoObject = {
 const authorization_1 = __importDefault(require("./routers/authorization"));
 const delivery_1 = __importDefault(require("./routers/delivery"));
 const buyer_1 = __importDefault(require("./routers/buyer"));
+const publicBuyer_1 = __importDefault(require("./routers/publicBuyer"));
 const seller_1 = __importDefault(require("./routers/seller"));
 app.use('/buyer', (0, buyer_1.default)(MongoObject));
+app.use('/publicbuyer', (0, publicBuyer_1.default)(MongoObject));
 app.use('/delivery', (0, delivery_1.default)(MongoObject));
 app.use('/authorization', (0, authorization_1.default)(MongoObject));
 app.use('/seller', (0, seller_1.default)(MongoObject));
 // running
 app.listen(8000, () => {
-    console.log(`⚡️[server]: Server is running at http://localhost:8000`);
+    console.log(`⚡️[server]: Server is running at https://localhost:8000`);
 });

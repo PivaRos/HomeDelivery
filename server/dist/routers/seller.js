@@ -49,7 +49,7 @@ const Router = (MongoObject) => {
             });
         }
     }));
-    //accept new order
+    //accept new order *
     SellerRouter.post('/order/accept', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const order_id = req.body.Orderid;

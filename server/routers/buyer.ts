@@ -111,6 +111,41 @@ const Router = (MongoObject: {
     buyerRouter.post("/order", processPayment, createOrder);
 
 
+    buyerRouter.get("/", async (req:Request, res:Response) => {
+        return res.json(res.locals.account);
+    });
+
+    buyerRouter.post("/new/get/sellers", async (req:Request, res:Response) => {
+        const buyerLocation = req.body.location;
+        try {
+            const projection = { authorizedUsers: 0 };
+            let sellers = await MongoObject.collections.Stores.find({}).project(projection).toArray();
+                let returnSellers:Store[] = [];
+                sellers.forEach(seller => {  //checks foreach seller the distance
+                    const distance = getDistance(seller.location, buyerLocation);
+                    if (distance < seller.deliveryDistance)
+                    {
+                        returnSellers.push(<Store>seller);
+                    }
+                });
+                res.status(200);
+                return res.json({
+                    err:false,
+                    msg:"ok",
+                    data:returnSellers
+                });
+            }
+        catch (e) {
+            res.status(500);
+            return res.json({
+                err: true,
+                msg: "unable to verify user",
+                not: null // number of tries left
+            });
+        }
+    })
+
+
     return buyerRouter;
 }
 
