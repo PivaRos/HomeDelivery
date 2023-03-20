@@ -14,7 +14,7 @@ const Tabs = () => {
 const Tab = createBottomTabNavigator();
 
     return (<Tab.Navigator
-        initialRouteName={Pages.Home}
+        initialRouteName={Pages.Stores}
         screenOptions={({route}) => ({
           tabBarIcon:({focused, color, size}) => {
             let iconName = ""

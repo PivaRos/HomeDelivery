@@ -7,30 +7,62 @@ import Navicon from './components/navicon';
 import Tabs from './navigation/tabs';
 import * as Location from 'expo-location';
 import { LocationObject } from './interfaces';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 export default function App() {
   const [thelocation, setLocation] = useState<LocationObject | null | undefined>();
   const [activePage, setActivePage] = useState<Pages>(); // 1 is stores page - default
   const [errorMsg, setErrorMsg] = useState("");
+  const [sessionid, setSessionid] = useState<null | undefined | string>();
 
+interface StorageData {
+  sessionid:string;
+}
+
+  const SaveData = async (data:StorageData) => {
+    try{
+      await AsyncStorage.setItem("@sessionid", data.sessionid);
+      UpdateData();
+    }catch{
+
+    }
+  }
+
+  const UpdateData = async () => {
+    try{
+      await setSessionid(await AsyncStorage.getItem("@sessionid"));
+    }catch{
+
+    }
+  }
+
+  
   useEffect(() => {
     (async () => {
-      
-      let  result  = await Location.requestForegroundPermissionsAsync();
-      if (result.status !== 'granted') {
-        setErrorMsg('Permission to access location was denied');
+     await SaveData({sessionid:"asdasdasd1"});
+      console.log(sessionid);
+     await SaveData({sessionid:"1122"});
+      console.log(sessionid);
+
+
+      try{
+
+        let  result  = await Location.requestForegroundPermissionsAsync();
+        if (result.status !== 'granted') {
+          setErrorMsg('Permission to access location was denied');
+          return;
+        }
+
+        let location = await Location.getCurrentPositionAsync({});
+        setLocation({
+          type:"point",
+          coordinates:[location.coords.latitude, location.coords.longitude]
+        });
+      }
+      catch{
         return;
       }
-
-      let location = await Location.getCurrentPositionAsync({});
-      setLocation({
-        type:"point",
-        coordinates:[location.coords.latitude, location.coords.longitude]
-      });
-      console.log(errorMsg);
-      console.log(thelocation);
     })();
   }, []);
 
