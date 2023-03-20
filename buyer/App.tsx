@@ -7,19 +7,18 @@ import * as Location from 'expo-location';
 import { LocationObject } from './interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
-
+import { userActions } from './hooks/user';
 
 export default function App() {
   const [thelocation, setLocation] = useState<LocationObject | null | undefined>();
-  const [activePage, setActivePage] = useState<Pages>(); // 1 is stores page - default
   const [errorMsg, setErrorMsg] = useState("");
   const [sessionid, setSessionid] = useState<null | undefined | string>();
+  
 
 interface StorageData {
   sessionid:string;
 }
 
- 
 
 const registerForPushNotificationsAsync = async () => {
   let token;
@@ -46,6 +45,24 @@ const registerForPushNotificationsAsync = async () => {
   }
 }
 
+const CheckLocation = async () => {
+  try{
+    let  result  = await Location.requestForegroundPermissionsAsync();
+    if (result.status !== 'granted') {
+      setErrorMsg('Permission to access location was denied');
+      return;
+    }
+
+    let location = await Location.getCurrentPositionAsync({});
+    setLocation({
+      type:"point",
+      coordinates:[location.coords.latitude, location.coords.longitude]
+    });
+  }
+  catch{
+    return;
+  }
+}
 
   const SaveData = async (data:StorageData) => {
     try{
@@ -59,6 +76,7 @@ const registerForPushNotificationsAsync = async () => {
   const UpdateData = async () => {
     try{
       await setSessionid(await AsyncStorage.getItem("@sessionid"));
+      console.log(sessionid);
     }catch{
 
     }
@@ -66,27 +84,21 @@ const registerForPushNotificationsAsync = async () => {
 
   
   useEffect(() => {
-    registerForPushNotificationsAsync();
-    (async () => {
-    await UpdateData();
+    try{
+    //registerForPushNotificationsAsync();
+    UpdateData();
+    CheckLocation();
+    userActions.GetUserData("asdasdasd");
+    }catch{
 
-      try{
-        let  result  = await Location.requestForegroundPermissionsAsync();
-        if (result.status !== 'granted') {
-          setErrorMsg('Permission to access location was denied');
-          return;
-        }
+    }
 
-        let location = await Location.getCurrentPositionAsync({});
-        setLocation({
-          type:"point",
-          coordinates:[location.coords.latitude, location.coords.longitude]
-        });
-      }
-      catch{
-        return;
-      }
-    })();
+
+    if (sessionid)
+    {
+      
+    }
+
   }, []);
 
   return (
