@@ -11,6 +11,7 @@ import Account from './screens/accountScreen';
 interface Props {
   location:LocationObject;
   Stores:availableStores | null | undefined;
+  setAvailableStores:React.Dispatch<React.SetStateAction<availableStores | null | undefined>>;
 }
 
 const Tabs = (props:Props) => {
@@ -43,7 +44,7 @@ const Tab = createBottomTabNavigator();
           headerShown:false,
           tabBarShowLabel:false
         })}>
-          <Tab.Screen name='Stores' children={() => <Stores Stores={props.Stores} location={props.location} />} />
+          <Tab.Screen name='Stores' children={() => <Stores setAvailableStores={props.setAvailableStores} Stores={props.Stores} location={props.location} />} />
           <Tab.Screen name='Home' children={() => <Home Stores={props.Stores} location={props.location} />}  />
           <Tab.Screen name='Search' children={() => <Search Stores={props.Stores} location={props.location} />} />
           <Tab.Screen name='Account' children={() => <Account Stores={props.Stores} location={props.location} />} />

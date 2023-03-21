@@ -22,34 +22,18 @@ export default function App() {
 
 const getContent = () => {
   if (loading) return <ActivityIndicator size="small" style={{opacity:1, marginTop:'100%'}}/>;
-  if (!thelocation) return <SafeAreaView><Text style={{fontWeight:"bold", textAlign:'center'}}>Please Allow HomeDelivery To Use Location In Order To Continue Using The App</Text><Button onPress={CheckForLocation} title='Allow Access'/></SafeAreaView>
+  if (!thelocation) return <SafeAreaView><Text style={{fontWeight:"bold", textAlign:'center'}}>Please Allow HomeDelivery To Use Location In Order To Continue Using The App</Text><Button onPress={PressLocation} title='Allow Access'/></SafeAreaView>
   return (
   <SafeAreaView style={styles.container}>
     <NavigationContainer>
-    <Tabs Stores={availableStores} location={thelocation}/>
-
+    <Tabs Stores={availableStores} setAvailableStores={setAvailableStores} location={thelocation}/>
     </NavigationContainer>
   </SafeAreaView>
 
   );
 }
-
-
-
-
-const CheckForLocation = async () => {
-  try{
-  console.log("checking location");
-  const response =  await Location.requestForegroundPermissionsAsync();
-  if (response.granted)
-  {
-    setLocation(await CheckLocation());
-    console.log("location is : " + location);
-  } 
-  }catch{
-    return;
-  }
-
+const PressLocation = async () => {
+  setLocation(await CheckLocation());
 }
 
   const SaveData = async (data:StorageData) => {
@@ -63,49 +47,28 @@ const CheckForLocation = async () => {
 
   const UpdateData = async () => {
     try{
-      await setSessionid(await AsyncStorage.getItem("@sessionid"));
-      console.log("sessionid is : " +sessionid);
+      const sessionid = await AsyncStorage.getItem("@sessionid");
+        setSessionid(sessionid);
+
     }catch{
 
     }
   }
 
+  const firstloadCheck = async () => {
+    try{
+      setLoading(true);
+      setLocation(await CheckLocation());
+      await UpdateData();
+      setLoading(false);
+    }catch(e){
+      console.log(e)
+    }
+  }
+
   
   useEffect(() => {
-    try{
-    setLoading(true);
-    (async () => {
-    //registerForPushNotificationsAsync();
-   await UpdateData();
-   await CheckForLocation();
-    if (thelocation)
-    {
-      const stores:availableStores = {
-        Open:await storeActions.GetStores(thelocation),
-        Closed:[]
-      }
-      setAvailableStores(stores);
-    }
-    setLoading(false);
-    console.log("the stores is : "+availableStores);
-   })()
-   
-    
-    //userActions.GetUserData("asdasdasd");
-
-    }catch{
-    setLoading(false);
-
-
-    }
-
-
-    if (sessionid)
-    {
-      
-    }
-
-
+    firstloadCheck();
   }, []);
 
   return (

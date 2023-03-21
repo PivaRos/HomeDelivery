@@ -93,6 +93,15 @@ export interface dateObject {
 }
 
 
+export interface dataObject {
+	err:boolean
+	msg:string,
+	data:any,
+	nor?:number 	//number of tries
+	
+}
+
+
 
 export interface productOrder {
     productId : ObjectId,

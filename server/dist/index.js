@@ -55,5 +55,5 @@ app.use('/authorization', (0, authorization_1.default)(MongoObject));
 app.use('/seller', (0, seller_1.default)(MongoObject));
 // running
 app.listen(8000, () => {
-    console.log(`⚡️[server]: Server is running at https://localhost:8000`);
+    console.log(`⚡️[server]: Server is running at http://localhost:8000`);
 });

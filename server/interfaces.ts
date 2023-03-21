@@ -38,7 +38,8 @@ export interface Store extends WithId<Document> {
     products: productObject[],
     authorizedUsers: string[],
     location: LocationObject,
-    deliveryDistance: number
+    deliveryDistance: number,
+    openHoursObject:openHoursObject
 }
 
 export interface Account {
@@ -92,4 +93,5 @@ export interface PaymentLog {
 export interface openHoursObject{
     openFrom:number;
     closedFrom:number;
+    hasCloseNextDay:boolean;
 }

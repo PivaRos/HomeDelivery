@@ -36,8 +36,7 @@ export const registerForPushNotificationsAsync = async () => {
       if (result.status !== 'granted') {
         return;
       }
-  
-      let location = await Location.getCurrentPositionAsync({});
+      let location = await Location.getCurrentPositionAsync();
       return({
         type:"point",
         coordinates:[location.coords.latitude, location.coords.longitude]

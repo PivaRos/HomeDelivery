@@ -1,6 +1,10 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.makeid = exports.getDistance = void 0;
+exports.timeToSecondsFromStartOfDay = exports.isOpen = exports.getSeconds = exports.makeid = exports.getDistance = void 0;
+const moment_1 = __importDefault(require("moment"));
 //returns distance (km)
 const getDistance = (Location1, Location2) => {
     const dy = (+Location1.coordinates[0]) - (+Location2.coordinates[0]);
@@ -21,3 +25,29 @@ const makeid = (length) => {
     return result;
 };
 exports.makeid = makeid;
+const getSeconds = (addDay) => {
+    if (addDay)
+        return (+(0, moment_1.default)() - +(0, moment_1.default)().startOf('day')) / 1000 + 86400;
+    return (+(0, moment_1.default)() - +(0, moment_1.default)().startOf('day')) / 1000;
+};
+exports.getSeconds = getSeconds;
+const isOpen = (openHoursObject, hasCloseNextDay) => {
+    const time = (0, exports.getSeconds)(hasCloseNextDay);
+    if (time < openHoursObject.closedFrom && time > openHoursObject.openFrom)
+        return true;
+    return false;
+};
+exports.isOpen = isOpen;
+const timeToSecondsFromStartOfDay = (time, isNextDay) => {
+    try {
+        var timeAndDate = (0, moment_1.default)("2023031" + 'T' + time);
+        var asd = ((+timeAndDate - +timeAndDate.startOf('day')) / 1000);
+        if (isNextDay) {
+            asd += 86400;
+        }
+        return asd;
+    }
+    catch (_a) {
+    }
+};
+exports.timeToSecondsFromStartOfDay = timeToSecondsFromStartOfDay;

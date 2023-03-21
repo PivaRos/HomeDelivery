@@ -65,5 +65,5 @@ app.use('/seller', SellerRouter(MongoObject));
 
 // running
 app.listen(8000, () => {
-  console.log(`⚡️[server]: Server is running at https://localhost:8000`);
+  console.log(`⚡️[server]: Server is running at http://localhost:8000`);
 }); 

@@ -1,6 +1,6 @@
-import { LocationObject } from "../interfaces";
+import { dataObject, dateObject, LocationObject } from "../interfaces";
 
-let url = "http://172.20.10.2:8000";
+let url = "http://192.168.1.198:8000";
 
 
 
@@ -15,7 +15,7 @@ export const storeActions =  {
         method:"POST",
         body:JSON.stringify({location: location})
       });
-      let data = await response.json();
+      let data:dataObject = await response.json();
       if (data)
       {
         return data.data;
