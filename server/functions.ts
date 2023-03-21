@@ -1,5 +1,5 @@
-import { LocationObject } from "./interfaces";
-
+import { LocationObject, openHoursObject } from "./interfaces";
+import moment from 'moment';
 
     //returns distance (km)
 export const getDistance = (Location1:LocationObject, Location2:LocationObject ) => {
@@ -21,4 +21,19 @@ export const makeid = (length:number) => {
     }
     return result;
 
+}
+
+
+export const getSeconds = () => {
+    return (+moment() - +moment().startOf('day')) / 1000;
+}
+
+export const isOpen = (openHoursObject:openHoursObject) => {
+    const time = getSeconds() ;
+    if (time < openHoursObject.closedFrom && time > openHoursObject.openFrom) return true;
+    return false;
+}
+
+export const DateToMoment = (date:Date) => {
+    
 }

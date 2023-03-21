@@ -1,15 +1,19 @@
 import * as React from 'react';
 import {View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Pages } from '../interfaces';
+import { availableStores, LocationObject, Pages } from '../interfaces';
 import Home from '../navigation/screens/homeScreen';
 import Navicon from '../components/navicon';
 import Stores from './screens/storesScreen';
 import Search from './screens/searchScreen';
 import Account from './screens/accountScreen';
 
+interface Props {
+  location:LocationObject;
+  Stores:availableStores | null | undefined;
+}
 
-const Tabs = () => {
+const Tabs = (props:Props) => {
 
 const Tab = createBottomTabNavigator();
 
@@ -19,7 +23,7 @@ const Tab = createBottomTabNavigator();
           tabBarIcon:({focused, color, size}) => {
             let iconName = ""
             let rn = route.name
-  
+            
             if (rn === Pages.Stores){
               iconName = focused ? stores_focusedsvg : storessvg
             } else if (rn === Pages.Home){
@@ -39,10 +43,10 @@ const Tab = createBottomTabNavigator();
           headerShown:false,
           tabBarShowLabel:false
         })}>
-          <Tab.Screen name='Stores' component={Stores} />
-          <Tab.Screen name='Home' component={Home} />
-          <Tab.Screen name='Search' component={Search} />
-          <Tab.Screen name='Account' component={Account} />
+          <Tab.Screen name='Stores' children={() => <Stores Stores={props.Stores} location={props.location} />} />
+          <Tab.Screen name='Home' children={() => <Home Stores={props.Stores} location={props.location} />}  />
+          <Tab.Screen name='Search' children={() => <Search Stores={props.Stores} location={props.location} />} />
+          <Tab.Screen name='Account' children={() => <Account Stores={props.Stores} location={props.location} />} />
         </Tab.Navigator>);
 
 }

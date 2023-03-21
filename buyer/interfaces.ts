@@ -8,6 +8,13 @@ export enum Pages {
     Home = "Home"
 }
 
+export interface availableStores{
+    Closed:Store[];
+    Open:Store[];
+}
+
+
+
 export enum account_type{
     Seller = 2,
     Buyer = 1,

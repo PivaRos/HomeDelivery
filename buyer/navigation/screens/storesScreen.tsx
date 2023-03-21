@@ -1,10 +1,15 @@
 import { StyleSheet, Text, View  } from 'react-native';
 import * as React from 'react'
-import { Pages } from '../../interfaces';
+import { availableStores, LocationObject, Pages } from '../../interfaces';
 import StoresGrid from '../../components/stores_grid';
 
 
-const Stores = () => {
+interface Props {
+    location:LocationObject;
+    Stores:availableStores | null | undefined;
+  }
+
+const Stores = (props:Props) => {
 return (
     <View style={style.view}>
         <Text>this is stores screen</Text>

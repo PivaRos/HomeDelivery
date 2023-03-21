@@ -75,7 +75,6 @@ export interface dateObject {
 }
 
 
-
 export interface productOrder {
     productId : ObjectId,
     details:{
@@ -87,4 +86,10 @@ export interface PaymentLog {
     accepted:boolean,
     priceCharged:number,
     timestamp:number
+}
+
+
+export interface openHoursObject{
+    openFrom:number;
+    closedFrom:number;
 }
