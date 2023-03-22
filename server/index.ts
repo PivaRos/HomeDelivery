@@ -1,12 +1,6 @@
 import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import { Account, Order, Store } from './interfaces';
-import https  from 'https';
-import fs from'fs';
-
-
-var privateKey  = fs.readFileSync('ssl/key.pem', 'utf8');
-var certificate = fs.readFileSync('ssl/cert.pem', 'utf8');
 
 
 dotenv.config();
@@ -54,6 +48,8 @@ import DeliveryRouter from "./routers/delivery";
 import BuyerRouter from "./routers/buyer";
 import PublicBuyerRouter from "./routers/publicBuyer";
 import SellerRouter from "./routers/seller"
+import DataRouter from "./routers/data";
+app.use('/data', DataRouter(MongoObject));
 app.use('/buyer', BuyerRouter(MongoObject));
 app.use('/publicbuyer', PublicBuyerRouter(MongoObject));
 app.use('/delivery', DeliveryRouter(MongoObject));

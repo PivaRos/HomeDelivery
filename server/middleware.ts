@@ -61,7 +61,7 @@ export const isBuyer = async (req:Request, res:Response, next:NextFunction) => {
 
 export const isSeller = async (req:Request, res:Response, next:NextFunction) => {
     res.locals.account = await Accounts.findOne({sessionid:req.headers.authorization});
-    if (res.locals.account && res.locals.account.type === "3")
+    if (res.locals.account && res.locals.account.type === 3)
     {
          next();
     }

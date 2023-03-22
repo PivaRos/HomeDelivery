@@ -1,5 +1,5 @@
 import express, { NextFunction, Request, Response } from 'express';
-import mongodb, { ObjectId,  } from 'mongodb';
+import mongodb from 'mongodb';
 import { checkValidation, processPayment, isSeller, isBuyer } from '../middleware';
 import { Account, LocationObject, Order, PaymentLog, productOrder, Store } from '../interfaces';
 import { getDistance, isOpen, timeToSecondsFromStartOfDay } from '../functions';
