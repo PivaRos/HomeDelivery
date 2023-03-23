@@ -1,6 +1,6 @@
 import { dataObject, dateObject, LocationObject } from "../interfaces";
 
-let url = "http://192.168.68.106:8000";
+let url = "http://192.168.1.198:8000";
 
 
 

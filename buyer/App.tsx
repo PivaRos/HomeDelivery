@@ -11,6 +11,8 @@ import { userActions } from './hooks/user';
 import { CheckLocation } from './functions';
 import { storeActions } from './hooks/stores';
 import Stores from './navigation/screens/storesScreen';
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { ViewStore } from './navigation/screens/viewStore';
 
 export default function App() {
   const [thelocation, setLocation] = useState<LocationObject | null | undefined>();
@@ -19,6 +21,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [availableStores, setAvailableStores] = useState<availableStores | null | undefined>();
 
+  const Stack = createNativeStackNavigator();
 
 const getContent = () => {
   if (loading) return <ActivityIndicator size="small" style={{opacity:1, marginTop:'100%'}}/>;
@@ -26,7 +29,10 @@ const getContent = () => {
   return (
   <SafeAreaView style={styles.container}>
     <NavigationContainer>
-    <Tabs Stores={availableStores} setAvailableStores={setAvailableStores} location={thelocation}/>
+    <Stack.Navigator screenOptions={{headerShown:false, fullScreenGestureEnabled:true}}>
+      <Stack.Screen name='tabs' children={() => <Tabs Stores={availableStores} setAvailableStores={setAvailableStores} location={thelocation}/>} />
+      <Stack.Screen name='ViewStore' children={() => <ViewStore/>}  />
+    </Stack.Navigator>
     </NavigationContainer>
   </SafeAreaView>
 
