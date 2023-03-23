@@ -1,5 +1,5 @@
 import express, { NextFunction, Request, Response } from 'express';
-import mongodb from 'mongodb';
+import mongodb, {GridFSBucket} from 'mongodb';
 import dotenv from "dotenv";
 import { Account, Order, Store } from '../interfaces';
 import multer from 'multer'
@@ -13,6 +13,7 @@ const Router = (MongoObject: {
     databases: {
         data: mongodb.Db;
         log: mongodb.Db;
+        uploads: mongodb.Db;
     };
     collections: {
         Stores: mongodb.Collection<Store>;
@@ -73,14 +74,18 @@ const Router = (MongoObject: {
       });
 
     //delete image/s
-      DataRouter.delete('/file/:filename', (req:Request, res:Response) => {
-        gfs.remove({ filename: req.params.filename, root: 'uploads' }, (err) => {
-          if (err) {
-            return res.sendStatus(500);
-          }
-          res.sendStatus(200);
-        });
-      });
+      DataRouter.delete('/file/:filename', async (req:Request, res:Response) => {
+        try{
+        const filesCollection = await MongoObject.databases.uploads.collection("uploads.files");
+        const file = await filesCollection.findOne({filename:req.params.filename});
+        const bucket =await  new GridFSBucket(conn.db, { bucketName: 'uploads' });
+        await bucket.delete(file._id);
+        res.sendStatus(200);
+        }catch(e){
+            console.log(e);
+            res.sendStatus(500);
+        }
+    });
 
 
     //get iamge/s

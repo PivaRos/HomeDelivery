@@ -15,6 +15,7 @@ const mongostring = process.env.MongoCluster || "";
 const client = new mongodb_1.MongoClient(mongostring);
 const data = client.db("data");
 const log = client.db("log");
+const uploads = client.db("uploads");
 // data collections
 exports.Accounts = data.collection("Accounts");
 const Orders = data.collection("Orders");
@@ -28,7 +29,8 @@ const ClosedApplications = log.collection("ClosedApplications");
 const MongoObject = {
     databases: {
         data: data,
-        log: log
+        log: log,
+        uploads: uploads
     },
     collections: {
         Stores: exports.Stores,
