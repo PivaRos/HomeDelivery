@@ -27,6 +27,7 @@ const ClosedApplications = log.collection("ClosedApplications");
 // MongoDB Object
 // should be passed to global router!
 const MongoObject = {
+    client: client,
     databases: {
         data: data,
         log: log,

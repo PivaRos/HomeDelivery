@@ -1,5 +1,6 @@
 import express, { NextFunction, Request, Response } from 'express';
 import mongodb, {GridFSBucket} from 'mongodb';
+import { ObjectId } from 'bson';
 import dotenv from "dotenv";
 import { Account, Order, Store } from '../interfaces';
 import multer from 'multer'
@@ -10,6 +11,7 @@ import path from 'path';
 import crypto from 'crypto';
 
 const Router = (MongoObject: {
+    client:mongodb.MongoClient,
     databases: {
         data: mongodb.Db;
         log: mongodb.Db;
@@ -33,17 +35,16 @@ const Router = (MongoObject: {
 
     });
 
-
     //init gfs
-    let gfs:Grid.Grid, gridfsBucket:mongoose.mongo.GridFSBucket;
-    conn.once('open', () => {
-    gridfsBucket = new mongoose.mongo.GridFSBucket(conn.db, {
-        bucketName: 'uploads'
+    let gfs:Grid.Grid, gridfsBucket: mongodb.GridFSBucket;
+    gridfsBucket = new GridFSBucket(MongoObject.databases.uploads, {
+      bucketName: 'uploads'
     });
-    gfs = Grid(conn.db, mongoose.mongo);
+
+    gfs = Grid(MongoObject.databases.uploads, MongoObject.client);
     gfs.collection('uploads');
     console.log("connected");
-    }); 
+  
 
 
     const storage = new GridFsStorage({
@@ -70,7 +71,10 @@ const Router = (MongoObject: {
 
     //upload image/s
       DataRouter.post('/upload', upload.single("thename"), async (req:Request, res:Response) => {
-        return res.sendStatus(200);
+       res.status(200);
+       return res.json({
+        filename:req.file?.filename
+       })
       });
 
     //delete image/s
@@ -78,8 +82,9 @@ const Router = (MongoObject: {
         try{
         const filesCollection = await MongoObject.databases.uploads.collection("uploads.files");
         const file = await filesCollection.findOne({filename:req.params.filename});
-        const bucket =await  new GridFSBucket(conn.db, { bucketName: 'uploads' });
-        await bucket.delete(file._id);
+        if (file){
+            await gridfsBucket.delete(file._id);
+        }
         res.sendStatus(200);
         }catch(e){
             console.log(e);
@@ -97,7 +102,7 @@ const Router = (MongoObject: {
               err: 'No file exists'
             });
         }
-        const readStream = gridfsBucket.openDownloadStream(file._id);
+        const readStream = gridfsBucket.openDownloadStream(new ObjectId(file._id));
         return readStream.pipe(res);
         }catch(e){
             console.log(e);
