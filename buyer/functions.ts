@@ -1,6 +1,6 @@
 
 import * as Location from 'expo-location';
-import { LocationObject, StorageData } from './interfaces';
+import { LocationObject, LocationType, StorageData } from './interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 
@@ -32,15 +32,20 @@ export const registerForPushNotificationsAsync = async () => {
   
  export const CheckLocation = async () => {
     try{
+      
       let  result  = await Location.requestForegroundPermissionsAsync();
       if (result.status !== 'granted') {
         return;
       }
       let location = await Location.getCurrentPositionAsync();
-      return({
-        type:"point",
-        coordinates:[location.coords.latitude, location.coords.longitude]
-      });
+      const thereturn = {
+       thelocation: <LocationObject>{
+          type:LocationType.point,
+          coordinates:[location.coords.latitude, location.coords.longitude]
+        },
+        fullcoords:<Location.LocationObjectCoords>location.coords
+      }
+      return(thereturn);
     }
     catch{
       return;

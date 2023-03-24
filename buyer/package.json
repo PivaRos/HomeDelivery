@@ -16,6 +16,7 @@
     "expo": "~48.0.4",
     "expo-location": "~15.1.1",
     "expo-notifications": "^0.18.1",
+    "expo-splash-screen": "^0.18.1",
     "expo-status-bar": "~1.4.4",
     "mongodb": "^5.1.0",
     "node-fetch": "^2.6.9",

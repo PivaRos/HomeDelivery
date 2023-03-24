@@ -46,15 +46,15 @@ const StoreTab = (props:Props) => {
 
 const styles = StyleSheet.create({
     view:{
-        width:Dimensions.get('window').width,
+        width:Dimensions.get('window').width-100,
         height:180,
         alignItems:'center',
         marginTop:10,
 
     },
     image:{
-        height:170,
-        width:'90%',
+        height:150,
+        width:'88%',
         borderRadius:10,
     },
 

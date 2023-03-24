@@ -42,10 +42,15 @@ export interface productObject {
     mainimage: string
     images: string[]
 }
+export enum LocationType {
+    point = "point",
+    address = "address"
+}
 
 export interface LocationObject {
-    type: string,
-    coordinates:number[]
+    type:LocationType
+    coordinates?:number[]
+    address?:string
 }
 
 

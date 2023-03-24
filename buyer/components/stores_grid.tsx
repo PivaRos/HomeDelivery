@@ -15,8 +15,8 @@ const StoresGrid = (props:Props) => {
 
     return (    <View style={{ marginTop:50,}}>
                 <Text style={styles.title}>{props.title}</Text>
-                <ScrollView snapToOffsets={arr.map((value, index) => {
-                    return ((index+1)*Dimensions.get('window').width);
+                <ScrollView showsHorizontalScrollIndicator={false}  snapToOffsets={arr.map((value, index) => {
+                    return ((index+1)*Dimensions.get('window').width-100);
                 })} decelerationRate="fast" horizontal={true} style={styles.view}>
                 {props.displayStores && props.displayStores.map((store, index) => {
                     return <StoreTab key={index} Store={store}/>

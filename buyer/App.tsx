@@ -1,7 +1,8 @@
 import { StyleSheet, Text, View, StatusBar, Platform, SafeAreaView, ActivityIndicator, Button} from 'react-native';
-import {useEffect, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import { availableStores, StorageData, Store } from './interfaces';
 import { NavigationContainer } from '@react-navigation/native';
+import { AddressHanddler } from './components/addressHanddler';
 import Tabs from './navigation/tabs';
 import * as Location from 'expo-location';
 import { LocationObject } from './interfaces';
@@ -13,21 +14,42 @@ import { storeActions } from './hooks/stores';
 import Stores from './navigation/screens/storesScreen';
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { ViewStore } from './navigation/screens/viewStore';
+import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
+
+SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const [thelocation, setLocation] = useState<LocationObject | null | undefined>();
+  const [fullCoords, setFullCoords] = useState<Location.LocationObjectCoords>()
   const [errorMsg, setErrorMsg] = useState("");
   const [sessionid, setSessionid] = useState<null | undefined | string>();
   const [loading, setLoading] = useState(false);
   const [availableStores, setAvailableStores] = useState<availableStores | null | undefined>();
 
+
   const Stack = createNativeStackNavigator();
+
+  const [fontsLoaded] = useFonts({
+    'Inter-Black': require('./assets/fonts/Inter-Black.otf'),
+  });
+
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+  onLayoutRootView();
+
 
 const getContent = () => {
   if (loading) return <ActivityIndicator size="small" style={{opacity:1, marginTop:'100%'}}/>;
   if (!thelocation) return <SafeAreaView><Text style={{fontWeight:"bold", textAlign:'center'}}>Please Allow HomeDelivery To Use Location In Order To Continue Using The App</Text><Button onPress={PressLocation} title='Allow Access'/></SafeAreaView>
   return (
   <SafeAreaView style={styles.container}>
+    <View style={{height:60, backgroundColor:'lightgreen'}}>
+      <AddressHanddler fullcoords={fullCoords} />
+    </View>
     <NavigationContainer>
     <Stack.Navigator screenOptions={{headerShown:false, fullScreenGestureEnabled:true}}>
       <Stack.Screen name='tabs' children={() => <Tabs Stores={availableStores} setAvailableStores={setAvailableStores} location={thelocation}/>} />
@@ -39,7 +61,12 @@ const getContent = () => {
   );
 }
 const PressLocation = async () => {
-  setLocation(await CheckLocation());
+  const result = await CheckLocation()
+  if (result)
+  {
+    setLocation(result.thelocation);
+  }
+
 }
 
   const SaveData = async (data:StorageData) => {
@@ -64,7 +91,13 @@ const PressLocation = async () => {
   const firstloadCheck = async () => {
     try{
       setLoading(true);
-      setLocation(await CheckLocation());
+      const result = await CheckLocation()
+      if (result)
+      {
+        setLocation(result.thelocation);
+        setFullCoords(result.fullcoords);
+      }
+
       await UpdateData();
       setLoading(false);
     }catch(e){
