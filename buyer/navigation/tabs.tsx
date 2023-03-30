@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { availableStores, LocationObject, Pages } from '../interfaces';
+import { availableStores, LocationObject, Pages, Store } from '../interfaces';
 import Home from '../navigation/screens/homeScreen';
 import Navicon from '../components/navicon';
 import Stores from './screens/storesScreen';
@@ -12,6 +12,7 @@ interface Props {
   location:LocationObject;
   Stores:availableStores | null | undefined;
   setAvailableStores:React.Dispatch<React.SetStateAction<availableStores | null | undefined>>;
+  setSelectedStore:React.Dispatch<React.SetStateAction<Store | undefined>>
 }
 
 const Tabs = (props:Props) => {
@@ -45,7 +46,7 @@ const Tab = createBottomTabNavigator();
           headerShown:false,
           tabBarShowLabel:false
         })}>
-          <Tab.Screen name='Stores' children={() => <Stores setAvailableStores={props.setAvailableStores} Stores={props.Stores} location={props.location} />} />
+          <Tab.Screen name='Stores' children={() =>  <Stores setSelectedStore={props.setSelectedStore} setAvailableStores={props.setAvailableStores} Stores={props.Stores} location={props.location} />} />
           <Tab.Screen name='Home' children={() => <Home Stores={props.Stores} location={props.location} />}  />
           <Tab.Screen name='Search' children={() => <Search Stores={props.Stores} location={props.location} />} />
           <Tab.Screen name='Account' children={() => <Account Stores={props.Stores} location={props.location} />} />

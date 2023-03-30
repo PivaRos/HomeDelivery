@@ -1,0 +1,180 @@
+[33mcommit 3fc2d4a82e9e4004cfd50016c2a9053684b12316[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: PivaRos <sbhtk478@gmail.com>
+Date:   Fri Mar 24 16:58:44 2023 +0200
+
+    added geocoding and reversegeocoding +styles
+
+[33mcommit 49832acf39a5553d8c26bc17a7a5212185fd9cd5[m
+Author: PivaRos <sbhtk478@gmail.com>
+Date:   Fri Mar 24 01:33:20 2023 +0200
+
+    added styles and image to storeTab & navigation for viewStore
+
+[33mcommit e36c936c57c2aa81287fa38eaf4b057fcbe124f0[m
+Author: PivaRos <sbhtk478@gmail.com>
+Date:   Thu Mar 23 19:12:54 2023 +0200
+
+    fixed packages versions for gfs
+
+[33mcommit 80401db2b88ce0e7e6cf5919202cb4902181ba44[m
+Author: PivaRos <sbhtk478@gmail.com>
+Date:   Thu Mar 23 10:48:51 2023 +0200
+
+    added remove from gfs for server
+
+[33mcommit edf35ad104726ac6a18fec1da6dc7fb704c9d2ba[m
+Author: PivaRos <sbhtk478@gmail.com>
+Date:   Thu Mar 23 01:18:48 2023 +0200
+
+    added grid-fs to server [get, set] but not delete
+
+[33mcommit 8ce82f0a368c212fe32d78e44f5a2d32cc891802[m
+Author: PivaRos <sbhtk478@gmail.com>
+Date:   Wed Mar 22 00:45:27 2023 +0200
+
+    added closed and open hours to filter stores
+
+[33mcommit a6cbfdb79430fdb3dd254c22c0233ed9293def79[m
+Author: PivaRos <sbhtk478@gmail.com>
+Date:   Tue Mar 21 13:52:13 2023 +0200
+
+    added open-close-hours functions
+
+[33mcommit af64467630287c83cb4d45644e61dfc09da41dcd[m
+Author: PivaRos <sbhtk478@gmail.com>
+Date:   Mon Mar 20 21:17:07 2023 +0200
+
+    added first fetch to get stores
+
+[33mcommit ecee8d16b02daa3fabf12958c87fb83008866a49[m
+Author: PivaRos <sbhtk478@gmail.com>
+Date:   Mon Mar 20 17:36:52 2023 +0200
+
+    added first hook
+
+[33mcommit c1110fb52b1f5d60e5a25ef256d78ae4ad6213b6[m
+Author: PivaRos <sbhtk478@gmail.com>
+Date:   Mon Mar 20 14:58:40 2023 +0200
+
+    added notifications
+
+[33mcommit 1707255fc80dbd333eae6400645eb7051abcd127[m
+Author: PivaRos <sbhtk478@gmail.com>
+Date:   Mon Mar 20 09:55:35 2023 +0200
+
+    added asyncStorage
+
+[33mcommit 2d98df16ef93bede032ab19d2065dcbf5131d8c4[m
+Merge: ca2f8ca 85e79e5
+Author: PivaRos <sbhtk478@gmail.com>
+Date:   Sun Mar 19 00:39:56 2023 +0200
+
+    merge and added location
+
+[33mcommit ca2f8ca448c151c667d73e8d9f2089895c3da108[m
+Author: PivaRos <sbhtk478@gmail.com>
+Date:   Sun Mar 19 00:33:03 2023 +0200
+
+    added location checker
+
+[33mcommit 85e79e599ca303f14fab1abbf041c36c492dc08a[m
+Author: PivaRos <sbhtk478@gmail.com>
+Date:   Mon Mar 13 18:32:26 2023 +0200
+
+    added styles for stores-grid
+
+[33mcommit 3c413149c8000258982e7e9cbf269c80e5b68c53[m
+Author: PivaRos <sbhtk478@gmail.com>
+Date:   Mon Mar 13 06:52:18 2023 +0200
+
+    added splash and tabBar icons and focus icons
+
+[33mcommit 90333d83889b666bdb21828e32ecddedc643362b[m
+Author: PivaRos <sbhtk478@gmail.com>
+Date:   Sun Mar 12 21:21:21 2023 +0200
+
+    added proper navbar for *buyer
+
+[33mcommit a79db612c41b3f041912da3514e64892a899d529[m
+Author: PivaRos <sbhtk478@gmail.com>
+Date:   Thu Mar 9 12:52:50 2023 +0200
+
+    added svg and components folder
+
+[33mcommit 20161fa8fc86c9d35e190c8f15dfe422abe6ed1a[m
+Author: PivaRos <sbhtk478@gmail.com>
+Date:   Thu Mar 2 18:04:48 2023 +0200
+
+    added react native apps
+
+[33mcommit 92c626e9ee445497d1d80a8a6af72b0aaf1085db[m
+Author: PivaRos <sbhtk478@gmail.com>
+Date:   Tue Feb 28 23:46:27 2023 +0200
+
+    added buyer app
+
+[33mcommit 5540520c939d308085c296bec65a5fd82c7890d9[m
+Author: PivaRos <sbhtk478@gmail.com>
+Date:   Tue Feb 28 20:28:34 2023 +0200
+
+    added store and enums on interfaces
+
+[33mcommit 42673a75220d78d346c5f54c7c884103b037969b[m
+Author: PivaRos <sbhtk478@gmail.com>
+Date:   Mon Feb 27 23:13:31 2023 +0200
+
+    accept new order fix
+
+[33mcommit 9c908ca74e85db920aacddacc8705f2084701b6f[m
+Author: PivaRos <sbhtk478@gmail.com>
+Date:   Mon Feb 27 20:45:18 2023 +0200
+
+    a
+
+[33mcommit e225a3e2763b6af41fa689329d05170bb2e2a2ae[m
+Author: PivaRos <sbhtk478@gmail.com>
+Date:   Mon Feb 27 13:26:48 2023 +0200
+
+    added sellerRouter and more
+
+[33mcommit cd771e05ded0b42eab332ffe5879dbe9f902e382[m
+Author: PivaRos <sbhtk478@gmail.com>
+Date:   Sat Feb 25 03:38:25 2023 +0200
+
+    managed the roles and routers + added middleware file and functions file
+
+[33mcommit d54617bc332a251de30b605635e9cf120f40cb8c[m
+Author: PivaRos <sbhtk478@gmail.com>
+Date:   Thu Feb 23 07:31:56 2023 +0200
+
+    improved /public/order/1
+
+[33mcommit 7067913aa3a231227f2530f5b0b3ffa99941f62f[m
+Author: PivaRos <sbhtk478@gmail.com>
+Date:   Tue Feb 21 22:20:39 2023 +0200
+
+    added function that recives sessionid and returns all open orders that are waiting delivery and within the range
+
+[33mcommit c2427e678253c3b80067dd310d7f20ed57cf2090[m
+Author: PivaRos <sbhtk478@gmail.com>
+Date:   Mon Feb 20 21:49:36 2023 +0200
+
+    recommit for fix
+
+[33mcommit fbead280afb9edabfd12cd68861196ea57054bbe[m
+Author: PivaRos <danielgavgurbin@gmail.com>
+Date:   Mon Feb 20 21:40:00 2023 +0200
+
+    recommit
+
+[33mcommit 508ce91cb64770bb7147500b0a08ae4c08671de2[m
+Author: PivaRos <sbhtk478@gmail.com>
+Date:   Sat Feb 18 18:45:23 2023 +0200
+
+    added basic routing and mongodb
+
+[33mcommit f59ff0eaa406960753cd3131c0b09a80fbe0d5bb[m
+Author: PivaRos <sbhtk478@gmail.com>
+Date:   Sat Feb 18 16:20:32 2023 +0200
+
+    first commit

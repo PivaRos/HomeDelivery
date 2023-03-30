@@ -12,6 +12,7 @@ interface Props{
 export const AddressHanddler = (props:Props) => {
     const [address, setAddress] = useState<LocationGeocodedAddress[]>();
 
+
     const ReverseGeocodeing = async () => {
         try{
 
@@ -24,7 +25,6 @@ export const AddressHanddler = (props:Props) => {
                     latitude,
                     longitude
                 });
-                console.log(response);
                 setAddress(response);
             }
         }
@@ -33,8 +33,24 @@ export const AddressHanddler = (props:Props) => {
         }
     }
 
+
+       const getdisplayAddress = () => {
+        if (!address) return "";
+        if (address[0].streetNumber?.split("–")[0])
+        {
+            return address[0].street + " " + address[0].streetNumber?.toString().split("–")[0] + ", " + address[0].city
+        }
+        else
+        {
+            return address[0].street + " " + address[0].streetNumber + ", " + address[0].city
+        }
+        
+    }
+
         useEffect(() => {
-            ReverseGeocodeing();
+            (async () => {
+            await ReverseGeocodeing();
+            })();
 
         },[])
 
@@ -42,7 +58,7 @@ export const AddressHanddler = (props:Props) => {
         <View style={styles.view}>
             <View style={styles.anotherView}>
 
-                <Text>{address && address[0].street + " " + address[0].streetNumber + ", " + address[0].city}</Text>
+                <Text>{getdisplayAddress()}</Text>
             </View>
         </View>
     );

@@ -1,13 +1,14 @@
+import { uri } from "../envVars";
 import { dataObject, dateObject, LocationObject } from "../interfaces";
 
-let url = "http://192.168.1.198:8000";
+let url = uri;
 
 
 
 export const storeActions =  {
     GetStores : (async (location:LocationObject) => {
     try{
-      const response = await fetch(url+"/publicbuyer/get/sellers", {
+      const response = await fetch(url+"publicbuyer/get/sellers", {
         headers: {
           "Content-Type": "application/json"
         },
@@ -15,7 +16,6 @@ export const storeActions =  {
         body:JSON.stringify({location: location})
       });
       let data:dataObject = await response.json();
-      console.log(data);
       if (data)
       {
         return data.data;

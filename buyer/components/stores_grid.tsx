@@ -6,6 +6,8 @@ import StoreTab from './storeTab';
 interface Props {
     title:string;
     displayStores:Store[] | null | undefined;
+    setSelectedStore:React.Dispatch<React.SetStateAction<Store | undefined>>;
+    
 }
 const StoresGrid = (props:Props) => {
     
@@ -19,7 +21,7 @@ const StoresGrid = (props:Props) => {
                     return ((index+1)*Dimensions.get('window').width-100);
                 })} decelerationRate="fast" horizontal={true} style={styles.view}>
                 {props.displayStores && props.displayStores.map((store, index) => {
-                    return <StoreTab key={index} Store={store}/>
+                    return <StoreTab setSelectedStore={props.setSelectedStore} key={index} Store={store}/>
                 })}
                 </ScrollView>
                 </View>); 

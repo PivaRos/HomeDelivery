@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import {uri} from '../envVars';
 interface Props {
     Store:Store;
+    setSelectedStore:React.Dispatch<React.SetStateAction<Store | undefined>>
 }
 
 
@@ -13,13 +14,7 @@ const StoreTab = (props:Props) => {
 
     const StorePressed = () => {
         console.log(props.Store.name + " pressed");
-        scaleValue.setValue(0);
-        Animated.timing(scaleValue, {
-          toValue: 1,
-          duration: 180,
-          easing: Easing.bounce,
-          useNativeDriver: true
-        });
+        props.setSelectedStore(props.Store);
         navigation.navigate("ViewStore", {});
 
     }   

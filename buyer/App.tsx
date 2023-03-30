@@ -26,6 +26,7 @@ export default function App() {
   const [sessionid, setSessionid] = useState<null | undefined | string>();
   const [loading, setLoading] = useState(false);
   const [availableStores, setAvailableStores] = useState<availableStores | null | undefined>();
+  const [selectedStore, setSelectedStore] = useState<Store>();
 
 
   const Stack = createNativeStackNavigator();
@@ -52,8 +53,8 @@ const getContent = () => {
     </View>
     <NavigationContainer>
     <Stack.Navigator screenOptions={{headerShown:false, fullScreenGestureEnabled:true}}>
-      <Stack.Screen name='tabs' children={() => <Tabs Stores={availableStores} setAvailableStores={setAvailableStores} location={thelocation}/>} />
-      <Stack.Screen name='ViewStore' children={() => <ViewStore/>}  />
+      <Stack.Screen name='tabs' children={() => <Tabs setSelectedStore={setSelectedStore} Stores={availableStores} setAvailableStores={setAvailableStores} location={thelocation}/>} />
+      <Stack.Screen name='ViewStore' children={() => <ViewStore Store={selectedStore}/>}  />
     </Stack.Navigator>
     </NavigationContainer>
   </SafeAreaView>
