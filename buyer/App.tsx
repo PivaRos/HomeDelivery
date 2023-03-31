@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, StatusBar, Platform, SafeAreaView, ActivityIndicator, Button} from 'react-native';
+import { StyleSheet, Text, View, StatusBar, Platform, SafeAreaView, ActivityIndicator, Button, ScrollView, RefreshControl} from 'react-native';
 import {useCallback, useEffect, useState} from 'react'
 import { availableStores, StorageData, Store } from './interfaces';
 import { NavigationContainer } from '@react-navigation/native';
@@ -27,6 +27,8 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [availableStores, setAvailableStores] = useState<availableStores | null | undefined>();
   const [selectedStore, setSelectedStore] = useState<Store>();
+  const [refreshing, setRefreshing] = useState(false);
+
 
 
   const Stack = createNativeStackNavigator();
@@ -48,19 +50,30 @@ const getContent = () => {
   if (!thelocation) return <SafeAreaView><Text style={{fontWeight:"bold", textAlign:'center'}}>Please Allow HomeDelivery To Use Location In Order To Continue Using The App</Text><Button onPress={PressLocation} title='Allow Access'/></SafeAreaView>
   return (
   <SafeAreaView style={styles.container}>
-    <View style={{height:60, backgroundColor:'lightgreen'}}>
+    <ScrollView contentContainerStyle={styles.container} refreshControl={<RefreshControl colors={['#2874ed']} title='Refresh'  refreshing={refreshing} onRefresh={onRefresh}/>}>
+    <View style={{height:30, backgroundColor:'lightgreen'}}>
       <AddressHanddler fullcoords={fullCoords} />
     </View>
     <NavigationContainer>
     <Stack.Navigator screenOptions={{headerShown:false, fullScreenGestureEnabled:true}}>
-      <Stack.Screen name='tabs' children={() => <Tabs setSelectedStore={setSelectedStore} Stores={availableStores} setAvailableStores={setAvailableStores} location={thelocation}/>} />
+      <Stack.Screen name='tabs' children={() => <Tabs refreshing={refreshing} setSelectedStore={setSelectedStore} Stores={availableStores} setAvailableStores={setAvailableStores} location={thelocation}/>} />
       <Stack.Screen name='ViewStore' children={() => <ViewStore Store={selectedStore}/>}  />
     </Stack.Navigator>
     </NavigationContainer>
+    </ScrollView>
   </SafeAreaView>
 
   );
 }
+
+
+const onRefresh = useCallback( async () => {
+  setRefreshing(true);
+  setTimeout(() => {
+    setRefreshing(false)
+  }, 1500)
+}, []);
+
 const PressLocation = async () => {
   const result = await CheckLocation()
   if (result)

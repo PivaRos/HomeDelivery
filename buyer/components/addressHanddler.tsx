@@ -67,20 +67,13 @@ export const AddressHanddler = (props:Props) => {
 
 const styles = StyleSheet.create({
     view:{
-        height:60,
+        height:30,
         width:'100%',
-    },
-    input:{
-     direction:'rtl',
-     height:30,
-     fontSize:19,
-     width:150,
-     backgroundColor:'red',
     },
      anotherView:{
         position:'absolute',
         left:0,
-        bottom:5,
+        bottom:6,
         display:'flex',
         flexDirection:'row',
      }

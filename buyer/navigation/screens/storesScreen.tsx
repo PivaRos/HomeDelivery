@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView  } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, RefreshControl  } from 'react-native';
 import React, {useEffect, useState} from 'react'
 import { availableStores, LocationObject, Pages, Store } from '../../interfaces';
 import StoresGrid from '../../components/stores_grid';
@@ -10,15 +10,27 @@ interface Props {
     Stores:availableStores | null | undefined;
     setAvailableStores:React.Dispatch<React.SetStateAction<availableStores | null | undefined>>;
     setSelectedStore:React.Dispatch<React.SetStateAction<Store | undefined>>;
+    refreshing:boolean;
   }
 
 const Stores = (props:Props) => {
 
-    useEffect(() => {
-       (async () => {
+    const load = async () => {
         props.setAvailableStores(await storeActions.GetStores(props.location));
-        })();
+    }
+
+
+    useEffect(() => {
+
+        load();
     }, [])
+    useEffect(() => {
+        if (props.refreshing)
+        {
+         props.setAvailableStores(null);
+         load();
+        }
+    }, [props.refreshing]) 
 
 
 return (
