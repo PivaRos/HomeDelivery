@@ -52,7 +52,7 @@ const getContent = () => {
   <SafeAreaView style={styles.container}>
     <ScrollView contentContainerStyle={styles.container} refreshControl={<RefreshControl colors={['#2874ed']} title='Refresh'  refreshing={refreshing} onRefresh={onRefresh}/>}>
     <View style={{height:30, backgroundColor:'lightgreen'}}>
-      <AddressHanddler fullcoords={fullCoords} />
+      {!refreshing && <AddressHanddler fullcoords={fullCoords} />}
     </View>
     <NavigationContainer>
     <Stack.Navigator screenOptions={{headerShown:false, fullScreenGestureEnabled:true}}>
@@ -65,6 +65,19 @@ const getContent = () => {
 
   );
 }
+
+useEffect(() => {
+  (async () => {
+  const result = await CheckLocation()
+  if (result)
+  {
+    setLocation(result.thelocation);
+    setFullCoords(result.fullcoords);
+  }
+
+  await UpdateData();
+  })();
+}, [refreshing])
 
 
 const onRefresh = useCallback( async () => {
