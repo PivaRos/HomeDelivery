@@ -11,7 +11,6 @@ interface Props {
 }
 const StoresGrid = (props:Props) => {
     
-    const uri = "http://192.168.1.198:8000/data/file/";
 
     const [arr, setArr] = useState(new Array(props.displayStores?.length))
 

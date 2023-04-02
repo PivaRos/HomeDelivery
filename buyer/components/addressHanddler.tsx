@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     },
      anotherView:{
         position:'absolute',
-        left:0,
+        left:5,
         bottom:6,
         display:'flex',
         flexDirection:'row',

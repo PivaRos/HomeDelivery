@@ -14,6 +14,11 @@ export interface availableStores{
 }
 
 
+export type RootStackParamList = {
+    ViewStore: { id: number } | undefined;
+    tabs: { id: number } | undefined;
+  };
+
 
 export enum account_type{
     Seller = 2,

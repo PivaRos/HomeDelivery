@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'; 
 import ReactNative, {StyleSheet, View, Text, Image, Dimensions, TouchableWithoutFeedback,  Animated, Easing  } from 'react-native';
-import { Store } from '../interfaces';
+import { RootStackParamList, Store } from '../interfaces';
 import { useNavigation } from '@react-navigation/native';
 import {uri} from '../envVars';
+import { StackNavigationProp } from '@react-navigation/stack';
 interface Props {
     Store:Store;
     setSelectedStore:React.Dispatch<React.SetStateAction<Store | undefined>>
@@ -10,12 +11,12 @@ interface Props {
 
 
 const StoreTab = (props:Props) => {
-    const navigation = useNavigation();
+    const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
     const StorePressed = () => {
         console.log(props.Store.name + " pressed");
         props.setSelectedStore(props.Store);
-        navigation.navigate("ViewStore", {});
+        navigation.navigate("ViewStore", {id:2});
 
     }   
     let scaleValue = new Animated.Value(0); // declare an animated value
@@ -31,7 +32,10 @@ const StoreTab = (props:Props) => {
     <View style={styles.view}>
     <Text style={styles.title}>{props.Store.name}</Text>
     <Animated.View style={transformStyle}>
-        <Image source={{uri:uri+"data/file/"+props.Store.logo}} style={styles.image}/>
+        <Image source={
+            {uri:uri+"data/file/"+props.Store.logo,
+            cache:'only-if-cached'
+            }} style={styles.image}/>
 
     </Animated.View>
     </View>
