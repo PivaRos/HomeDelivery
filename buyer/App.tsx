@@ -57,7 +57,8 @@ const getContent = () => {
     <NavigationContainer>
     <Stack.Navigator screenOptions={{headerShown:false, fullScreenGestureEnabled:true}}>
       <Stack.Screen name='tabs' children={() => <Tabs refreshing={refreshing} setSelectedStore={setSelectedStore} Stores={availableStores} setAvailableStores={setAvailableStores} location={thelocation}/>} />
-      <Stack.Screen name='ViewStore' children={() => <ViewStore Store={selectedStore}/>}  />
+    {selectedStore &&  <Stack.Screen name='ViewStore' children={() => <ViewStore Store={selectedStore}/>}  />}
+    {!selectedStore &&  <Stack.Screen name='ViewStore' children={ () => <View><Text>asasd</Text></View>}/>}
     </Stack.Navigator>
     </NavigationContainer>
     </ScrollView>

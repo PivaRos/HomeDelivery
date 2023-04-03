@@ -34,7 +34,7 @@ const StoreTab = (props:Props) => {
     <Animated.View style={transformStyle}>
         <Image source={
             {uri:uri+"data/file/"+props.Store.logo,
-            cache:'only-if-cached'
+            cache:'force-cache'
             }} style={styles.image}/>
 
     </Animated.View>

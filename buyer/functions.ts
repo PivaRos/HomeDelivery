@@ -52,4 +52,9 @@ export const registerForPushNotificationsAsync = async () => {
     }
   }
   
-  
+    
+  export const toDateTime = (secs:number) => {
+    var t = new Date(1970, 0, 1); // Epoch
+    t.setSeconds(secs);
+    return t;
+}

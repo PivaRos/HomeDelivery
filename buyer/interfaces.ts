@@ -3,7 +3,7 @@ import { ObjectId, Timestamp, WithId, Document } from "mongodb"
 
 export enum Pages {
     Stores = "Stores",
-    Search  = "Search", 
+    Orders  = "Orders", 
     Account = "Account",
     Home = "Home"
 }
@@ -66,7 +66,13 @@ export interface Store extends WithId<Document> {
     products: productObject[],
     authorizedUsers: string[],
     location: LocationObject,
-    deliveryDistance: number
+    deliveryDistance: number,
+    openHoursObject:openHoursObject
+}
+
+export interface openHoursObject {
+    openFrom:number,
+    closedFrom:number
 }
 
 export interface Account {

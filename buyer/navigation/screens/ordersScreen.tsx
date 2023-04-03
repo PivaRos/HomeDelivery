@@ -7,7 +7,7 @@ interface Props {
     Stores:availableStores | null | undefined;
   }
 
-const Search = ({navigation}:any) => {
+const OrdersScreen = ({navigation}:any) => {
 return (
     <View>
         <Text>this is search screen</Text>
@@ -15,4 +15,4 @@ return (
 );
 }
 
-export default Search;
+export default OrdersScreen;

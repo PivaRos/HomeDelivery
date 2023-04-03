@@ -4,16 +4,32 @@ import { useNavigation } from '@react-navigation/native';
 import { RootStackParamList, Store } from "../../interfaces";
 import { uri } from "../../envVars";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { toDateTime } from "../../functions";
 
 interface Props {
-    Store:Store | undefined
+    Store:Store
 }
 
 const imageUri = uri+"data/file/";
 export const ViewStore = (props:Props) => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+    const [OpenDateString, setOpenDateString] = useState("");
+    const [CloseDateString, setCloseDateString] = useState("");
 
-    console.log(imageUri)
+
+    useEffect(() => {
+        const OpenDate = toDateTime(props.Store.openHoursObject.openFrom).toLocaleTimeString().split(":");
+        
+        console.log(props.Store.openHoursObject.closedFrom)
+        if (props.Store.openHoursObject.closedFrom > 86400) props.Store.openHoursObject.closedFrom -= 86400
+        const CloseDate = toDateTime(props.Store.openHoursObject.closedFrom).toLocaleTimeString().split(":");
+        
+
+
+        setOpenDateString(OpenDate[0]+":"+OpenDate[1]);
+        setCloseDateString(CloseDate[0]+":"+CloseDate[1]);
+
+    }, [])
     return (
         
         <View style={{backgroundColor:'white', height:'100%'}}>
@@ -22,11 +38,12 @@ export const ViewStore = (props:Props) => {
         <Pressable style={styles.backButton} onPress={() => navigation.navigate("tabs", {id:1})}><Text style={styles.backButtonText}>Back</Text></Pressable>
         <Image style={styles.imageStyle} source={
             {uri:imageUri+props.Store?.logo,
-                cache:"only-if-cached"
-            
+                cache:"force-cache"
+                
             }} />
         <View style={styles.storeInfo}>
         <Text style={styles.StoreName}>{props.Store?.name}</Text>
+        <Text>{OpenDateString + " - " + CloseDateString}</Text>
         </View>
         </View>
         </ScrollView>
