@@ -26,7 +26,14 @@ export enum account_type{
     Delivery = 3,
     Support = 4,
     Admin = 5
+
 }
+
+export enum store_category{
+	food = 1,
+	homeMade = 2
+}
+
 
 export interface StorageData {
     sessionid:string;
@@ -67,7 +74,8 @@ export interface Store extends WithId<Document> {
     authorizedUsers: string[],
     location: LocationObject,
     deliveryDistance: number,
-    openHoursObject:openHoursObject
+    openHoursObject:openHoursObject,
+    category:store_category
 }
 
 export interface openHoursObject {

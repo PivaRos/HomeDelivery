@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, ScrollView, RefreshControl  } from 'react-native';
 import React, {useEffect, useState} from 'react'
-import { availableStores, LocationObject, Pages, Store } from '../../interfaces';
+import { availableStores, LocationObject, Pages, Store, store_category } from '../../interfaces';
 import StoresGrid from '../../components/stores_grid';
 import { storeActions } from '../../hooks/stores';
 import { StoresPlacaHolderGrid } from '../../components/stores_placeHolderGrid';
@@ -8,33 +8,34 @@ import { StoresPlacaHolderGrid } from '../../components/stores_placeHolderGrid';
 
 interface Props {
     location:LocationObject;
-    Stores:availableStores | null | undefined;
-    setAvailableStores:React.Dispatch<React.SetStateAction<availableStores | null | undefined>>;
+    foodStores:availableStores | null | undefined;
+    setFoodStores:React.Dispatch<React.SetStateAction<availableStores | null | undefined>>;
     setSelectedStore:React.Dispatch<React.SetStateAction<Store | undefined>>;
     refreshing:boolean;
   }
 
-const Stores = (props:Props) => {
+const FoodStores = (props:Props) => {
     const [loading, setLoading] = useState(true);
 
     const load = async () => {
-        props.setAvailableStores(await storeActions.GetStores(props.location));
+        props.setFoodStores(await storeActions.GetStores(props.location, store_category.food));
     }
 
 
     useEffect(() => {
         
         load();
-        if (props.Stores)
+        if (props.foodStores)
         {
             setLoading(false);
         }
     }, [])
+
     useEffect(() => {
         if (props.refreshing)
         {
          setLoading(true);
-         props.setAvailableStores(null);
+         props.setFoodStores(null);
          load();
         }
         else
@@ -46,10 +47,10 @@ const Stores = (props:Props) => {
     const getContent = () => {
 
         return ( <View style={style.view}>
-            <Text style={style.title}>The Way For Delivery {"(:"}</Text>
+            <Text style={style.title}>Enjoy The Best Food .</Text>
             <ScrollView>
-             <StoresGrid setSelectedStore={props.setSelectedStore}  title='Available Stores' displayStores={props.Stores?.Open} />
-             <StoresGrid setSelectedStore={props.setSelectedStore}  title='Closed Stores' displayStores={props.Stores?.Closed} />
+             <StoresGrid setSelectedStore={props.setSelectedStore}  title='New On HomeDelivery' displayStores={props.foodStores?.Open} />
+             <StoresGrid setSelectedStore={props.setSelectedStore}  title='Closed Stores' displayStores={props.foodStores?.Closed} />
              
             
             </ScrollView>
@@ -69,11 +70,13 @@ const style = StyleSheet.create({
     },
 
     title:{
-        fontSize:19 ,
-        textAlign:'center',
-        marginTop:5,
-        fontFamily:"Inter-Black"
+        fontSize:22 ,
+        marginLeft:10,
+        marginTop:10,
+        fontFamily:'AmericanTypewriter',
+        fontWeight:'bold'
+        
     }
 })
 
-export default Stores;
+export default FoodStores;

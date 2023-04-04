@@ -22,11 +22,11 @@ const StoresGrid = (props:Props) => {
             for(let i = 0;i < newarray.length; i++)
             {
 
-                newarray[i] = ((i)*Dimensions.get('window').width)-(100*i);
+                newarray[i] = i*Dimensions.get('window').width-(100*i);
             }
             setArr(newarray);
         }
-    }, [])
+    }, [props.displayStores])
 
 
     return (    <View style={{ marginTop:50,}}>

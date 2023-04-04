@@ -7,10 +7,15 @@ exports.timeToSecondsFromStartOfDay = exports.isOpen = exports.getSeconds = expo
 const moment_1 = __importDefault(require("moment"));
 //returns distance (km)
 const getDistance = (Location1, Location2) => {
-    const dy = (+Location1.coordinates[0]) - (+Location2.coordinates[0]);
-    const dx = (+Location1.coordinates[1]) - (+Location2.coordinates[1]);
-    const distance = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 110.574;
-    return distance;
+    if (Location1.coordinates && Location2.coordinates) {
+        const dy = (+Location1.coordinates[0]) - (+Location2.coordinates[0]);
+        const dx = (+Location1.coordinates[1]) - (+Location2.coordinates[1]);
+        const distance = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 110.574; //im km
+        return distance;
+    }
+    else {
+        return 0;
+    }
 };
 exports.getDistance = getDistance;
 const makeid = (length) => {

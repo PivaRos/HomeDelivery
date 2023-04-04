@@ -14,7 +14,6 @@ const StoreTab = (props:Props) => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
     const StorePressed = () => {
-        console.log(props.Store.name + " pressed");
         props.setSelectedStore(props.Store);
         navigation.navigate("ViewStore", {id:2});
 

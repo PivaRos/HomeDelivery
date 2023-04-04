@@ -1,7 +1,7 @@
 import express, { NextFunction, Request, Response } from 'express';
 import mongodb from 'mongodb';
 import { checkValidation, processPayment, isSeller, isBuyer } from '../middleware';
-import { Account, LocationObject, Order, PaymentLog, productOrder, Store } from '../interfaces';
+import { Account, LocationObject, Order, PaymentLog, productOrder, Store, store_category } from '../interfaces';
 import { getDistance, isOpen, timeToSecondsFromStartOfDay } from '../functions';
 
 const Router = (MongoObject: {
@@ -21,11 +21,11 @@ const Router = (MongoObject: {
     const PublicbuyerRouter = express.Router();
 
 
-    PublicbuyerRouter.post("/get/sellers", async (req:Request, res:Response) => {
+    PublicbuyerRouter.post("/get/stores", async (req:Request, res:Response) => {
         const buyerLocation = req.body.location;
         try {
             const projection = { authorizedUsers: 0 };
-            let sellers = await MongoObject.collections.Stores.find({}).project(projection).toArray();
+            let sellers = await MongoObject.collections.Stores.find({category:req.body.store_category}).project(projection).toArray();
                 let OpenReturnSellers:Store[] = [];
                 let ClosedReturnSellers:Store[] = [];
                 sellers.forEach(seller => {  //checks foreach seller the distance

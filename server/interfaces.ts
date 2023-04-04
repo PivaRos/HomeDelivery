@@ -1,6 +1,25 @@
 import { ObjectId, Timestamp, WithId, Document } from "mongodb"
 
 
+export enum Pages {
+    Stores = "Stores",
+    Orders  = "Orders", 
+    Account = "Account",
+    Home = "Home"
+}
+
+export interface availableStores{
+    Closed:Store[];
+    Open:Store[];
+}
+
+
+export type RootStackParamList = {
+    ViewStore: { id: number } | undefined;
+    tabs: { id: number } | undefined;
+  };
+
+
 export enum account_type{
     Seller = 2,
     Buyer = 1,
@@ -8,6 +27,16 @@ export enum account_type{
     Support = 4,
     Admin = 5
 }
+
+export enum store_category{
+	food = 1,
+	homeMade = 2
+}
+
+
+export interface StorageData {
+    sessionid:string;
+  }
 
 export enum order_status {
     pending = 1,
@@ -24,10 +53,15 @@ export interface productObject {
     mainimage: string
     images: string[]
 }
+export enum LocationType {
+    point = "point",
+    address = "address"
+}
 
 export interface LocationObject {
-    type: string,
-    coordinates:number[]
+    type:LocationType
+    coordinates?:number[]
+    address?:string
 }
 
 
@@ -39,7 +73,13 @@ export interface Store extends WithId<Document> {
     authorizedUsers: string[],
     location: LocationObject,
     deliveryDistance: number,
-    openHoursObject:openHoursObject
+    openHoursObject:openHoursObject,
+    category:store_category
+}
+
+export interface openHoursObject {
+    openFrom:number,
+    closedFrom:number
 }
 
 export interface Account {
@@ -76,6 +116,16 @@ export interface dateObject {
 }
 
 
+export interface dataObject {
+	err:boolean
+	msg:string,
+	data:any,
+	nor?:number 	//number of tries
+	
+}
+
+
+
 export interface productOrder {
     productId : ObjectId,
     details:{
@@ -87,11 +137,4 @@ export interface PaymentLog {
     accepted:boolean,
     priceCharged:number,
     timestamp:number
-}
-
-
-export interface openHoursObject{
-    openFrom:number;
-    closedFrom:number;
-    hasCloseNextDay:boolean;
 }

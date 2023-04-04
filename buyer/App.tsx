@@ -11,7 +11,7 @@ import * as Notifications from 'expo-notifications';
 import { userActions } from './hooks/user';
 import { CheckLocation } from './functions';
 import { storeActions } from './hooks/stores';
-import Stores from './navigation/screens/storesScreen';
+import Stores from './navigation/screens/foodStoresScreen';
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { ViewStore } from './navigation/screens/viewStore';
 import { useFonts } from 'expo-font';
@@ -25,7 +25,8 @@ export default function App() {
   const [errorMsg, setErrorMsg] = useState("");
   const [sessionid, setSessionid] = useState<null | undefined | string>();
   const [loading, setLoading] = useState(false);
-  const [availableStores, setAvailableStores] = useState<availableStores | null | undefined>();
+  const [homeMadeStores, setHomeMadeStores] = useState<availableStores | null | undefined>();
+  const [foodStores, setFoodStores] = useState<availableStores | null | undefined>();
   const [selectedStore, setSelectedStore] = useState<Store>();
   const [refreshing, setRefreshing] = useState(false);
 
@@ -56,7 +57,7 @@ const getContent = () => {
     </View>
     <NavigationContainer>
     <Stack.Navigator screenOptions={{headerShown:false, fullScreenGestureEnabled:true}}>
-      <Stack.Screen name='tabs' children={() => <Tabs refreshing={refreshing} setSelectedStore={setSelectedStore} Stores={availableStores} setAvailableStores={setAvailableStores} location={thelocation}/>} />
+      <Stack.Screen name='tabs' children={() => <Tabs homeMadeStores={homeMadeStores} setHomeMadeStores={setHomeMadeStores} refreshing={refreshing} setSelectedStore={setSelectedStore} foodStores={foodStores} setFoodStores={setFoodStores} location={thelocation}/>} />
     {selectedStore &&  <Stack.Screen name='ViewStore' children={() => <ViewStore Store={selectedStore}/>}  />}
     {!selectedStore &&  <Stack.Screen name='ViewStore' children={ () => <View><Text>asasd</Text></View>}/>}
     </Stack.Navigator>
