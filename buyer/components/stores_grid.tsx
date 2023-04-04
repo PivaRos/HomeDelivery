@@ -12,13 +12,26 @@ interface Props {
 const StoresGrid = (props:Props) => {
     
 
-    const [arr, setArr] = useState(new Array(props.displayStores?.length))
+    const [arr, setArr] = useState([0,0]);
+
+    useEffect(() => {
+
+        const newarray = new Array(props.displayStores?.length);
+        if (newarray)
+        {
+            for(let i = 0;i < newarray.length; i++)
+            {
+
+                newarray[i] = ((i)*Dimensions.get('window').width)-(100*i);
+            }
+            setArr(newarray);
+        }
+    }, [])
+
 
     return (    <View style={{ marginTop:50,}}>
                 <Text style={styles.title}>{props.title}</Text>
-                <ScrollView showsHorizontalScrollIndicator={false}  snapToOffsets={arr.map((value, index) => {
-                    return ((index+1)*Dimensions.get('window').width-100);
-                })} decelerationRate="fast" horizontal={true} style={styles.view}>
+                <ScrollView showsHorizontalScrollIndicator={false}  snapToOffsets={arr} decelerationRate="fast" horizontal={true} style={styles.view}>
                 {props.displayStores && props.displayStores.map((store, index) => {
                     return <StoreTab setSelectedStore={props.setSelectedStore} key={index} Store={store}/>
                 })}
