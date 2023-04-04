@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb";
 import { uri } from "../envVars";
 import { dataObject, dateObject, LocationObject, store_category } from "../interfaces";
 
@@ -27,6 +28,27 @@ export const storeActions =  {
     }catch(e){
         console.log(e);
     }
+    }),
+
+    GetProducts: (async (store_id:ObjectId) => {
+      try{
+        const response = await fetch(url+"publicbuyer/get/products", {
+          headers: {
+            "Content-Type": "application/json"
+          },
+          method:"POST",
+          body:JSON.stringify({
+            store_id:store_id,
+          })
+        });
+        let data:dataObject = await response.json();
+        if (data)
+        {
+          return data.data;
+        }
+  
+      }catch(e){
+          console.log(e);
+      }
     })
-    
 };

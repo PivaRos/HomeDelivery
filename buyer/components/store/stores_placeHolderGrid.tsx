@@ -1,6 +1,5 @@
 import { StyleSheet, Text, View, ScrollView, RefreshControl  } from 'react-native';
 import React, {useEffect, useState} from 'react'
-import { availableStores, LocationObject, Pages, Store } from '../interfaces';
 
 interface Props {
     title:string;
@@ -17,6 +16,7 @@ const styles = StyleSheet.create({
     view:{
         height:200,
     },
+    
 
     title:{
         paddingLeft:10,

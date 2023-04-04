@@ -46,7 +46,8 @@ export enum order_status {
     done = 4
 }
 
-export interface productObject {
+export interface Product {
+    available:boolean,
     name: string,
     price: number,
     info: string,
@@ -69,7 +70,7 @@ export interface Store extends WithId<Document> {
     _id: ObjectId,
     logo: string,
     name: string,
-    products: productObject[],
+    products: Product[],
     authorizedUsers: string[],
     location: LocationObject,
     deliveryDistance: number,

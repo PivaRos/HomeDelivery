@@ -87,7 +87,6 @@ const Router = (MongoObject: {
         }
         res.sendStatus(200);
         }catch(e){
-            console.log(e);
             res.sendStatus(500);
         }
     });

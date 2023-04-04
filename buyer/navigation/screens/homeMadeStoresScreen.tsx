@@ -1,7 +1,7 @@
 import { ScrollView, StyleSheet, Text, View  } from 'react-native';
 import * as React from 'react'
 import { availableStores, LocationObject, Pages, Store, store_category } from '../../interfaces';
-import StoresGrid from '../../components/stores_grid';
+import StoresGrid from '../../components/store/stores_grid';
 import { useEffect, useState } from 'react';
 import { storeActions } from '../../hooks/stores';
 
@@ -46,10 +46,10 @@ const HomeMadeStores = (props:Props) => {
     const getContent = () => {
 
         return ( <View style={style.view}>
-            <Text style={style.title}>The Way For Delivery {"(:"}</Text>
+            <Text style={style.title}>Creativity Place .</Text>
             <ScrollView>
-             <StoresGrid setSelectedStore={props.setSelectedStore}  title='New On HomeDelivery' displayStores={props.homeMadeStores?.Open} />
-             <StoresGrid setSelectedStore={props.setSelectedStore}  title='Closed Stores' displayStores={props.homeMadeStores?.Closed} />
+             <StoresGrid thelocation={props.location} setSelectedStore={props.setSelectedStore}  title='New On HomeDelivery' displayStores={props.homeMadeStores?.Open} />
+             <StoresGrid thelocation={props.location} setSelectedStore={props.setSelectedStore}  title='Closed Stores' displayStores={props.homeMadeStores?.Closed} />
              
             
             </ScrollView>
@@ -70,10 +70,12 @@ const style = StyleSheet.create({
     },
 
     title:{
-        fontSize:19 ,
-        textAlign:'center',
-        marginTop:5,
-        fontFamily:"Inter-Black"
+        fontSize:22 ,
+        marginLeft:10,
+        marginTop:10,
+        fontFamily:'AmericanTypewriter',
+        fontWeight:'bold'
+        
     }
 })
 

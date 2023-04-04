@@ -1,5 +1,5 @@
-import express, { NextFunction, Request, Response } from 'express';
-import mongodb from 'mongodb';
+import express, { NextFunction, Request, Response, request } from 'express';
+import mongodb, { ObjectId } from 'mongodb';
 import { checkValidation, processPayment, isSeller, isBuyer } from '../middleware';
 import { Account, LocationObject, Order, PaymentLog, productOrder, Store, store_category } from '../interfaces';
 import { getDistance, isOpen, timeToSecondsFromStartOfDay } from '../functions';
@@ -32,6 +32,7 @@ const Router = (MongoObject: {
                     const distance = getDistance(seller.location, buyerLocation);
                     if (distance < seller.deliveryDistance)
                     {
+                    
                         //check open hours
                         if (isOpen(seller.openHoursObject, seller.openHoursObject.hasCloseNextDay))
                         {
@@ -65,6 +66,20 @@ const Router = (MongoObject: {
             });
         }
     })
+
+
+
+    PublicbuyerRouter.post("/get/products", async (req:Request, res:Response) => {
+        if (req.body.store_id)
+        {
+            const products = await MongoObject.collections.Stores.findOne({_id:new ObjectId(req.body.store_id)}, {projection:{products:1}});
+            return res.json({
+                err:false,
+                msg:"ok",
+                data:products?.products
+            })
+        }
+    });
 
 
     return PublicbuyerRouter;

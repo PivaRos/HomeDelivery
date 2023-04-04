@@ -1,9 +1,8 @@
 import { StyleSheet, Text, View, ScrollView, RefreshControl  } from 'react-native';
 import React, {useEffect, useState} from 'react'
 import { availableStores, LocationObject, Pages, Store, store_category } from '../../interfaces';
-import StoresGrid from '../../components/stores_grid';
 import { storeActions } from '../../hooks/stores';
-import { StoresPlacaHolderGrid } from '../../components/stores_placeHolderGrid';
+import StoresGrid from '../../components/store/stores_grid';
 
 
 interface Props {
@@ -49,8 +48,8 @@ const FoodStores = (props:Props) => {
         return ( <View style={style.view}>
             <Text style={style.title}>Enjoy The Best Food .</Text>
             <ScrollView>
-             <StoresGrid setSelectedStore={props.setSelectedStore}  title='New On HomeDelivery' displayStores={props.foodStores?.Open} />
-             <StoresGrid setSelectedStore={props.setSelectedStore}  title='Closed Stores' displayStores={props.foodStores?.Closed} />
+             <StoresGrid thelocation={props.location} setSelectedStore={props.setSelectedStore}  title='New On HomeDelivery' displayStores={props.foodStores?.Open} />
+             <StoresGrid thelocation={props.location} setSelectedStore={props.setSelectedStore}  title='Closed Stores' displayStores={props.foodStores?.Closed} />
              
             
             </ScrollView>

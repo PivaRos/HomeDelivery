@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react'; 
 import ReactNative, {StyleSheet, View, Text, Image, Dimensions, TouchableWithoutFeedback,  Animated, Easing  } from 'react-native';
-import { RootStackParamList, Store } from '../interfaces';
+import { LocationObject, RootStackParamList, Store } from '../../interfaces';
 import { useNavigation } from '@react-navigation/native';
-import {uri} from '../envVars';
+import {uri} from '../../envVars';
 import { StackNavigationProp } from '@react-navigation/stack';
 interface Props {
     Store:Store;
     setSelectedStore:React.Dispatch<React.SetStateAction<Store | undefined>>
+    thelocation:LocationObject;
 }
 
 

@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react'; 
 import {StyleSheet, View, Text, Image, ScrollView, Dimensions} from 'react-native';
-import { Store } from '../interfaces';
+import { LocationObject, Store } from '../../interfaces';
 import StoreTab from './storeTab';
 
 interface Props {
     title:string;
     displayStores:Store[] | null | undefined;
     setSelectedStore:React.Dispatch<React.SetStateAction<Store | undefined>>;
+    thelocation:LocationObject;
     
 }
 const StoresGrid = (props:Props) => {
@@ -33,7 +34,7 @@ const StoresGrid = (props:Props) => {
                 <Text style={styles.title}>{props.title}</Text>
                 <ScrollView showsHorizontalScrollIndicator={false}  snapToOffsets={arr} decelerationRate="fast" horizontal={true} style={styles.view}>
                 {props.displayStores && props.displayStores.map((store, index) => {
-                    return <StoreTab setSelectedStore={props.setSelectedStore} key={index} Store={store}/>
+                    return <StoreTab thelocation={props.thelocation} setSelectedStore={props.setSelectedStore} key={index} Store={store}/>
                 })}
                 </ScrollView>
                 </View>); 

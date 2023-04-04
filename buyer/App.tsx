@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, StatusBar, Platform, SafeAreaView, ActivityIndicator, Button, ScrollView, RefreshControl} from 'react-native';
 import {useCallback, useEffect, useState} from 'react'
-import { availableStores, StorageData, Store } from './interfaces';
+import { availableStores, Product, StorageData, Store } from './interfaces';
 import { NavigationContainer } from '@react-navigation/native';
 import { AddressHanddler } from './components/addressHanddler';
 import Tabs from './navigation/tabs';
@@ -16,6 +16,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { ViewStore } from './navigation/screens/viewStore';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
+import { ViewProduct } from './navigation/screens/viewProduct';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -29,7 +30,7 @@ export default function App() {
   const [foodStores, setFoodStores] = useState<availableStores | null | undefined>();
   const [selectedStore, setSelectedStore] = useState<Store>();
   const [refreshing, setRefreshing] = useState(false);
-
+  const [selectedProduct, setSelectedProduct] = useState<Product>();
 
 
   const Stack = createNativeStackNavigator();
@@ -58,8 +59,10 @@ const getContent = () => {
     <NavigationContainer>
     <Stack.Navigator screenOptions={{headerShown:false, fullScreenGestureEnabled:true}}>
       <Stack.Screen name='tabs' children={() => <Tabs homeMadeStores={homeMadeStores} setHomeMadeStores={setHomeMadeStores} refreshing={refreshing} setSelectedStore={setSelectedStore} foodStores={foodStores} setFoodStores={setFoodStores} location={thelocation}/>} />
-    {selectedStore &&  <Stack.Screen name='ViewStore' children={() => <ViewStore Store={selectedStore}/>}  />}
+    {selectedStore &&  <Stack.Screen name='ViewStore' children={() => <ViewStore setSelectedProduct={setSelectedProduct} thelocation={thelocation} Store={selectedStore}/>}  />}
     {!selectedStore &&  <Stack.Screen name='ViewStore' children={ () => <View><Text>asasd</Text></View>}/>}
+    {selectedProduct && <Stack.Screen name='ViewProduct' children={() => <ViewProduct setSelectedProduct={setSelectedProduct} Product={selectedProduct} thelocation={thelocation}/>} />}
+    {!selectedProduct && <Stack.Screen name='ViewProduct' children={() => <View><Text>asdasd</Text></View>}/>}
     </Stack.Navigator>
     </NavigationContainer>
     </ScrollView>
