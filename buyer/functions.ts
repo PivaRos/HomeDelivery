@@ -1,8 +1,9 @@
 
 import * as Location from 'expo-location';
-import { LocationObject, LocationType, StorageData } from './interfaces';
+import { LocationObject, LocationType, StorageData, Store } from './interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
+import { ObjectId } from 'mongodb';
 
 
 export const registerForPushNotificationsAsync = async () => {
@@ -28,6 +29,18 @@ export const registerForPushNotificationsAsync = async () => {
       console.log(e);
       return token;
     }
+  }
+
+
+  export const GetOptionProduct = (Store:Store, OptionProdcutId:ObjectId) => {
+    for (let i =0;i < Store.optionProducts.length;i++)
+    {
+      if (Store.optionProducts[i]._id === OptionProdcutId)
+      {
+        return Store.optionProducts[i];
+      }
+    }
+    return;
   }
   
  export const CheckLocation = async () => {

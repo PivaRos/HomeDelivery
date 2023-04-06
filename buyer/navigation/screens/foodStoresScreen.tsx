@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, ScrollView, RefreshControl  } from 'react-native';
 import React, {useEffect, useState} from 'react'
 import { availableStores, LocationObject, Pages, Store, store_category } from '../../interfaces';
-import { storeActions } from '../../hooks/stores';
+import { storeActions } from '../../network_services/stores';
 import StoresGrid from '../../components/store/stores_grid';
 
 

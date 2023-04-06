@@ -8,9 +8,9 @@ import * as Location from 'expo-location';
 import { LocationObject } from './interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
-import { userActions } from './hooks/user';
+import { userActions } from './network_services/user';
 import { CheckLocation } from './functions';
-import { storeActions } from './hooks/stores';
+import { storeActions } from './network_services/stores';
 import Stores from './navigation/screens/foodStoresScreen';
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { ViewStore } from './navigation/screens/viewStore';
@@ -61,7 +61,7 @@ const getContent = () => {
       <Stack.Screen name='tabs' children={() => <Tabs homeMadeStores={homeMadeStores} setHomeMadeStores={setHomeMadeStores} refreshing={refreshing} setSelectedStore={setSelectedStore} foodStores={foodStores} setFoodStores={setFoodStores} location={thelocation}/>} />
     {selectedStore &&  <Stack.Screen name='ViewStore' children={() => <ViewStore setSelectedProduct={setSelectedProduct} thelocation={thelocation} Store={selectedStore}/>}  />}
     {!selectedStore &&  <Stack.Screen name='ViewStore' children={ () => <View><Text>asasd</Text></View>}/>}
-    {selectedProduct && <Stack.Screen name='ViewProduct' children={() => <ViewProduct setSelectedProduct={setSelectedProduct} Product={selectedProduct} thelocation={thelocation}/>} />}
+    {selectedProduct && <Stack.Screen name='ViewProduct' children={() => <ViewProduct savedOrder={undefined} setSelectedProduct={setSelectedProduct} Product={selectedProduct} thelocation={thelocation}/>} />}
     {!selectedProduct && <Stack.Screen name='ViewProduct' children={() => <View><Text>asdasd</Text></View>}/>}
     </Stack.Navigator>
     </NavigationContainer>

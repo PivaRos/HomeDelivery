@@ -3,7 +3,7 @@ import * as React from 'react'
 import { availableStores, LocationObject, Pages, Store, store_category } from '../../interfaces';
 import StoresGrid from '../../components/store/stores_grid';
 import { useEffect, useState } from 'react';
-import { storeActions } from '../../hooks/stores';
+import { storeActions } from '../../network_services/stores';
 
 interface Props {
     location:LocationObject;

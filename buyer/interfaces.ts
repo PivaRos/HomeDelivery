@@ -61,11 +61,11 @@ export interface Product {
     mainimage: string
     images: string[],
     category: string
-    options:Option[]
+    options:Option[] | null | undefined
 }
 
 export interface Option {
-    optionProducts:optionProduct[],
+    optionProducts:ObjectId[],
     maxPicks:number,
     additionalAllowed:boolean,
     additionalMax:number,
