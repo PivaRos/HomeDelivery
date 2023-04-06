@@ -36,8 +36,8 @@ export enum store_category {
 }
 
 export interface ui_order {
-    Products:Product[],
-    
+    Products: Product[],
+
 }
 
 
@@ -61,16 +61,18 @@ export interface Product {
     mainimage: string
     images: string[],
     category: string
-    options:Option[] | null | undefined
+    options: Option[] | null | undefined
 }
 
 export interface Option {
-    optionProducts:ObjectId[],
-    maxPicks:number,
-    additionalAllowed:boolean,
-    additionalMax:number,
-    additionalPricePerUnit:PriceObject
-    
+    optionProducts: ObjectId[],
+    maxPicks: number,
+    additionalAllowed: boolean,
+    additionalMax: number,
+    additionalPricePerUnit: PriceObject,
+    useOwnPrice: boolean,
+    name: string
+
 }
 
 export interface PriceObject {
@@ -99,14 +101,15 @@ export interface Store extends WithId<Document> {
     deliveryDistance: number,
     openHoursObject: openHoursObject,
     category: store_category,
-    optionProducts:optionProduct[]
+    optionProducts: optionProduct[]
 }
 
 export interface optionProduct {
-    _id:ObjectId,
-    image:string,
-    name:string,
-    category:string
+    _id: ObjectId,
+    image: string,
+    name: string,
+    category: string,
+    ownPrice: PriceObject
 }
 
 
@@ -128,7 +131,7 @@ export interface Account {
 }
 
 export interface product_option {
-    
+
 }
 
 

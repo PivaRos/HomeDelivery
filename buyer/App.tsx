@@ -1,5 +1,5 @@
-import { StyleSheet, Text, View, StatusBar, Platform, SafeAreaView, ActivityIndicator, Button, ScrollView, RefreshControl} from 'react-native';
-import {useCallback, useEffect, useState} from 'react'
+import { StyleSheet, Text, View, StatusBar, Platform, SafeAreaView, ActivityIndicator, Button, ScrollView, RefreshControl } from 'react-native';
+import { useCallback, useEffect, useState } from 'react'
 import { availableStores, Product, StorageData, Store } from './interfaces';
 import { NavigationContainer } from '@react-navigation/native';
 import { AddressHanddler } from './components/addressHanddler';
@@ -47,97 +47,94 @@ export default function App() {
   onLayoutRootView();
 
 
-const getContent = () => {
-  if (loading) return <ActivityIndicator size="small" style={{opacity:1, marginTop:'100%'}}/>;
-  if (!thelocation) return <SafeAreaView><Text style={{fontWeight:"bold", textAlign:'center'}}>Please Allow HomeDelivery To Use Location In Order To Continue Using The App</Text><Button onPress={PressLocation} title='Allow Access'/></SafeAreaView>
-  return (
-  <SafeAreaView style={styles.container}>
-    <ScrollView contentContainerStyle={styles.container} refreshControl={<RefreshControl colors={['#2874ed']} title='Refresh'  refreshing={refreshing} onRefresh={onRefresh}/>}>
-    <View style={{height:30, backgroundColor:'lightgreen'}}>
-      {!refreshing && <AddressHanddler fullcoords={fullCoords} />}
-    </View>
-    <NavigationContainer>
-    <Stack.Navigator screenOptions={{headerShown:false, fullScreenGestureEnabled:true}}>
-      <Stack.Screen name='tabs' children={() => <Tabs homeMadeStores={homeMadeStores} setHomeMadeStores={setHomeMadeStores} refreshing={refreshing} setSelectedStore={setSelectedStore} foodStores={foodStores} setFoodStores={setFoodStores} location={thelocation}/>} />
-    {selectedStore &&  <Stack.Screen name='ViewStore' children={() => <ViewStore setSelectedProduct={setSelectedProduct} thelocation={thelocation} Store={selectedStore}/>}  />}
-    {!selectedStore &&  <Stack.Screen name='ViewStore' children={ () => <View><Text>asasd</Text></View>}/>}
-    {selectedProduct && <Stack.Screen name='ViewProduct' children={() => <ViewProduct savedOrder={undefined} setSelectedProduct={setSelectedProduct} Product={selectedProduct} thelocation={thelocation}/>} />}
-    {!selectedProduct && <Stack.Screen name='ViewProduct' children={() => <View><Text>asdasd</Text></View>}/>}
-    </Stack.Navigator>
-    </NavigationContainer>
-    </ScrollView>
-  </SafeAreaView>
+  const getContent = () => {
+    if (loading) return <ActivityIndicator size="small" style={{ opacity: 1, marginTop: '100%' }} />;
+    if (!thelocation) return <SafeAreaView><Text style={{ fontWeight: "bold", textAlign: 'center' }}>Please Allow HomeDelivery To Use Location In Order To Continue Using The App</Text><Button onPress={PressLocation} title='Allow Access' /></SafeAreaView>
+    return (
+      <SafeAreaView style={styles.container}>
+        <ScrollView contentContainerStyle={styles.container} refreshControl={<RefreshControl colors={['#2874ed']} title='Refresh' refreshing={refreshing} onRefresh={onRefresh} />}>
+          <View style={{ height: 30, backgroundColor: 'lightgreen' }}>
+            {!refreshing && <AddressHanddler fullcoords={fullCoords} />}
+          </View>
+          <NavigationContainer>
+            <Stack.Navigator screenOptions={{ headerShown: false, fullScreenGestureEnabled: true }}>
+              <Stack.Screen name='tabs' children={() => <Tabs homeMadeStores={homeMadeStores} setHomeMadeStores={setHomeMadeStores} refreshing={refreshing} setSelectedStore={setSelectedStore} foodStores={foodStores} setFoodStores={setFoodStores} location={thelocation} />} />
+              {selectedStore && <Stack.Screen name='ViewStore' children={() => <ViewStore setSelectedProduct={setSelectedProduct} thelocation={thelocation} Store={selectedStore} />} />}
+              {!selectedStore && <Stack.Screen name='ViewStore' children={() => <View><Text>asasd</Text></View>} />}
+              {(selectedProduct && selectedStore) && <Stack.Screen name='ViewProduct' children={() => <ViewProduct Store={selectedStore} savedOrder={undefined} setSelectedProduct={setSelectedProduct} Product={selectedProduct} thelocation={thelocation} />} />}
+              {!selectedProduct && <Stack.Screen name='ViewProduct' children={() => <View><Text>asdasd</Text></View>} />}
+            </Stack.Navigator>
+          </NavigationContainer>
+        </ScrollView>
+      </SafeAreaView>
 
-  );
-}
-
-useEffect(() => {
-  (async () => {
-  const result = await CheckLocation()
-  if (result)
-  {
-    setLocation(result.thelocation);
-    setFullCoords(result.fullcoords);
+    );
   }
 
-  await UpdateData();
-  })();
-}, [refreshing])
+  useEffect(() => {
+    (async () => {
+      const result = await CheckLocation()
+      if (result) {
+        setLocation(result.thelocation);
+        setFullCoords(result.fullcoords);
+      }
+
+      await UpdateData();
+    })();
+  }, [refreshing])
 
 
-const onRefresh = useCallback( async () => {
-  setRefreshing(true);
-  setTimeout(() => {
-    setRefreshing(false)
-  }, 1500)
-}, []);
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false)
+    }, 1500)
+  }, []);
 
-const PressLocation = async () => {
-  const result = await CheckLocation()
-  if (result)
-  {
-    setLocation(result.thelocation);
+  const PressLocation = async () => {
+    const result = await CheckLocation()
+    if (result) {
+      setLocation(result.thelocation);
+    }
+
   }
 
-}
-
-  const SaveData = async (data:StorageData) => {
-    try{
+  const SaveData = async (data: StorageData) => {
+    try {
       await AsyncStorage.setItem("@sessionid", data.sessionid);
       UpdateData();
-    }catch{
+    } catch {
 
     }
   }
 
   const UpdateData = async () => {
-    try{
+    try {
       const sessionid = await AsyncStorage.getItem("@sessionid");
-        setSessionid(sessionid);
+      setSessionid(sessionid);
 
-    }catch{
+    } catch {
 
     }
   }
 
   const firstloadCheck = async () => {
-    try{
+    try {
       setLoading(true);
       const result = await CheckLocation()
-      if (result)
-      {
+      if (result) {
         setLocation(result.thelocation);
         setFullCoords(result.fullcoords);
       }
 
       await UpdateData();
       setLoading(false);
-    }catch(e){
+    } catch (e) {
       console.log(e)
     }
   }
 
-  
+
   useEffect(() => {
     firstloadCheck();
   }, []);
@@ -153,6 +150,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
-    paddingTop:Platform.OS === 'android' ? StatusBar.currentHeight : 0
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0
   },
 });
