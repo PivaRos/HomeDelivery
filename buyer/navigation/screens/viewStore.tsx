@@ -6,7 +6,7 @@ import { uri } from "../../envVars";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { getDistance, toDateTime } from "../../functions";
 import ProductsGrid from "../../components/product/products_grid";
-import { storeActions } from "../../hooks/stores";
+import { storeActions } from "../../network_services/stores";
 
 interface Props {
     Store: Store;
