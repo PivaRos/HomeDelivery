@@ -35,6 +35,11 @@ export enum store_category {
     homeMade = 2
 }
 
+export interface ui_order {
+    Products:Product[],
+    
+}
+
 
 export interface StorageData {
     sessionid: string;
@@ -56,6 +61,16 @@ export interface Product {
     mainimage: string
     images: string[],
     category: string
+    options:Option[]
+}
+
+export interface Option {
+    optionProducts:optionProduct[],
+    maxPicks:number,
+    additionalAllowed:boolean,
+    additionalMax:number,
+    additionalPricePerUnit:PriceObject
+    
 }
 
 export interface PriceObject {
@@ -83,8 +98,18 @@ export interface Store extends WithId<Document> {
     location: LocationObject,
     deliveryDistance: number,
     openHoursObject: openHoursObject,
-    category: store_category
+    category: store_category,
+    optionProducts:optionProduct[]
 }
+
+export interface optionProduct {
+    _id:ObjectId,
+    image:string,
+    name:string,
+    category:string
+}
+
+
 
 export interface openHoursObject {
     openFrom: number,
@@ -100,6 +125,10 @@ export interface Account {
     sessionid: string,
     location: LocationObject,
     deliveryDistance?: number
+}
+
+export interface product_option {
+    
 }
 
 
