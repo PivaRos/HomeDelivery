@@ -24,7 +24,6 @@ export const ViewStore = (props: Props) => {
     useEffect(() => {
         const OpenDate = toDateTime(props.Store.openHoursObject.openFrom).toLocaleTimeString().split(":");
 
-        console.log(props.Store.openHoursObject.closedFrom)
         if (props.Store.openHoursObject.closedFrom > 86400) props.Store.openHoursObject.closedFrom -= 86400
         const CloseDate = toDateTime(props.Store.openHoursObject.closedFrom).toLocaleTimeString().split(":");
 
