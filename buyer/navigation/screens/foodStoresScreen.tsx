@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, ScrollView, RefreshControl  } from 'react-native';
 import React, {useEffect, useState} from 'react'
-import { availableStores, LocationObject, Pages, Store, store_category } from '../../interfaces';
+import { availableStores, LocationObject, Order, Pages, Store, store_category } from '../../interfaces';
 import { storeActions } from '../../network_services/stores';
 import StoresGrid from '../../components/store/stores_grid';
 
@@ -11,6 +11,8 @@ interface Props {
     setFoodStores:React.Dispatch<React.SetStateAction<availableStores | null | undefined>>;
     setSelectedStore:React.Dispatch<React.SetStateAction<Store | undefined>>;
     refreshing:boolean;
+    setSavedOrder:React.Dispatch<React.SetStateAction<Order | undefined | null>>;
+
   }
 
 const FoodStores = (props:Props) => {
@@ -48,8 +50,8 @@ const FoodStores = (props:Props) => {
         return ( <View style={style.view}>
             <Text style={style.title}>Enjoy The Best Food .</Text>
             <ScrollView>
-             <StoresGrid thelocation={props.location} setSelectedStore={props.setSelectedStore}  title='New On HomeDelivery' displayStores={props.foodStores?.Open} />
-             <StoresGrid thelocation={props.location} setSelectedStore={props.setSelectedStore}  title='Closed Stores' displayStores={props.foodStores?.Closed} />
+             <StoresGrid setSavedOrder={props.setSavedOrder} thelocation={props.location} setSelectedStore={props.setSelectedStore}  title='New On HomeDelivery' displayStores={props.foodStores?.Open} />
+             <StoresGrid setSavedOrder={props.setSavedOrder} thelocation={props.location} setSelectedStore={props.setSelectedStore}  title='Closed Stores' displayStores={props.foodStores?.Closed} />
              
             
             </ScrollView>

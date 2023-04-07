@@ -35,10 +35,7 @@ export enum store_category {
     homeMade = 2
 }
 
-export interface ui_order {
-    Products: Product[],
 
-}
 
 
 export interface StorageData {
@@ -54,6 +51,7 @@ export enum order_status {
 }
 
 export interface Product {
+    _id:ObjectId,
     available: boolean,
     name: string,
     price: PriceObject,
@@ -73,6 +71,16 @@ export interface Option {
     useOwnPrice: boolean,
     name: string
 
+}
+
+export interface SelectedProduct{
+   _id:ObjectId,
+   options:selectedOption[] | null | undefined; 
+}
+
+export interface selectedOption{
+    selectedOptionProducts: ObjectId[],
+    _id:ObjectId
 }
 
 export interface PriceObject {
@@ -136,17 +144,17 @@ export interface product_option {
 
 
 export interface Order {
-    _id?: ObjectId,
-    seller: ObjectId,
-    buyer: ObjectId,
-    date: dateObject
-    products: productOrder[],
-    totalPrice: number,
+    _id: ObjectId |  undefined | null,
+    seller: ObjectId | undefined | null,
+    buyer: ObjectId | undefined | null,
+    date: dateObject,
+    selecedProdcuts: SelectedProduct[],
+    totalPrice: PriceObject,
     location: LocationObject,
-    city: string,
-    street: string,
-    homenumber: string,
-    zipcode: string,
+    city: string | undefined | null,
+    street: string | undefined | null,
+    homenumber: string | undefined | null,
+    zipcode: string | undefined | null,
     delivery?: ObjectId,
     status: order_status
 }

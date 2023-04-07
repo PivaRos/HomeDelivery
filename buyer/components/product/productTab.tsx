@@ -1,22 +1,43 @@
 import React, { useState, useEffect } from 'react';
 import ReactNative, { StyleSheet, View, Text, Image, Dimensions, TouchableWithoutFeedback, Animated, Easing, ScrollView } from 'react-native';
-import { LocationObject, Product, RootStackParamList } from '../../interfaces';
+import { LocationObject, Order, Product, RootStackParamList } from '../../interfaces';
 import { useNavigation } from '@react-navigation/native';
 import { uri } from '../../envVars';
 import { StackNavigationProp } from '@react-navigation/stack';
 import getSymbolFromCurrency from 'currency-symbol-map'
+import { getExpoPushTokenAsync } from 'expo-notifications';
 
 
 interface Props {
     Product: Product;
     setSelectedProduct: React.Dispatch<React.SetStateAction<Product | undefined>>
     thelocation: LocationObject;
+    savedOrder:Order | undefined |  null;
+    setSelectedOrder:React.Dispatch<React.SetStateAction<Order | undefined | null>>
 }
 
 
 const ProductTab = (props: Props) => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const [price, setPrice] = useState("" + (props.Product.price.price / 1000).toString());
+
+    const [glowing, setGlowing] = useState(false);
+    const [units, setUnits] = useState<undefined | null | number>();
+
+    useEffect(() => {
+        if (props.savedOrder)
+        {
+            props.savedOrder.selecedProdcuts.forEach(selectedProduct => {
+                if (selectedProduct._id == props.Product._id)
+                {
+                    console.log(units);
+                    if (units) setUnits(units+1);
+                    else setUnits(1);
+                    setGlowing(true);
+                }
+            });
+        }  
+    }, [props.savedOrder, props.savedOrder?.selecedProdcuts])
 
     useEffect(() => {
 
@@ -38,28 +59,52 @@ const ProductTab = (props: Props) => {
 
     }
 
-
-    return (
-        <TouchableWithoutFeedback onPress={ProductPressed}>
-            <View style={styles.view}>
-                <View style={styles.TextView}>
-
-                    <Text style={styles.title}>{props.Product.name}</Text>
-                    <Text numberOfLines={2} style={styles.info_text}>{props.Product.info}</Text>
-                    <Text style={styles.price_text}>{price}</Text>
+    const GetContent = () => {
+        return (
+            <TouchableWithoutFeedback onPress={ProductPressed}>
+                <View style={ !glowing ? styles.view : styles.viewGlowing}>
+                    <View style={styles.TextView}>
+    
+                        <Text style={styles.title}>{props.Product.name}</Text>
+                        <Text numberOfLines={2} style={styles.info_text}>{props.Product.info}</Text>
+                        <Text style={styles.price_text}>{price}</Text>
+                        {units && <Text>{units} x</Text>}
+                    </View>
+                    <Image source={
+                        {
+                            uri: uri + "data/file/" + props.Product.mainimage,
+                            cache: 'force-cache'
+                        }} style={styles.image} />
+    
                 </View>
-                <Image source={
-                    {
-                        uri: uri + "data/file/" + props.Product.mainimage,
-                        cache: 'force-cache'
-                    }} style={styles.image} />
+            </TouchableWithoutFeedback>);
+    }
 
-            </View>
-        </TouchableWithoutFeedback>);
+    return GetContent();
 }
 
 
 const styles = StyleSheet.create({
+    viewGlowing:{
+        display: 'flex',
+        flexDirection: 'row',
+        width: '100%',
+        marginTop: 5,
+        height: 100,
+        backgroundColor: "white",
+        borderColor:"lightgreen",
+        borderWidth:1,
+        alignItems: 'center',
+        shadowColor: "lightgreen",
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 0.22,
+        shadowRadius: 2.22,
+
+        elevation: 3,
+    },
     view: {
         display: 'flex',
         flexDirection: 'row',

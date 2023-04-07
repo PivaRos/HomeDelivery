@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'; 
 import ReactNative, {StyleSheet, View, Text, Image, Dimensions, TouchableWithoutFeedback,  Animated, Easing  } from 'react-native';
-import { LocationObject, RootStackParamList, Store } from '../../interfaces';
+import { LocationObject, Order, RootStackParamList, Store } from '../../interfaces';
 import { useNavigation } from '@react-navigation/native';
 import {uri} from '../../envVars';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -8,6 +8,7 @@ interface Props {
     Store:Store;
     setSelectedStore:React.Dispatch<React.SetStateAction<Store | undefined>>
     thelocation:LocationObject;
+    setSavedOrder:React.Dispatch<React.SetStateAction<Order | undefined | null>>;
 }
 
 
@@ -16,6 +17,7 @@ const StoreTab = (props:Props) => {
 
     const StorePressed = () => {
         props.setSelectedStore(props.Store);
+        props.setSavedOrder(undefined);
         navigation.navigate("ViewStore", {id:2});
 
     }   

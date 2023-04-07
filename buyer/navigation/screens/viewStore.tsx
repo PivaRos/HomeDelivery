@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Button, Pressable, StyleSheet, ScrollView, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { LocationObject, Product, RootStackParamList, Store } from "../../interfaces";
+import { LocationObject, Order, Product, RootStackParamList, Store } from "../../interfaces";
 import { uri } from "../../envVars";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { getDistance, toDateTime } from "../../functions";
@@ -12,6 +12,8 @@ interface Props {
     Store: Store;
     thelocation: LocationObject;
     setSelectedProduct: React.Dispatch<React.SetStateAction<Product | undefined>>;
+    savedOrder:Order | null | undefined;
+    setSavedOrder:React.Dispatch<React.SetStateAction<Order | undefined | null>>;
 }
 
 const imageUri = uri + "data/file/";
@@ -60,7 +62,7 @@ export const ViewStore = (props: Props) => {
                         localproducts.push(displayProducts[i]);
                     }
                 }
-                return <ProductsGrid key={index} title={categoryname} thelocation={props.thelocation} displayProducts={localproducts} setSelectedProduct={props.setSelectedProduct} />
+                return <ProductsGrid savedOrder={props.savedOrder} setSavedOrder={props.setSavedOrder} key={index} title={categoryname} thelocation={props.thelocation} displayProducts={localproducts} setSelectedProduct={props.setSelectedProduct} />
             }
         })
     }

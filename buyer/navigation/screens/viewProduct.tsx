@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Button, Pressable, StyleSheet, ScrollView, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { LocationObject, Product, RootStackParamList, Store, ui_order } from "../../interfaces";
+import { LocationObject, Order, Product, RootStackParamList, SelectedProduct, Store, selectedOption } from "../../interfaces";
 import { uri } from "../../envVars";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { ProductOptionsList } from "../../components/product/options/options_grid";
 import getSymbolFromCurrency from "currency-symbol-map";
+import { ObjectId } from "mongodb";
 
 interface Props {
     Product: Product,
     thelocation: LocationObject
     setSelectedProduct: React.Dispatch<React.SetStateAction<Product | undefined>>
-    savedOrder: undefined | null | ui_order
+    savedOrder: undefined | null | Order
+    setSavedOrder:React.Dispatch<React.SetStateAction<Order | undefined | null>>
     Store: Store
 }
 
@@ -22,6 +24,7 @@ export const ViewProduct = (props: Props) => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const [uiOrder, setUiOrder] = useState(props.savedOrder);
     const [productPrice, setProductPrice] = useState("");
+    const [selectedOptions, setSelectedOptions] = useState<selectedOption[] | null | undefined>();
 
 
     const addToPrice = (amount: number) => {
@@ -39,7 +42,56 @@ export const ViewProduct = (props: Props) => {
         const sherit = props.Product.price.price % 1000;
         if (!sherit) setProductPrice(symbol + (props.Product.price.price / 1000).toString() + "." + sherit.toString());
         else setProductPrice(symbol + (props.Product.price.price / 1000).toString());
+
+
+
     }, [])
+
+    const addToOrder = () => {
+        //need to add animation
+        let previousOrder = props.savedOrder;
+        if (previousOrder)
+        {
+        let newSelectedProduct:SelectedProduct = {
+            _id:props.Product._id,
+            options:selectedOptions
+        }
+        previousOrder?.selecedProdcuts.push(newSelectedProduct);
+        props.setSavedOrder(previousOrder);
+        navigation.navigate("ViewStore", {id:2});
+        }
+        else
+        {
+            let newSelectedProduct:SelectedProduct = {
+                _id:props.Product._id,
+                options:selectedOptions
+            }
+            let neworder: Order =  {
+                _id:undefined,
+                buyer:undefined,
+                city:undefined,
+                date:{
+                    date:new Date(),
+                    timestamp:Math.floor(Date.now() / 1000)
+                },
+                homenumber:undefined,
+                location:props.thelocation,
+                selecedProdcuts:[newSelectedProduct],
+                seller:props.Store._id,
+                status:1,
+                street:undefined,
+                totalPrice:{
+                    price:props.Product.price.price,
+                    currency:"ILS"
+                },
+                zipcode:undefined
+            }
+            neworder.selecedProdcuts.push(newSelectedProduct);
+            props.setSavedOrder(neworder);
+            navigation.navigate("ViewStore", {id:2});
+        }
+    }
+
     return (
 
         <View style={{ backgroundColor: 'white', height: '100%' }}>
@@ -72,7 +124,7 @@ export const ViewProduct = (props: Props) => {
             <Pressable style={styles.PressableUnits}>
                     <Text style={styles.buttonText}>+  1   -</Text>
             </Pressable>
-            <Pressable style={styles.PressableAdd}>
+            <Pressable onPress={addToOrder} style={styles.PressableAdd}>
                     <Text style={styles.buttonText}>Add to order</Text><Text style={styles.buttonPrice}>{productPrice}</Text>
             </Pressable>
         </View>

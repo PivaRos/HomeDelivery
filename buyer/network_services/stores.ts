@@ -22,6 +22,7 @@ export const storeActions =  {
       let data:dataObject = await response.json();
       if (data)
       {
+      console.log(data);
         return data.data;
       }
 

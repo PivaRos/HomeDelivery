@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, StatusBar, Platform, SafeAreaView, ActivityIndicator, Button, ScrollView, RefreshControl } from 'react-native';
 import { useCallback, useEffect, useState } from 'react'
-import { availableStores, Product, StorageData, Store } from './interfaces';
+import { availableStores, Order, Product, StorageData, Store } from './interfaces';
 import { NavigationContainer } from '@react-navigation/native';
 import { AddressHanddler } from './components/addressHanddler';
 import Tabs from './navigation/tabs';
@@ -31,7 +31,7 @@ export default function App() {
   const [selectedStore, setSelectedStore] = useState<Store>();
   const [refreshing, setRefreshing] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product>();
-
+  const [savedOrder, setSavedOrder] = useState<Order | null | undefined>();
 
   const Stack = createNativeStackNavigator();
 
@@ -46,6 +46,10 @@ export default function App() {
   }, [fontsLoaded]);
   onLayoutRootView();
 
+  useEffect(() => {
+    console.log(savedOrder);
+  }, [savedOrder])
+
 
   const getContent = () => {
     if (loading) return <ActivityIndicator size="small" style={{ opacity: 1, marginTop: '100%' }} />;
@@ -58,10 +62,10 @@ export default function App() {
           </View>
           <NavigationContainer>
             <Stack.Navigator screenOptions={{ headerShown: false, fullScreenGestureEnabled: true }}>
-              <Stack.Screen name='tabs' children={() => <Tabs homeMadeStores={homeMadeStores} setHomeMadeStores={setHomeMadeStores} refreshing={refreshing} setSelectedStore={setSelectedStore} foodStores={foodStores} setFoodStores={setFoodStores} location={thelocation} />} />
-              {selectedStore && <Stack.Screen name='ViewStore' children={() => <ViewStore setSelectedProduct={setSelectedProduct} thelocation={thelocation} Store={selectedStore} />} />}
+              <Stack.Screen name='tabs' children={() => <Tabs setSavedOrder={setSavedOrder} homeMadeStores={homeMadeStores} setHomeMadeStores={setHomeMadeStores} refreshing={refreshing} setSelectedStore={setSelectedStore} foodStores={foodStores} setFoodStores={setFoodStores} location={thelocation} />} />
+              {selectedStore && <Stack.Screen name='ViewStore' children={() => <ViewStore savedOrder={savedOrder} setSavedOrder={setSavedOrder}  setSelectedProduct={setSelectedProduct} thelocation={thelocation} Store={selectedStore} />} />}
               {!selectedStore && <Stack.Screen name='ViewStore' children={() => <View><Text>asasd</Text></View>} />}
-              {(selectedProduct && selectedStore) && <Stack.Screen name='ViewProduct' children={() => <ViewProduct Store={selectedStore} savedOrder={undefined} setSelectedProduct={setSelectedProduct} Product={selectedProduct} thelocation={thelocation} />} />}
+              {(selectedProduct && selectedStore) && <Stack.Screen name='ViewProduct' children={() => <ViewProduct setSavedOrder={setSavedOrder} Store={selectedStore} savedOrder={savedOrder} setSelectedProduct={setSelectedProduct} Product={selectedProduct} thelocation={thelocation} />} />}
               {!selectedProduct && <Stack.Screen name='ViewProduct' children={() => <View><Text>asdasd</Text></View>} />}
             </Stack.Navigator>
           </NavigationContainer>
