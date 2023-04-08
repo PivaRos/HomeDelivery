@@ -6,6 +6,7 @@ import { uri } from '../../envVars';
 import { StackNavigationProp } from '@react-navigation/stack';
 import getSymbolFromCurrency from 'currency-symbol-map'
 import { getExpoPushTokenAsync } from 'expo-notifications';
+import { getOccurrence } from '../../functions';
 
 
 interface Props {
@@ -22,21 +23,17 @@ const ProductTab = (props: Props) => {
     const [price, setPrice] = useState("" + (props.Product.price.price / 1000).toString());
 
     const [glowing, setGlowing] = useState(false);
-    const [units, setUnits] = useState<undefined | null | number>();
+    const [units, setUnits] = useState<number>(0);
 
     useEffect(() => {
         if (props.savedOrder)
         {
-            console.log(props.savedOrder);
-            props.savedOrder.selecedProdcuts.forEach(selectedProduct => {
-                if (selectedProduct._id.toString() === props.Product._id.toString())
-                {
-                    if (units) setUnits(units+1);
-                    else setUnits(1);
-                    setGlowing(true);
-                }
-            });
-        }  
+            const newarray = props.savedOrder.selecedProdcuts.map((v) => {
+                return v._id;
+            })
+           const number =  getOccurrence(newarray, props.Product._id);
+           setUnits(number);
+        }
     }, [props.savedOrder?.selecedProdcuts.length])
 
     useEffect(() => {
@@ -60,13 +57,14 @@ const ProductTab = (props: Props) => {
     }
 
     const GetContent = () => {
+        if (units){
         return (
             <TouchableWithoutFeedback onPress={ProductPressed}>
                 <View style={ !glowing ? styles.view : styles.viewGlowing}>
                     <View style={styles.TextView}>
                     <View style={{flexDirection:'row'}}>
                         <Text style={styles.title}>{props.Product.name}</Text>
-                    {units && <Text style={styles.units}> x {units}</Text>}
+                    <Text style={styles.units}> x {units}</Text>
                     </View>
                         <Text numberOfLines={2} style={styles.info_text}>{props.Product.info}</Text>
                         <Text style={styles.price_text}>{price}</Text>
@@ -79,6 +77,28 @@ const ProductTab = (props: Props) => {
     
                 </View>
             </TouchableWithoutFeedback>);
+        }
+        else
+        {
+            return (
+                <TouchableWithoutFeedback onPress={ProductPressed}>
+                    <View style={ !glowing ? styles.view : styles.viewGlowing}>
+                        <View style={styles.TextView}>
+                        <View style={{flexDirection:'row'}}>
+                            <Text style={styles.title}>{props.Product.name}</Text>
+                        </View>
+                            <Text numberOfLines={2} style={styles.info_text}>{props.Product.info}</Text>
+                            <Text style={styles.price_text}>{price}</Text>
+                        </View>
+                        <Image source={
+                            {
+                                uri: uri + "data/file/" + props.Product.mainimage,
+                                cache: 'force-cache'
+                            }} style={styles.image} />
+        
+                    </View>
+                </TouchableWithoutFeedback>);
+        }
     }
 
     return GetContent();

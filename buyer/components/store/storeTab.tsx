@@ -17,7 +17,6 @@ const StoreTab = (props:Props) => {
 
     const StorePressed = () => {
         props.setSelectedStore(props.Store);
-        props.setSavedOrder(undefined);
         navigation.navigate("ViewStore", {id:2});
 
     }   

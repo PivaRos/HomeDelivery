@@ -47,7 +47,10 @@ export default function App() {
   onLayoutRootView();
 
   useEffect(() => {
-  }, [savedOrder])
+    savedOrder?.selecedProdcuts.map((value) => {
+      console.log(value);
+    })
+  }, [savedOrder?.selecedProdcuts.length])
 
 
   const getContent = () => {

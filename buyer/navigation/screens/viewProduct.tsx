@@ -48,18 +48,17 @@ export const ViewProduct = (props: Props) => {
     }, [])
 
     const addToOrder = () => {
-        //need to add animation
-        console.log(props.savedOrder);
-        let previousOrder = props.savedOrder;
-        if (previousOrder != undefined)
+        var previousOrder = props.savedOrder;
+        if (previousOrder)
         {
-        let newSelectedProduct:SelectedProduct = {
-            _id:props.Product._id,
-            options:selectedOptions
-        }
-        previousOrder.selecedProdcuts.push(newSelectedProduct);
-        props.setSavedOrder(previousOrder);
-        navigation.navigate("ViewStore", {id:2});
+            let newSelectedProduct:SelectedProduct = {
+                _id:props.Product._id,
+                options:selectedOptions
+            }
+            previousOrder.selecedProdcuts.push(newSelectedProduct);
+
+            props.setSavedOrder(previousOrder);
+            navigation.navigate("ViewStore", {id:2});
         }
         else
         {
@@ -76,7 +75,7 @@ export const ViewProduct = (props: Props) => {
                 },
                 homenumber:undefined,
                 location:props.thelocation,
-                selecedProdcuts:[newSelectedProduct],
+                selecedProdcuts:[],
                 seller:props.Store._id,
                 status:1,
                 street:undefined,

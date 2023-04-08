@@ -64,6 +64,12 @@ export const registerForPushNotificationsAsync = async () => {
       return;
     }
   }
+
+  export function getOccurrence(array:Array<any>, value:any) {
+    var count = 0;
+    array.forEach((v) => (v === value && count++));
+    return count;
+}
   
     
   export const toDateTime = (secs:number) => {

@@ -67,13 +67,17 @@ export const ViewStore = (props: Props) => {
         })
     }
 
+    const BackPress = () => {
+        props.setSavedOrder(null);
+        navigation.navigate("tabs", { id: 1 })
+    }
 
     return (
 
         <View style={{ backgroundColor: 'white' }}>
             <ScrollView >
                 <View style={styles.Conteintor}>
-                    <Pressable style={styles.backButton} onPress={() => navigation.navigate("tabs", { id: 1 })}><Text style={styles.backButtonText}>Back</Text></Pressable>
+                    <Pressable style={styles.backButton} onPress={BackPress}><Text style={styles.backButtonText}>Back</Text></Pressable>
                     <Image style={styles.imageStyle} source={
                         {
                             uri: imageUri + props.Store?.logo,
