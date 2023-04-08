@@ -47,7 +47,6 @@ export default function App() {
   onLayoutRootView();
 
   useEffect(() => {
-    console.log(savedOrder);
   }, [savedOrder])
 
 

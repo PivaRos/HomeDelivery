@@ -27,17 +27,17 @@ const ProductTab = (props: Props) => {
     useEffect(() => {
         if (props.savedOrder)
         {
+            console.log(props.savedOrder);
             props.savedOrder.selecedProdcuts.forEach(selectedProduct => {
-                if (selectedProduct._id == props.Product._id)
+                if (selectedProduct._id.toString() === props.Product._id.toString())
                 {
-                    console.log(units);
                     if (units) setUnits(units+1);
                     else setUnits(1);
                     setGlowing(true);
                 }
             });
         }  
-    }, [props.savedOrder, props.savedOrder?.selecedProdcuts])
+    }, [props.savedOrder?.selecedProdcuts.length])
 
     useEffect(() => {
 
@@ -64,11 +64,12 @@ const ProductTab = (props: Props) => {
             <TouchableWithoutFeedback onPress={ProductPressed}>
                 <View style={ !glowing ? styles.view : styles.viewGlowing}>
                     <View style={styles.TextView}>
-    
+                    <View style={{flexDirection:'row'}}>
                         <Text style={styles.title}>{props.Product.name}</Text>
+                    {units && <Text style={styles.units}> x {units}</Text>}
+                    </View>
                         <Text numberOfLines={2} style={styles.info_text}>{props.Product.info}</Text>
                         <Text style={styles.price_text}>{price}</Text>
-                        {units && <Text>{units} x</Text>}
                     </View>
                     <Image source={
                         {
@@ -85,6 +86,9 @@ const ProductTab = (props: Props) => {
 
 
 const styles = StyleSheet.create({
+    units:{
+        top :0,
+    },
     viewGlowing:{
         display: 'flex',
         flexDirection: 'row',

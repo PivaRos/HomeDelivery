@@ -144,7 +144,7 @@ export interface product_option {
 
 
 export interface Order {
-    _id: ObjectId |  undefined | null,
+    _id?: ObjectId,
     seller: ObjectId | undefined | null,
     buyer: ObjectId | undefined | null,
     date: dateObject,

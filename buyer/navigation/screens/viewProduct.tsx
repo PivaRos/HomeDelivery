@@ -49,14 +49,15 @@ export const ViewProduct = (props: Props) => {
 
     const addToOrder = () => {
         //need to add animation
+        console.log(props.savedOrder);
         let previousOrder = props.savedOrder;
-        if (previousOrder)
+        if (previousOrder != undefined)
         {
         let newSelectedProduct:SelectedProduct = {
             _id:props.Product._id,
             options:selectedOptions
         }
-        previousOrder?.selecedProdcuts.push(newSelectedProduct);
+        previousOrder.selecedProdcuts.push(newSelectedProduct);
         props.setSavedOrder(previousOrder);
         navigation.navigate("ViewStore", {id:2});
         }
@@ -67,7 +68,6 @@ export const ViewProduct = (props: Props) => {
                 options:selectedOptions
             }
             let neworder: Order =  {
-                _id:undefined,
                 buyer:undefined,
                 city:undefined,
                 date:{
