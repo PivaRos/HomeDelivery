@@ -10,7 +10,8 @@ interface Props {
     thelocation:LocationObject;
     savedOrder:Order | undefined | null
     setSavedOrder:React.Dispatch<React.SetStateAction<Order | undefined | null>>;
-
+    setSelectedProductUnits:React.Dispatch<React.SetStateAction<number>>;
+    selectedProductUnits:number;
 }
 const ProductsGrid = (props:Props) => {
 
@@ -21,7 +22,7 @@ const ProductsGrid = (props:Props) => {
             <Text style={styles.title}>{props.title}</Text>
             <ScrollView style={styles.view}>
             {props.displayProducts && props.displayProducts.map((product, index) => {
-                return <ProductTab savedOrder={props.savedOrder} setSelectedOrder={props.setSavedOrder} thelocation={props.thelocation} setSelectedProduct={props.setSelectedProduct} key={index} Product={product}/>
+                return <ProductTab selectedProductUnits={props.selectedProductUnits} setSelectedProductUnits={props.setSelectedProductUnits} savedOrder={props.savedOrder} setSelectedOrder={props.setSavedOrder} thelocation={props.thelocation} setSelectedProduct={props.setSelectedProduct} key={index} Product={product}/>
             })}
             </ScrollView>
             </View>); 

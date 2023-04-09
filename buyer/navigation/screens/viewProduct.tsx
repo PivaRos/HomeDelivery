@@ -7,6 +7,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { ProductOptionsList } from "../../components/product/options/options_grid";
 import getSymbolFromCurrency from "currency-symbol-map";
 import { ObjectId } from "mongodb";
+import { RemoveOrAddFromOrder, getOccurrence } from "../../functions";
 
 interface Props {
     Product: Product,
@@ -25,6 +26,8 @@ export const ViewProduct = (props: Props) => {
     const [uiOrder, setUiOrder] = useState(props.savedOrder);
     const [productPrice, setProductPrice] = useState("");
     const [selectedOptions, setSelectedOptions] = useState<selectedOption[] | null | undefined>();
+    const [units, setUnits] = useState(0);
+    const [justChanged, setJustChanged] = useState(false);
 
 
     const addToPrice = (amount: number) => {
@@ -42,6 +45,15 @@ export const ViewProduct = (props: Props) => {
         const sherit = props.Product.price.price % 1000;
         if (!sherit) setProductPrice(symbol + (props.Product.price.price / 1000).toString() + "." + sherit.toString());
         else setProductPrice(symbol + (props.Product.price.price / 1000).toString());
+        if (props.savedOrder?.selecedProdcuts)
+        {
+            const newarray = props.savedOrder.selecedProdcuts.map((value) => {
+                return value._id;
+            })
+            const units =  getOccurrence(newarray, props.Product._id);
+
+            setUnits(units);
+        }
 
 
 
@@ -51,20 +63,22 @@ export const ViewProduct = (props: Props) => {
         var previousOrder = props.savedOrder;
         if (previousOrder)
         {
-            let newSelectedProduct:SelectedProduct = {
+            
+           const result = RemoveOrAddFromOrder(1, props.setSavedOrder, props.savedOrder, {
                 _id:props.Product._id,
-                options:selectedOptions
-            }
-            previousOrder.selecedProdcuts.push(newSelectedProduct);
+                selectedOptions:selectedOptions
 
-            props.setSavedOrder(previousOrder);
-            navigation.navigate("ViewStore", {id:2});
+            })
+            if (result)
+            {
+                navigation.navigate("ViewStore", {id:2});
+            }
         }
         else
         {
             let newSelectedProduct:SelectedProduct = {
                 _id:props.Product._id,
-                options:selectedOptions
+                selectedOptions:selectedOptions
             }
             let neworder: Order =  {
                 buyer:undefined,
@@ -89,6 +103,88 @@ export const ViewProduct = (props: Props) => {
             props.setSavedOrder(neworder);
             navigation.navigate("ViewStore", {id:2});
         }
+    }
+
+    const changeUnitsUp = () => {
+
+    if (props.savedOrder)
+    {
+    const result = RemoveOrAddFromOrder(1, props.setSavedOrder, props.savedOrder, {
+        _id:props.Product._id,
+        selectedOptions:selectedOptions
+    });
+    if (result)
+    {
+    setUnits(units+1);
+    setJustChanged(true);  
+    }}
+    else
+    {
+        let newSelectedProduct:SelectedProduct = {
+            _id:props.Product._id,
+            selectedOptions:selectedOptions
+        }
+        let neworder: Order =  {
+            buyer:undefined,
+            city:undefined,
+            date:{
+                date:new Date(),
+                timestamp:Math.floor(Date.now() / 1000)
+            },
+            homenumber:undefined,
+            location:props.thelocation,
+            selecedProdcuts:[],
+            seller:props.Store._id,
+            status:1,
+            street:undefined,
+            totalPrice:{
+                price:props.Product.price.price,
+                currency:"ILS"
+            },
+            zipcode:undefined
+        }
+        neworder.selecedProdcuts.push(newSelectedProduct);
+        props.setSavedOrder(neworder);
+        setUnits(units+1);
+        setJustChanged(true);  
+    }
+}
+
+    const changeUnitsDown = () => {
+        if (units > 0)
+        {
+            const result =  RemoveOrAddFromOrder(0, props.setSavedOrder, props.savedOrder, {
+                _id:props.Product._id,
+                selectedOptions:selectedOptions
+            });
+            if (result)
+            {
+            setUnits(units-1);
+            setJustChanged(true);
+            }
+
+        }
+        
+    }
+
+    const RemoveAllFromOrder = () => {
+        if (!props.savedOrder) return;
+        const savedOrder1 = props.savedOrder;
+        const tempArray = [];
+        for (let i = 0; i < props.savedOrder.selecedProdcuts.length; i++)
+        {
+          if (JSON.stringify(savedOrder1.selecedProdcuts[i]) !== JSON.stringify({
+                _id:props.Product._id,
+                selectedOptions:selectedOptions
+          }))
+          {
+            tempArray.push(props.savedOrder.selecedProdcuts[i]);
+        }
+        }
+        savedOrder1.selecedProdcuts = tempArray;
+        props.setSavedOrder(savedOrder1);
+        navigation.navigate("ViewStore", {id:2});
+        
     }
 
     return (
@@ -119,13 +215,25 @@ export const ViewProduct = (props: Props) => {
 
 
             </ScrollView>
+            </View >
+            <View  style={styles.PressableUnits}>
+            <Pressable style={{left:5, position:'absolute', zIndex:3}} onPress={changeUnitsUp}>
+                    <Text style={styles.buttonText}>+</Text>
+            </Pressable>
+            <Text style={[styles.buttonText, {justifyContent:'center', display:'flex', flexDirection:'row', width:'100%', textAlign:'center'}]}>{units}</Text>
+            <Pressable style={{right:5, position:'absolute', zIndex:3}} onPress={changeUnitsDown} >
+                    <Text style={styles.buttonText}>-</Text>
+            </Pressable>
             </View>
-            <Pressable style={styles.PressableUnits}>
-                    <Text style={styles.buttonText}>+  1   -</Text>
-            </Pressable>
-            <Pressable onPress={addToOrder} style={styles.PressableAdd}>
+            {((units===0) && !justChanged) && <Pressable onPress={addToOrder} style={styles.PressableAdd}>
                     <Text style={styles.buttonText}>Add to order</Text><Text style={styles.buttonPrice}>{productPrice}</Text>
-            </Pressable>
+            </Pressable>}
+            {((units > 0) && !justChanged) && <Pressable onPress={RemoveAllFromOrder} style={[styles.PressableAdd, {backgroundColor:"#fa3737"}]}>
+                    <Text style={styles.buttonText}>{(units > 1) ? "Remove all" : "Remove"}</Text><Text style={styles.buttonPrice}>{"- "+productPrice}</Text>
+            </Pressable>}
+            {(justChanged) && <Pressable onPress={() => {setJustChanged(false), navigation.navigate("ViewStore", {id:2})}} style={styles.PressableAdd}>
+                    <Text style={styles.buttonText}>Update order</Text>
+            </Pressable>}
         </View>
     );
 }
@@ -177,6 +285,7 @@ const styles = StyleSheet.create({
     elevation: 5,
     },
     PressableUnits:{
+        flexDirection:'row',
         height:50,
         width:'35%',
         backgroundColor:"white",

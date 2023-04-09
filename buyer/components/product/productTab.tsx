@@ -15,6 +15,8 @@ interface Props {
     thelocation: LocationObject;
     savedOrder:Order | undefined |  null;
     setSelectedOrder:React.Dispatch<React.SetStateAction<Order | undefined | null>>
+    setSelectedProductUnits:React.Dispatch<React.SetStateAction<number>>;
+    selectedProductUnits:number;
 }
 
 
@@ -32,6 +34,14 @@ const ProductTab = (props: Props) => {
                 return v._id;
             })
            const number =  getOccurrence(newarray, props.Product._id);
+           if (number)
+           {
+                setGlowing(true);
+           }
+           else
+           {
+                setGlowing(false);
+           }
            setUnits(number);
         }
     }, [props.savedOrder?.selecedProdcuts.length])

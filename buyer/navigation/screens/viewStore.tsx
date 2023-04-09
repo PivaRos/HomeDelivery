@@ -14,6 +14,8 @@ interface Props {
     setSelectedProduct: React.Dispatch<React.SetStateAction<Product | undefined>>;
     savedOrder:Order | null | undefined;
     setSavedOrder:React.Dispatch<React.SetStateAction<Order | undefined | null>>;
+    setSelectedProductUnits:React.Dispatch<React.SetStateAction<number>>;
+    selectedProductUnits:number;
 }
 
 const imageUri = uri + "data/file/";
@@ -62,7 +64,7 @@ export const ViewStore = (props: Props) => {
                         localproducts.push(displayProducts[i]);
                     }
                 }
-                return <ProductsGrid savedOrder={props.savedOrder} setSavedOrder={props.setSavedOrder} key={index} title={categoryname} thelocation={props.thelocation} displayProducts={localproducts} setSelectedProduct={props.setSelectedProduct} />
+                return <ProductsGrid selectedProductUnits={props.selectedProductUnits} setSelectedProductUnits={props.setSelectedProductUnits} savedOrder={props.savedOrder} setSavedOrder={props.setSavedOrder} key={index} title={categoryname} thelocation={props.thelocation} displayProducts={localproducts} setSelectedProduct={props.setSelectedProduct} />
             }
         })
     }

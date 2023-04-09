@@ -32,6 +32,7 @@ export default function App() {
   const [refreshing, setRefreshing] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product>();
   const [savedOrder, setSavedOrder] = useState<Order | null | undefined>();
+  const [selectedProductUnits, setSelectedProductsUnits] = useState(0);
 
   const Stack = createNativeStackNavigator();
 
@@ -64,10 +65,10 @@ export default function App() {
           </View>
           <NavigationContainer>
             <Stack.Navigator screenOptions={{ headerShown: false, fullScreenGestureEnabled: true }}>
-              <Stack.Screen name='tabs' children={() => <Tabs setSavedOrder={setSavedOrder} homeMadeStores={homeMadeStores} setHomeMadeStores={setHomeMadeStores} refreshing={refreshing} setSelectedStore={setSelectedStore} foodStores={foodStores} setFoodStores={setFoodStores} location={thelocation} />} />
-              {selectedStore && <Stack.Screen name='ViewStore' children={() => <ViewStore savedOrder={savedOrder} setSavedOrder={setSavedOrder}  setSelectedProduct={setSelectedProduct} thelocation={thelocation} Store={selectedStore} />} />}
+              <Stack.Screen name='tabs' children={() => <Tabs selectedProductUnits={selectedProductUnits} setSelectedProductUnits={setSelectedProductsUnits} setSavedOrder={setSavedOrder} homeMadeStores={homeMadeStores} setHomeMadeStores={setHomeMadeStores} refreshing={refreshing} setSelectedStore={setSelectedStore} foodStores={foodStores} setFoodStores={setFoodStores} location={thelocation} />} />
+              {selectedStore && <Stack.Screen name='ViewStore' children={() => <ViewStore selectedProductUnits={selectedProductUnits} setSelectedProductUnits={setSelectedProductsUnits} savedOrder={savedOrder} setSavedOrder={setSavedOrder}  setSelectedProduct={setSelectedProduct} thelocation={thelocation} Store={selectedStore} />} />}
               {!selectedStore && <Stack.Screen name='ViewStore' children={() => <View><Text>asasd</Text></View>} />}
-              {(selectedProduct && selectedStore) && <Stack.Screen name='ViewProduct' children={() => <ViewProduct setSavedOrder={setSavedOrder} Store={selectedStore} savedOrder={savedOrder} setSelectedProduct={setSelectedProduct} Product={selectedProduct} thelocation={thelocation} />} />}
+              {(selectedProduct && selectedStore) && <Stack.Screen name='ViewProduct' children={() => <ViewProduct  setSavedOrder={setSavedOrder} Store={selectedStore} savedOrder={savedOrder} setSelectedProduct={setSelectedProduct} Product={selectedProduct} thelocation={thelocation} />} />}
               {!selectedProduct && <Stack.Screen name='ViewProduct' children={() => <View><Text>asdasd</Text></View>} />}
             </Stack.Navigator>
           </NavigationContainer>

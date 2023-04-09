@@ -9,6 +9,8 @@ interface Props {
     setSelectedStore:React.Dispatch<React.SetStateAction<Store | undefined>>
     thelocation:LocationObject;
     setSavedOrder:React.Dispatch<React.SetStateAction<Order | undefined | null>>;
+    setSelectedProductUnits:React.Dispatch<React.SetStateAction<number>>;
+    selectedProductUnits:number;
 }
 
 

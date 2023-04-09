@@ -75,7 +75,7 @@ export interface Option {
 
 export interface SelectedProduct{
    _id:ObjectId,
-   options:selectedOption[] | null | undefined; 
+   selectedOptions:selectedOption[] | null | undefined; 
 }
 
 export interface selectedOption{

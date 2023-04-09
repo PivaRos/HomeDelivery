@@ -12,6 +12,8 @@ interface Props {
     setSelectedStore:React.Dispatch<React.SetStateAction<Store | undefined>>;
     refreshing:boolean;
     setSavedOrder:React.Dispatch<React.SetStateAction<Order | undefined | null>>;
+    setSelectedProductUnits:React.Dispatch<React.SetStateAction<number>>;
+    selectedProductUnits:number;
 
   }
 
@@ -50,8 +52,8 @@ const FoodStores = (props:Props) => {
         return ( <View style={style.view}>
             <Text style={style.title}>Enjoy The Best Food .</Text>
             <ScrollView>
-             <StoresGrid setSavedOrder={props.setSavedOrder} thelocation={props.location} setSelectedStore={props.setSelectedStore}  title='New On HomeDelivery' displayStores={props.foodStores?.Open} />
-             <StoresGrid setSavedOrder={props.setSavedOrder} thelocation={props.location} setSelectedStore={props.setSelectedStore}  title='Closed Stores' displayStores={props.foodStores?.Closed} />
+             <StoresGrid setSelectedProductUnits={props.setSelectedProductUnits} selectedProductUnits={props.selectedProductUnits} setSavedOrder={props.setSavedOrder} thelocation={props.location} setSelectedStore={props.setSelectedStore}  title='New On HomeDelivery' displayStores={props.foodStores?.Open} />
+             <StoresGrid setSelectedProductUnits={props.setSelectedProductUnits} selectedProductUnits={props.selectedProductUnits} setSavedOrder={props.setSavedOrder} thelocation={props.location} setSelectedStore={props.setSelectedStore}  title='Closed Stores' displayStores={props.foodStores?.Closed} />
              
             
             </ScrollView>

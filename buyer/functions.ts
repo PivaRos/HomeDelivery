@@ -1,6 +1,6 @@
 
 import * as Location from 'expo-location';
-import { LocationObject, LocationType, StorageData, Store } from './interfaces';
+import { LocationObject, LocationType, Order, SelectedProduct, StorageData, Store } from './interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 import { ObjectId } from 'mongodb';
@@ -65,10 +65,46 @@ export const registerForPushNotificationsAsync = async () => {
     }
   }
 
-  export function getOccurrence(array:Array<any>, value:any) {
+  export const getOccurrence = (array:Array<any>, value:any) => {
     var count = 0;
     array.forEach((v) => (v === value && count++));
     return count;
+}
+
+export const RemoveOrAddFromOrder = (removeOrAdd:0|1, setSavedOrder:React.Dispatch<React.SetStateAction<Order | undefined| null>>, savedOrder:Order | undefined| null, SelectedProduct:SelectedProduct) => {
+  if (!savedOrder) return false;
+  if (removeOrAdd === 0)
+  {
+    //remove
+    for (let i = 0; i < savedOrder.selecedProdcuts.length; i++)
+    {
+      console.log(SelectedProduct);
+      if (JSON.stringify(savedOrder.selecedProdcuts[i]) === JSON.stringify(SelectedProduct))
+      {
+        
+        const savedOrder1 = savedOrder;
+        savedOrder1.selecedProdcuts.splice(i, 1);
+        setSavedOrder(savedOrder1);
+        return true;
+      }
+    }
+    return false;
+  }
+  else
+  {
+    //add
+    var previousOrder = savedOrder;
+    if (previousOrder)
+    {
+        previousOrder.selecedProdcuts.push(SelectedProduct);
+        setSavedOrder(previousOrder);
+        return true;
+    }
+    else
+    {
+      return false;
+    } 
+  }
 }
   
     
