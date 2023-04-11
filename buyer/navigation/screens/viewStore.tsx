@@ -24,6 +24,7 @@ export const ViewStore = (props: Props) => {
     const [OpenDateString, setOpenDateString] = useState("");
     const [CloseDateString, setCloseDateString] = useState("");
     const [displayProducts, setDisplayProducts] = useState<Product[]>();
+    
 
     useEffect(() => {
         const OpenDate = toDateTime(props.Store.openHoursObject.openFrom).toLocaleTimeString().split(":");
