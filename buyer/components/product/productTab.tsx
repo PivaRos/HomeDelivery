@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ReactNative, { StyleSheet, View, Text, Image, Dimensions, TouchableWithoutFeedback, Animated, Easing, ScrollView } from 'react-native';
-import { LocationObject, Order, Product, RootStackParamList } from '../../interfaces';
+import { LocationObject, Order, Product, RootStackParamList, selectedOption } from '../../interfaces';
 import { useNavigation } from '@react-navigation/native';
 import { uri } from '../../envVars';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -11,6 +11,7 @@ import { getOccurrence } from '../../functions';
 
 interface Props {
     Product: Product;
+    selectedOptions?:selectedOption[];
     setSelectedProduct: React.Dispatch<React.SetStateAction<Product | undefined>>
     thelocation: LocationObject;
     savedOrder:Order | undefined |  null;
@@ -30,10 +31,11 @@ const ProductTab = (props: Props) => {
     useEffect(() => {
         if (props.savedOrder)
         {
-            const newarray = props.savedOrder.selecedProdcuts.map((v) => {
-                return v._id;
-            })
+            const newarray = props.savedOrder.selecedProdcuts.map((product) => {
+                return product._id;
+            });
            const number =  getOccurrence(newarray, props.Product._id);
+           console.log(number);
            if (number)
            {
                 setGlowing(true);

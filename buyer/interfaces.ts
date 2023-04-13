@@ -60,6 +60,7 @@ export interface Product {
     images: string[],
     category: string
     options: Option[] | null | undefined
+    selectedOptions?:selectedOption[] | null | undefined; 
 }
 
 export interface Option {
@@ -73,10 +74,6 @@ export interface Option {
 
 }
 
-export interface SelectedProduct{
-   _id:ObjectId,
-   selectedOptions:selectedOption[] | null | undefined; 
-}
 
 export interface selectedOption{
     selectedOptionProducts: ObjectId[],
@@ -148,7 +145,7 @@ export interface Order {
     seller: ObjectId | undefined | null,
     buyer: ObjectId | undefined | null,
     date: dateObject,
-    selecedProdcuts: SelectedProduct[],
+    selecedProdcuts: Product[],
     totalPrice: PriceObject,
     location: LocationObject,
     city: string | undefined | null,

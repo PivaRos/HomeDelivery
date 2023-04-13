@@ -1,6 +1,6 @@
 
 import * as Location from 'expo-location';
-import { LocationObject, LocationType, Order, SelectedProduct, StorageData, Store } from './interfaces';
+import { LocationObject, LocationType, Order, Product, StorageData, Store } from './interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 import { ObjectId } from 'mongodb';
@@ -71,8 +71,9 @@ export const registerForPushNotificationsAsync = async () => {
     return count;
 }
 
-export const RemoveOrAddFromOrder = (removeOrAdd:0|1, setSavedOrder:React.Dispatch<React.SetStateAction<Order | undefined| null>>, savedOrder:Order | undefined| null, SelectedProduct:SelectedProduct) => {
+export const RemoveOrAddFromOrder = (removeOrAdd:0|1, setSavedOrder:React.Dispatch<React.SetStateAction<Order | undefined| null>>, savedOrder:Order | undefined| null, SelectedProduct:Product) => {
   if (!savedOrder) return false;
+  console.log(savedOrder.selecedProdcuts);
   if (removeOrAdd === 0)
   {
     //remove
@@ -96,8 +97,10 @@ export const RemoveOrAddFromOrder = (removeOrAdd:0|1, setSavedOrder:React.Dispat
     var previousOrder = savedOrder;
     if (previousOrder)
     {
+      console.log("here");
         previousOrder.selecedProdcuts.push(SelectedProduct);
         setSavedOrder(previousOrder);
+        console.log(savedOrder.selecedProdcuts);
         return true;
     }
     else

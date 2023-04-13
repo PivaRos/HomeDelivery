@@ -37,6 +37,35 @@ export const ViewStore = (props: Props) => {
         setOpenDateString(OpenDate[0] + ":" + OpenDate[1]);
         setCloseDateString(CloseDate[0] + ":" + CloseDate[1]);
 
+
+
+        if (!props.savedOrder)
+        {
+            //Create new order
+            let neworder: Order =  {
+                buyer:undefined,
+                city:undefined,
+                date:{
+                    date:new Date(),
+                    timestamp:Math.floor(Date.now() / 1000)
+                },
+                homenumber:undefined,
+                location:props.thelocation,
+                selecedProdcuts:[],
+                seller:props.Store._id,
+                status:1,
+                street:undefined,
+                totalPrice:{
+                    price:0,
+                    currency:"ILS"
+                },
+                zipcode:undefined
+            }
+            
+            props.setSavedOrder(neworder);
+            console.log("neworderCreated")
+        }
+
     }, [])
 
     useEffect(() => {

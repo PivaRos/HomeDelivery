@@ -6,6 +6,7 @@ import ProductTab from './productTab';
 interface Props {
     title:string;
     displayProducts:Product[] | null | undefined;
+    displaySelectedProducts?:Product[];
     setSelectedProduct:React.Dispatch<React.SetStateAction<Product | undefined>>;
     thelocation:LocationObject;
     savedOrder:Order | undefined | null

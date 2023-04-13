@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Button, Pressable, StyleSheet, ScrollView, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { LocationObject, Order, Product, RootStackParamList, SelectedProduct, Store, selectedOption } from "../../interfaces";
+import { LocationObject, Order, Product, RootStackParamList, Store, selectedOption } from "../../interfaces";
 import { uri } from "../../envVars";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { ProductOptionsList } from "../../components/product/options/options_grid";
 import getSymbolFromCurrency from "currency-symbol-map";
 import { ObjectId } from "mongodb";
 import { RemoveOrAddFromOrder, getOccurrence } from "../../functions";
+
 
 interface Props {
     Product: Product,
@@ -22,10 +23,11 @@ const imageUri = uri + "data/file/";
 
 
 export const ViewProduct = (props: Props) => {
+
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const [uiOrder, setUiOrder] = useState(props.savedOrder);
     const [productPrice, setProductPrice] = useState("");
-    const [selectedOptions, setSelectedOptions] = useState<selectedOption[] | null | undefined>();
+    const [selectedOptions, setSelectedOptions] = useState<selectedOption[] | null | undefined>(props.Product.selectedOptions);
     const [units, setUnits] = useState(0);
     const [justChanged, setJustChanged] = useState(false);
 
@@ -36,15 +38,19 @@ export const ViewProduct = (props: Props) => {
 
     useEffect(() => {
 
+
+        //price string
         let symbol = "";
         const thesymb = getSymbolFromCurrency(props.Product.price.currency);
         if (thesymb) {
             symbol = thesymb;
         }
-
         const sherit = props.Product.price.price % 1000;
         if (!sherit) setProductPrice(symbol + (props.Product.price.price / 1000).toString() + "." + sherit.toString());
         else setProductPrice(symbol + (props.Product.price.price / 1000).toString());
+        
+        
+        //get unit of product
         if (props.savedOrder?.selecedProdcuts)
         {
             const newarray = props.savedOrder.selecedProdcuts.map((value) => {
@@ -54,21 +60,20 @@ export const ViewProduct = (props: Props) => {
 
             setUnits(units);
         }
-
-
-
     }, [])
+
+
+    useEffect(() => {
+        console.log("changed : " + selectedOptions);
+    }, [selectedOptions])
+
 
     const addToOrder = () => {
         var previousOrder = props.savedOrder;
         if (previousOrder)
         {
             
-           const result = RemoveOrAddFromOrder(1, props.setSavedOrder, props.savedOrder, {
-                _id:props.Product._id,
-                selectedOptions:selectedOptions
-
-            })
+           const result = RemoveOrAddFromOrder(1, props.setSavedOrder, props.savedOrder, props.Product)
             if (result)
             {
                 navigation.navigate("ViewStore", {id:2});
@@ -76,31 +81,7 @@ export const ViewProduct = (props: Props) => {
         }
         else
         {
-            let newSelectedProduct:SelectedProduct = {
-                _id:props.Product._id,
-                selectedOptions:selectedOptions
-            }
-            let neworder: Order =  {
-                buyer:undefined,
-                city:undefined,
-                date:{
-                    date:new Date(),
-                    timestamp:Math.floor(Date.now() / 1000)
-                },
-                homenumber:undefined,
-                location:props.thelocation,
-                selecedProdcuts:[],
-                seller:props.Store._id,
-                status:1,
-                street:undefined,
-                totalPrice:{
-                    price:props.Product.price.price,
-                    currency:"ILS"
-                },
-                zipcode:undefined
-            }
-            neworder.selecedProdcuts.push(newSelectedProduct);
-            props.setSavedOrder(neworder);
+            console.log("bug");
             navigation.navigate("ViewStore", {id:2});
         }
     }
@@ -109,10 +90,8 @@ export const ViewProduct = (props: Props) => {
 
     if (props.savedOrder)
     {
-    const result = RemoveOrAddFromOrder(1, props.setSavedOrder, props.savedOrder, {
-        _id:props.Product._id,
-        selectedOptions:selectedOptions
-    });
+        
+    const result = RemoveOrAddFromOrder(1, props.setSavedOrder, props.savedOrder, props.Product);
     if (result)
     {
     setUnits(units+1);
@@ -120,43 +99,20 @@ export const ViewProduct = (props: Props) => {
     }}
     else
     {
-        let newSelectedProduct:SelectedProduct = {
-            _id:props.Product._id,
-            selectedOptions:selectedOptions
-        }
-        let neworder: Order =  {
-            buyer:undefined,
-            city:undefined,
-            date:{
-                date:new Date(),
-                timestamp:Math.floor(Date.now() / 1000)
-            },
-            homenumber:undefined,
-            location:props.thelocation,
-            selecedProdcuts:[],
-            seller:props.Store._id,
-            status:1,
-            street:undefined,
-            totalPrice:{
-                price:props.Product.price.price,
-                currency:"ILS"
-            },
-            zipcode:undefined
-        }
-        neworder.selecedProdcuts.push(newSelectedProduct);
-        props.setSavedOrder(neworder);
-        setUnits(units+1);
-        setJustChanged(true);  
+        console.log("bug");
+         
     }
 }
+
 
     const changeUnitsDown = () => {
         if (units > 0)
         {
-            const result =  RemoveOrAddFromOrder(0, props.setSavedOrder, props.savedOrder, {
-                _id:props.Product._id,
-                selectedOptions:selectedOptions
-            });
+            
+            let product1 = props.Product;
+            product1.selectedOptions = selectedOptions;
+            props.setSelectedProduct(product1);
+            const result =  RemoveOrAddFromOrder(0, props.setSavedOrder, props.savedOrder, props.Product);
             if (result)
             {
             setUnits(units-1);
@@ -167,16 +123,15 @@ export const ViewProduct = (props: Props) => {
         
     }
 
+
     const RemoveAllFromOrder = () => {
         if (!props.savedOrder) return;
         const savedOrder1 = props.savedOrder;
         const tempArray = [];
         for (let i = 0; i < props.savedOrder.selecedProdcuts.length; i++)
         {
-          if (JSON.stringify(savedOrder1.selecedProdcuts[i]) !== JSON.stringify({
-                _id:props.Product._id,
-                selectedOptions:selectedOptions
-          }))
+
+          if (JSON.stringify(savedOrder1.selecedProdcuts[i]) !== JSON.stringify(props.Product))
           {
             tempArray.push(props.savedOrder.selecedProdcuts[i]);
         }
