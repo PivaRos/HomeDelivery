@@ -9,32 +9,33 @@ import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { ObjectId } from "mongodb";
 
 interface Props {
-    addToPrice: (amount: number) => void,
     option: Option,
     store: Store,
+    Product:Product,
+    setProduct:React.Dispatch<React.SetStateAction<Product>>,
+    justChanged:boolean,
+    setJustChanged:React.Dispatch<React.SetStateAction<boolean>>
 }
 
 
 
 export const ProductOptionsList = (props: Props) => {
-    const [ListIsChecked, setListIsChecked] = useState<boolean[]>(new Array(props.option.optionProducts.length));
+    const [ListIsChecked, setListIsChecked] = useState<boolean[]>(props.option.selectedOptionProducts);
+    
+
+
     const toggleCheckbox = (index:number) => {
-        console.log(index);
-        let tempListIsChecked = ListIsChecked;
-        tempListIsChecked[index] = !tempListIsChecked[index];
-        setListIsChecked(tempListIsChecked); 
-    }
+        if (!props.Product.options) return
 
-    const CheckBoxPressed = (isChecked:boolean, index:number) => {
 
     }
 
-    const GetOptionProductsName = (value:ObjectId) => {
+    const GetOptionProduct = (value:ObjectId) => {
         for (let i = 0;i<props.store.optionProducts.length;i++)
         {
             if (props.store.optionProducts[i]._id === value)
             {
-                return props.store.optionProducts[i].name;
+                return props.store.optionProducts[i];
             }
         }
     }
@@ -42,11 +43,8 @@ export const ProductOptionsList = (props: Props) => {
     const getProductOptions = () => {
        return (props.option.optionProducts.map((value, index) => {
 
-            return (<View style={{padding:5, marginLeft:5}} key={index}><BouncyCheckbox isChecked={ListIsChecked[index]}  fillColor="lightgreen" text={GetOptionProductsName(value)} onPress={() => {
-                console.log(ListIsChecked)
-                let tempListIsChecked = ListIsChecked;
-                tempListIsChecked[index] = !tempListIsChecked[index];
-                setListIsChecked(tempListIsChecked); 
+            return (<View style={{padding:5, marginLeft:5}} key={index}><BouncyCheckbox isChecked={ListIsChecked[index]}  fillColor="lightgreen" text={GetOptionProduct(value)?.name} onPress={() => {
+                toggleCheckbox(index);
             }}/></View> )
         }));
     }

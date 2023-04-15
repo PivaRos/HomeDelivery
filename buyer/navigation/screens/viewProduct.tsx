@@ -7,16 +7,17 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { ProductOptionsList } from "../../components/product/options/options_grid";
 import getSymbolFromCurrency from "currency-symbol-map";
 import { ObjectId } from "mongodb";
-import { RemoveOrAddFromOrder, getOccurrence } from "../../functions";
+import { RemoveOrAddFromOrder, getUnits } from "../../functions";
 
 
 interface Props {
-    Product: Product,
-    thelocation: LocationObject
-    setSelectedProduct: React.Dispatch<React.SetStateAction<Product | undefined>>
-    savedOrder: undefined | null | Order
-    setSavedOrder:React.Dispatch<React.SetStateAction<Order | undefined | null>>
-    Store: Store
+    Product: Product;
+    thelocation: LocationObject;
+    setSelectedProduct: React.Dispatch<React.SetStateAction<Product | undefined>>;
+    savedOrder: Order;
+    setSavedOrder:React.Dispatch<React.SetStateAction<Order | undefined | null>>;
+    Store: Store;
+    indexinSelectedProduct?:number;
 }
 
 const imageUri = uri + "data/file/";
@@ -27,18 +28,53 @@ export const ViewProduct = (props: Props) => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const [uiOrder, setUiOrder] = useState(props.savedOrder);
     const [productPrice, setProductPrice] = useState("");
-    const [selectedOptions, setSelectedOptions] = useState<selectedOption[] | null | undefined>(props.Product.selectedOptions);
-    const [units, setUnits] = useState(0);
+    const [units, setUnits] = useState(props.Product.units || 0);
     const [justChanged, setJustChanged] = useState(false);
-
-
-    const addToPrice = (amount: number) => {
-        setProductPrice(productPrice + amount);
-    }
+    const [Product, setProduct] = useState(props.Product);
+    const [indexForSavedOrder, setIndexSavedOrder] = useState(-1);
 
     useEffect(() => {
 
 
+        //price string
+        calculatePriceString();
+        
+        
+        //get unit of product
+        if (props.savedOrder?.selecedProdcuts)
+        {
+            const units =  getUnits(props.savedOrder.selecedProdcuts, Product);
+            var p = Product
+            p.units = units;
+            setProduct(p);
+        }
+
+        GetIndex();
+
+
+
+
+    }, [])
+
+
+    const GetIndex = () => {
+        props.savedOrder.selecedProdcuts.forEach((p, index) => {
+            if (JSON.stringify(p) === JSON.stringify(props.Product))
+            {
+                setIndexSavedOrder(index); 
+            }
+        }
+        );
+    }
+
+    useEffect(() => {
+        console.log("units changed to : "+units)
+        let p = Product;
+        Product.units = units;
+        setProduct(p);
+    }, [units])
+
+    const calculatePriceString = () => {
         //price string
         let symbol = "";
         const thesymb = getSymbolFromCurrency(props.Product.price.currency);
@@ -48,98 +84,79 @@ export const ViewProduct = (props: Props) => {
         const sherit = props.Product.price.price % 1000;
         if (!sherit) setProductPrice(symbol + (props.Product.price.price / 1000).toString() + "." + sherit.toString());
         else setProductPrice(symbol + (props.Product.price.price / 1000).toString());
-        
-        
-        //get unit of product
-        if (props.savedOrder?.selecedProdcuts)
-        {
-            const newarray = props.savedOrder.selecedProdcuts.map((value) => {
-                return value._id;
-            })
-            const units =  getOccurrence(newarray, props.Product._id);
+    }
 
-            setUnits(units);
-        }
-    }, [])
-
-
-    useEffect(() => {
-        console.log("changed : " + selectedOptions);
-    }, [selectedOptions])
 
 
     const addToOrder = () => {
-        var previousOrder = props.savedOrder;
-        if (previousOrder)
-        {
-            
-           const result = RemoveOrAddFromOrder(1, props.setSavedOrder, props.savedOrder, props.Product)
-            if (result)
-            {
-                navigation.navigate("ViewStore", {id:2});
-            }
-        }
-        else
-        {
-            console.log("bug");
-            navigation.navigate("ViewStore", {id:2});
-        }
+        //saved to savedorder;
+        const saved1 = props.savedOrder;
+        Product.units = 1;
+        saved1.selecedProdcuts.push(Product);
+        props.setSavedOrder(saved1);
+        navigation.navigate("ViewStore", {id:2});
     }
 
     const changeUnitsUp = () => {
+        // change in local list
+        if (units === 0)
+        {
+            const saved1 = props.savedOrder;
+            Product.units = 1;
+            setUnits(1);
+            saved1.selecedProdcuts.push(Product);
+            props.setSavedOrder(saved1);
+            GetIndex();
+            setJustChanged(true);
+        }
+        else
+        {
+            setUnits(units+1);
+            console.log("the units is : " + Product.units)
+            setJustChanged(true);  
+        }
 
-    if (props.savedOrder)
-    {
         
-    const result = RemoveOrAddFromOrder(1, props.setSavedOrder, props.savedOrder, props.Product);
-    if (result)
-    {
-    setUnits(units+1);
-    setJustChanged(true);  
-    }}
-    else
-    {
-        console.log("bug");
-         
     }
-}
 
 
     const changeUnitsDown = () => {
-        if (units > 0)
-        {
-            
-            let product1 = props.Product;
-            product1.selectedOptions = selectedOptions;
-            props.setSelectedProduct(product1);
-            const result =  RemoveOrAddFromOrder(0, props.setSavedOrder, props.savedOrder, props.Product);
-            if (result)
-            {
-            setUnits(units-1);
-            setJustChanged(true);
-            }
+        if (units <= 0) return;
+        // change in local list
+        let units1 = units;
+        setUnits(units1-1); 
+        console.log("p utnit is : " + units)
+        setJustChanged(true);
+    }
+    
 
-        }
-        
+
+    const RemoveFromOrder = async () => {
+        if (!props.savedOrder) return;
+        //remove from local list
+
+       await setUnits(0);
+        saveOrder();
     }
 
-
-    const RemoveAllFromOrder = () => {
-        if (!props.savedOrder) return;
-        const savedOrder1 = props.savedOrder;
-        const tempArray = [];
-        for (let i = 0; i < props.savedOrder.selecedProdcuts.length; i++)
+   const saveOrder = () => {
+        setJustChanged(false)
+        //save product to savedOrder;
+        if (Product.units == 0)
         {
-
-          if (JSON.stringify(savedOrder1.selecedProdcuts[i]) !== JSON.stringify(props.Product))
-          {
-            tempArray.push(props.savedOrder.selecedProdcuts[i]);
+            console.log("product unit = 0");
+            var order = props.savedOrder;
+            order.selecedProdcuts.splice(indexForSavedOrder, 1);
+            props.setSavedOrder(order);
+            navigation.navigate("ViewStore", {id:2})
         }
+        else{
+        var order = props.savedOrder;
+        console.log("saved Product : "+ Product.units);
+        order.selecedProdcuts[indexForSavedOrder] = Product;
+        props.setSavedOrder(order);
+        navigation.navigate("ViewStore", {id:2})
         }
-        savedOrder1.selecedProdcuts = tempArray;
-        props.setSavedOrder(savedOrder1);
-        navigation.navigate("ViewStore", {id:2});
-        
     }
 
     return (
@@ -163,7 +180,7 @@ export const ViewProduct = (props: Props) => {
                     </View>
                     <View style={styles.restView}>
                      {props.Product.options?.map((option, index) => {
-                        return (<ProductOptionsList key={index} addToPrice={addToPrice} option={option} store={props.Store} />)
+                        return (<ProductOptionsList justChanged={justChanged} setJustChanged={setJustChanged} key={index} Product={Product} setProduct={setProduct} option={option} store={props.Store} />)
                     })}  
                     </View>
   
@@ -183,10 +200,10 @@ export const ViewProduct = (props: Props) => {
             {((units===0) && !justChanged) && <Pressable onPress={addToOrder} style={styles.PressableAdd}>
                     <Text style={styles.buttonText}>Add to order</Text><Text style={styles.buttonPrice}>{productPrice}</Text>
             </Pressable>}
-            {((units > 0) && !justChanged) && <Pressable onPress={RemoveAllFromOrder} style={[styles.PressableAdd, {backgroundColor:"#fa3737"}]}>
+            {((units > 0) && !justChanged) && <Pressable onPress={RemoveFromOrder} style={[styles.PressableAdd, {backgroundColor:"#fa3737"}]}>
                     <Text style={styles.buttonText}>{(units > 1) ? "Remove all" : "Remove"}</Text><Text style={styles.buttonPrice}>{"- "+productPrice}</Text>
             </Pressable>}
-            {(justChanged) && <Pressable onPress={() => {setJustChanged(false), navigation.navigate("ViewStore", {id:2})}} style={styles.PressableAdd}>
+            {(justChanged) && <Pressable onPress={saveOrder} style={styles.PressableAdd}>
                     <Text style={styles.buttonText}>Update order</Text>
             </Pressable>}
         </View>

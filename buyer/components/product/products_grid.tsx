@@ -11,19 +11,22 @@ interface Props {
     thelocation:LocationObject;
     savedOrder:Order | undefined | null
     setSavedOrder:React.Dispatch<React.SetStateAction<Order | undefined | null>>;
-    setSelectedProductUnits:React.Dispatch<React.SetStateAction<number>>;
-    selectedProductUnits:number;
 }
 const ProductsGrid = (props:Props) => {
 
 
+    useEffect(() => {
+        console.log(props.displayProducts?.map((value) => {
+            return value.name;
+        }))
+    }, [])
 
     const GetContent = () => {
         return (    <View style={{ marginTop:50,}}>
             <Text style={styles.title}>{props.title}</Text>
             <ScrollView style={styles.view}>
-            {props.displayProducts && props.displayProducts.map((product, index) => {
-                return <ProductTab selectedProductUnits={props.selectedProductUnits} setSelectedProductUnits={props.setSelectedProductUnits} savedOrder={props.savedOrder} setSelectedOrder={props.setSavedOrder} thelocation={props.thelocation} setSelectedProduct={props.setSelectedProduct} key={index} Product={product}/>
+            {(props.displayProducts) && props.displayProducts.map((product, index) => {
+                return <ProductTab savedOrder={props.savedOrder} setSelectedOrder={props.setSavedOrder} thelocation={props.thelocation} setSelectedProduct={props.setSelectedProduct} key={index} Product={product}/>
             })}
             </ScrollView>
             </View>); 

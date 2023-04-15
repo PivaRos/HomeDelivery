@@ -16,6 +16,7 @@ export interface availableStores {
 
 export type RootStackParamList = {
     ViewStore: { id: number } | undefined;
+    ViewOrder: { id: number } | undefined;
     ViewProduct: { id: number } | undefined
     tabs: { id: number } | undefined;
 };
@@ -58,13 +59,15 @@ export interface Product {
     info: string,
     mainimage: string
     images: string[],
-    category: string
-    options: Option[] | null | undefined
-    selectedOptions?:selectedOption[] | null | undefined; 
+    category: string,
+    options: Option[] | null | undefined,
+    units?:number,
 }
 
 export interface Option {
+    _id:ObjectId,
     optionProducts: ObjectId[],
+    selectedOptionProducts:boolean[],
     maxPicks: number,
     additionalAllowed: boolean,
     additionalMax: number,

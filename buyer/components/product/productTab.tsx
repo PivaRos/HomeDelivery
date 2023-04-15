@@ -6,7 +6,7 @@ import { uri } from '../../envVars';
 import { StackNavigationProp } from '@react-navigation/stack';
 import getSymbolFromCurrency from 'currency-symbol-map'
 import { getExpoPushTokenAsync } from 'expo-notifications';
-import { getOccurrence } from '../../functions';
+import { getUnits } from '../../functions';
 
 
 interface Props {
@@ -16,8 +16,6 @@ interface Props {
     thelocation: LocationObject;
     savedOrder:Order | undefined |  null;
     setSelectedOrder:React.Dispatch<React.SetStateAction<Order | undefined | null>>
-    setSelectedProductUnits:React.Dispatch<React.SetStateAction<number>>;
-    selectedProductUnits:number;
 }
 
 
@@ -27,15 +25,25 @@ const ProductTab = (props: Props) => {
 
     const [glowing, setGlowing] = useState(false);
     const [units, setUnits] = useState<number>(0);
+    const [idnexForSavedOrder, setIndexSavedOrder] = useState(-1);
+
+
+    useEffect(() => {
+        if (!props.savedOrder) return;
+        props.savedOrder.selecedProdcuts.forEach((p, index) => {
+            if (JSON.stringify(p) === JSON.stringify(props.Product))
+            {
+                setIndexSavedOrder(index); 
+            }
+        }
+        
+        );
+    }, [])
 
     useEffect(() => {
         if (props.savedOrder)
         {
-            const newarray = props.savedOrder.selecedProdcuts.map((product) => {
-                return product._id;
-            });
-           const number =  getOccurrence(newarray, props.Product._id);
-           console.log(number);
+           const number =  getUnits(props.savedOrder.selecedProdcuts, props.Product);
            if (number)
            {
                 setGlowing(true);
@@ -46,7 +54,7 @@ const ProductTab = (props: Props) => {
            }
            setUnits(number);
         }
-    }, [props.savedOrder?.selecedProdcuts.length])
+    }, [JSON.stringify(props.savedOrder?.selecedProdcuts)])
 
     useEffect(() => {
 

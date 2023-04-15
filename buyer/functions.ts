@@ -65,9 +65,9 @@ export const registerForPushNotificationsAsync = async () => {
     }
   }
 
-  export const getOccurrence = (array:Array<any>, value:any) => {
+  export const getUnits = (array:Array<Product>, value:Product) => {
     var count = 0;
-    array.forEach((v) => (v === value && count++));
+    array.forEach((v) => ((JSON.stringify(v) === JSON.stringify(value) && value.units) && (count = value.units)));
     return count;
 }
 
