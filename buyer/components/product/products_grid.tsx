@@ -6,7 +6,6 @@ import ProductTab from './productTab';
 interface Props {
     title:string;
     displayProducts:Product[] | null | undefined;
-    displaySelectedProducts?:Product[];
     setSelectedProduct:React.Dispatch<React.SetStateAction<Product | undefined>>;
     thelocation:LocationObject;
     savedOrder:Order | undefined | null
@@ -14,14 +13,12 @@ interface Props {
 }
 const ProductsGrid = (props:Props) => {
 
-
     useEffect(() => {
-        console.log(props.displayProducts?.map((value) => {
-            return value.name;
-        }))
+
     }, [])
 
     const GetContent = () => {
+        let tempdisplayedProduct = props.displayProducts;
         return (    <View style={{ marginTop:50,}}>
             <Text style={styles.title}>{props.title}</Text>
             <ScrollView style={styles.view}>

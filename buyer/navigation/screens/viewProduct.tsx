@@ -26,7 +26,6 @@ const imageUri = uri + "data/file/";
 export const ViewProduct = (props: Props) => {
 
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
-    const [uiOrder, setUiOrder] = useState(props.savedOrder);
     const [productPrice, setProductPrice] = useState("");
     const [units, setUnits] = useState(props.Product.units || 0);
     const [justChanged, setJustChanged] = useState(false);
@@ -38,23 +37,21 @@ export const ViewProduct = (props: Props) => {
 
         //price string
         calculatePriceString();
-        
-        
-        //get unit of product
-        if (props.savedOrder?.selecedProdcuts)
-        {
-            const units =  getUnits(props.savedOrder.selecedProdcuts, Product);
-            var p = Product
-            p.units = units;
-            setProduct(p);
-        }
-
+       
         GetIndex();
 
 
 
 
     }, [])
+
+    useEffect(() => {
+        if (props.savedOrder)
+        {
+            setUnits(props.Product.units || 0);
+            setProduct(props.Product);
+        }
+    }, [JSON.stringify(props.savedOrder?.selecedProdcuts)])
 
 
     const GetIndex = () => {
@@ -68,9 +65,8 @@ export const ViewProduct = (props: Props) => {
     }
 
     useEffect(() => {
-        console.log("units changed to : "+units)
         let p = Product;
-        Product.units = units;
+        p.units = units;
         setProduct(p);
     }, [units])
 
@@ -112,7 +108,6 @@ export const ViewProduct = (props: Props) => {
         else
         {
             setUnits(units+1);
-            console.log("the units is : " + Product.units)
             setJustChanged(true);  
         }
 
@@ -125,7 +120,6 @@ export const ViewProduct = (props: Props) => {
         // change in local list
         let units1 = units;
         setUnits(units1-1); 
-        console.log("p utnit is : " + units)
         setJustChanged(true);
     }
     
@@ -144,7 +138,6 @@ export const ViewProduct = (props: Props) => {
         //save product to savedOrder;
         if (Product.units == 0)
         {
-            console.log("product unit = 0");
             var order = props.savedOrder;
             order.selecedProdcuts.splice(indexForSavedOrder, 1);
             props.setSavedOrder(order);
@@ -152,7 +145,6 @@ export const ViewProduct = (props: Props) => {
         }
         else{
         var order = props.savedOrder;
-        console.log("saved Product : "+ Product.units);
         order.selecedProdcuts[indexForSavedOrder] = Product;
         props.setSavedOrder(order);
         navigation.navigate("ViewStore", {id:2})

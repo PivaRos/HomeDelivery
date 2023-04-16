@@ -80,11 +80,34 @@ export const ViewStore = (props: Props) => {
     
 
     useEffect(() => {
+
+        //adds selectedProducts to display products5
         if (!props.savedOrder) return;
+        let tempselectedProducts = new Array<Product>()
+        if (!props.savedOrder.selecedProdcuts) return;
+        props.savedOrder.selecedProdcuts.forEach((prodcut) => {
+            if (prodcut.options)
+            {
+                for (let i = 0 ;i < prodcut.options.length; i++)
+                {
+                    if (prodcut.options[i].selectedOptionProducts.includes(true))
+                    {
+                        tempselectedProducts.push(prodcut)
+                        i = prodcut.options.length;
+                    }
+                }
+
+            }
+            else
+            {
+
+            }
+        })
         let tempdisplayedProduct = props.Store.products;
-        const newdis = tempdisplayedProduct.concat(props.savedOrder.selecedProdcuts)
+        const newdis = tempdisplayedProduct.concat(tempselectedProducts)
+
         setDisplayProducts(newdis);
-    }, [props.savedOrder?.selecedProdcuts.length])
+    }, [JSON.stringify(props.savedOrder?.selecedProdcuts), JSON.stringify(props.Store.products)])
 
 
 

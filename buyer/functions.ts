@@ -73,13 +73,11 @@ export const registerForPushNotificationsAsync = async () => {
 
 export const RemoveOrAddFromOrder = (removeOrAdd:0|1, setSavedOrder:React.Dispatch<React.SetStateAction<Order | undefined| null>>, savedOrder:Order | undefined| null, SelectedProduct:Product) => {
   if (!savedOrder) return false;
-  console.log(savedOrder.selecedProdcuts);
   if (removeOrAdd === 0)
   {
     //remove
     for (let i = 0; i < savedOrder.selecedProdcuts.length; i++)
     {
-      console.log(SelectedProduct);
       if (JSON.stringify(savedOrder.selecedProdcuts[i]) === JSON.stringify(SelectedProduct))
       {
         

@@ -24,26 +24,37 @@ const ProductTab = (props: Props) => {
     const [price, setPrice] = useState("" + (props.Product.price.price / 1000).toString());
 
     const [glowing, setGlowing] = useState(false);
-    const [units, setUnits] = useState<number>(0);
+    const [units, setUnits] = useState<number>(props.Product.units || 0);
     const [idnexForSavedOrder, setIndexSavedOrder] = useState(-1);
 
 
     useEffect(() => {
         if (!props.savedOrder) return;
+        let found = false;
         props.savedOrder.selecedProdcuts.forEach((p, index) => {
             if (JSON.stringify(p) === JSON.stringify(props.Product))
             {
+                found = true;
                 setIndexSavedOrder(index); 
+                
             }
+        });
+        if (!found)
+        {
+            props.Product.units = 0;
+            props.Product.options?.forEach((option) => {
+                option.selectedOptionProducts = option.selectedOptionProducts.map(() => {
+                    return false;
+                })
+            })
         }
-        
-        );
+
     }, [])
 
     useEffect(() => {
         if (props.savedOrder)
         {
-           const number =  getUnits(props.savedOrder.selecedProdcuts, props.Product);
+           const number =  props.Product.units;
            if (number)
            {
                 setGlowing(true);
@@ -52,9 +63,11 @@ const ProductTab = (props: Props) => {
            {
                 setGlowing(false);
            }
-           setUnits(number);
+
+           setUnits(number || 0);
+           
         }
-    }, [JSON.stringify(props.savedOrder?.selecedProdcuts)])
+    }, [JSON.stringify(props.savedOrder?.selecedProdcuts), JSON.stringify(props.Product)])
 
     useEffect(() => {
 
