@@ -29,6 +29,8 @@ const ProductTab = (props: Props) => {
 
 
     useEffect(() => {
+
+
         if (!props.savedOrder) return;
         let found = false;
         props.savedOrder.selecedProdcuts.forEach((p, index) => {
@@ -68,6 +70,11 @@ const ProductTab = (props: Props) => {
            
         }
     }, [JSON.stringify(props.savedOrder?.selecedProdcuts), JSON.stringify(props.Product)])
+
+
+    useEffect(() => {
+        console.log("productTab: props.product Changed");
+    }, [JSON.stringify(props.Product)])
 
     useEffect(() => {
 

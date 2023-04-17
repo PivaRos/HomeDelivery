@@ -14,12 +14,11 @@ interface Props {
 const ProductsGrid = (props:Props) => {
 
     useEffect(() => {
-
-    }, [])
+        console.log("displayproducts Changed ");
+    }, [JSON.stringify(props.displayProducts)])
 
     const GetContent = () => {
-        let tempdisplayedProduct = props.displayProducts;
-        return (    <View style={{ marginTop:50,}}>
+        return (<View style={{ marginTop:50,}}>
             <Text style={styles.title}>{props.title}</Text>
             <ScrollView style={styles.view}>
             {(props.displayProducts) && props.displayProducts.map((product, index) => {

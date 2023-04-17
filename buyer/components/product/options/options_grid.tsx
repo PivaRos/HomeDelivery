@@ -37,8 +37,9 @@ export const ProductOptionsList = (props: Props) => {
         }
     }, [JSON.stringify(props.Product), props.justChanged])
 
+    
     useEffect(() => {
-        
+
     }, [JSON.stringify(ListIsChecked)])
 
 
