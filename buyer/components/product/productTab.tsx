@@ -29,6 +29,12 @@ const ProductTab = (props: Props) => {
 
 
     useEffect(() => {
+        console.log(JSON.stringify(props.Product, null, 2));
+    }, [JSON.stringify(props.Product)])
+
+
+
+    useEffect(() => {
 
 
         if (!props.savedOrder) return;

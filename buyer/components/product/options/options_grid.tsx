@@ -15,6 +15,7 @@ interface Props {
     setProduct:React.Dispatch<React.SetStateAction<Product>>,
     justChanged:boolean,
     setJustChanged:React.Dispatch<React.SetStateAction<boolean>>
+    units:number;
 }
 
 export const ProductOptionsList = (props: Props) => {
@@ -22,93 +23,39 @@ export const ProductOptionsList = (props: Props) => {
 
 
     const [ListIsChecked, setListIsChecked] = useState<boolean[]>(props.option.selectedOptionProducts);
-    const [indexForOptions, setIndexForOptions] = useState(props.Product.options?.indexOf(props.option) || -1);
-    const [units, setUnits] = useState(0);
+    const [indexForOptions, setIndexForOptions] = useState(-1);
 
+        //gets the index of current option in the product options
+        useEffect(() => {
+            let index = props.Product.options?.indexOf(props.option)
+            if (index && index !== -1)
+            {
+                 setIndexForOptions(index);
+            }
+            else if(props.Product.options && props.option === props.Product.options[0]){
+             setIndexForOptions(0);
+            }
+         }, [])
 
     useEffect(() => {
-
-        if (props.Product.units)
+        //change local product
+        if (props.units > 0)
         {
-            let un = props.Product.units;
-            setUnits(un);
-
-            console.log(units+"a");
-
+            props.setJustChanged(true); // to handle first time user changing checkbox 
         }
-
-
         let p = props.Product;
-        let u = units
-        console.log(p.units);
-        if (!p.options){
-
-        }
-        else{
-        if ((u === 0) || u === undefined)
+        if (p.options && p.options[indexForOptions])
         {
-            p.options = p.options.map(o => {
-                o.selectedOptionProducts =  o.selectedOptionProducts.map((sp) => {
-                    sp = false;
-                    return sp;
-                });
-                return o;
-            });
+            
+            console.log("option is :"+ p.options[indexForOptions]);
+            p.options[indexForOptions].selectedOptionProducts = ListIsChecked;
             props.setProduct(p);
         }
-        }
-        
-    }, [])
-
-
-    useEffect(() => {
-        if (props.Product.units !== units)
-        {
-            setUnits(units);
-        }
-    }, [props.Product])
-
-
-
-
-    useEffect(() => {
-
     }, [JSON.stringify(ListIsChecked)])
 
 
-    const toggleCheckbox = async (index:number) => {
 
-        if (!props.Product.options) return
-        let temp = ListIsChecked;
-        temp[index] = !temp[index];
-        setListIsChecked(temp);
-        let p = props.Product;
-        if (props.Product.units !== units && props.Product.units)
-        {
-            console.log("here")
-            setUnits(units);
-        }
-        if (p.options)
-        {
-            if (p.options[indexForOptions])
-            {
-                p.options[indexForOptions].selectedOptionProducts = ListIsChecked;
-                await props.setProduct(p);
-            }
-            
-
-        }
-        console.log("units from options :"+units +"and real units :" + props.Product.units);
-        if (units && units> 0)
-        {
-            props.setJustChanged(true);
-        }
-        else{
-            
-        }
-
-    }
-
+    //returns the OptionProduct that has the id
     const GetOptionProduct = (value:ObjectId) => {
         for (let i = 0;i<props.store.optionProducts.length;i++)
         {
@@ -119,6 +66,14 @@ export const ProductOptionsList = (props: Props) => {
         }
     }
 
+    //changes the selectedOptionProducts
+    const ChangeSelectedOptionProducts = async (index:number) => {
+        console.log(indexForOptions);
+        let selectedlist = ListIsChecked;
+        selectedlist[index] = !selectedlist[index];
+        setListIsChecked(selectedlist);
+    }
+
     const getProductOptions = () => {
        return (props.option.optionProducts.map((value, index) => {
 
@@ -127,7 +82,7 @@ export const ProductOptionsList = (props: Props) => {
                 fillColor="lightgreen"
                 text={GetOptionProduct(value)?.name}
                 onPress={() => {
-                toggleCheckbox(index);
+                    ChangeSelectedOptionProducts(index);
             }}/></View> )
         }));
     }

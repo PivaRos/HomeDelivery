@@ -54,7 +54,8 @@ export const ViewProduct = (props: Props) => {
         props.savedOrder.selecedProdcuts.forEach((p, index) => {
             if (JSON.stringify(p) === JSON.stringify(props.Product))
             {
-                setIndexSavedOrder(index); 
+               setIndexSavedOrder(index); 
+                
             }
         }
         );
@@ -77,8 +78,9 @@ export const ViewProduct = (props: Props) => {
 
     const addToOrder = () => {
         //saved to savedorder;
-        const saved1 = props.savedOrder;
-        Product.units = 1;
+        let saved1 = props.savedOrder;
+        let p = Product;
+        p.units = 1;
         saved1.selecedProdcuts.push(Product);
         props.setSavedOrder(saved1);
         props.setSelectedProduct(undefined);
@@ -102,7 +104,6 @@ export const ViewProduct = (props: Props) => {
         else
         { 
             let u = units;
-            if (units <= 0) return
             // change in local list
             await setUnits(u+1);  
             p.units = u+1;
@@ -136,18 +137,22 @@ export const ViewProduct = (props: Props) => {
     const RemoveFromOrder = async () => {
         if (!props.savedOrder) return;
         //remove from local list
+        let u = units;
+        u = 0;
+        await setUnits(u);
         let p = Product;
-        p.units = undefined;
-       await setProduct(p);
+        p.units = u;
+        setProduct(p);
         saveOrder();
     }
 
    const saveOrder = async () => {
         setJustChanged(false)
-        //save product to savedOrder;
-        if (units || units === 0)
+        //save product state to savedOrder;
+        var order = props.savedOrder;
+        if (units === 0)
         {
-            var order = props.savedOrder;
+
             order.selecedProdcuts.splice(indexForSavedOrder, 1);
             await  props.setSavedOrder(order);
             await  props.setSelectedProduct(undefined);
@@ -155,11 +160,10 @@ export const ViewProduct = (props: Props) => {
         }
         else
         {
-        var order = props.savedOrder;
-        order.selecedProdcuts[indexForSavedOrder] = Product;
-        await props.setSavedOrder(order);
-        await props.setSelectedProduct(undefined);
-        navigation.navigate("ViewStore", {id:2})
+            order.selecedProdcuts[indexForSavedOrder] = Product;
+            await props.setSavedOrder(order);
+            await props.setSelectedProduct(undefined);
+            navigation.navigate("ViewStore", {id:2})
         }
     }
 
@@ -182,11 +186,11 @@ export const ViewProduct = (props: Props) => {
                         <Text style={styles.productDesc}>{props.Product.info}</Text>
                         </View>
                     </View>
-                    <View style={styles.restView}>
+                    <ScrollView style={[styles.restView, {height:340, paddingBottom:10,}]}>
                      {props.Product.options?.map((option, index) => {
-                        return (<ProductOptionsList justChanged={justChanged} setJustChanged={setJustChanged} key={index} Product={Product} setProduct={setProduct} option={option} store={props.Store} />)
+                        return (<ProductOptionsList units={units} justChanged={justChanged} setJustChanged={setJustChanged} key={index} Product={Product} setProduct={setProduct} option={option} store={props.Store} />)
                     })}  
-                    </View>
+                    </ScrollView>
   
 
 
