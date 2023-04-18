@@ -23,33 +23,71 @@ export const ProductOptionsList = (props: Props) => {
 
     const [ListIsChecked, setListIsChecked] = useState<boolean[]>(props.option.selectedOptionProducts);
     const [indexForOptions, setIndexForOptions] = useState(props.Product.options?.indexOf(props.option) || -1);
-
+    const [units, setUnits] = useState(0);
 
 
     useEffect(() => {
+
+        if (props.Product.units)
+        {
+            let un = props.Product.units;
+            setUnits(un);
+
+            console.log(units+"a");
+
+        }
+
+
+        let p = props.Product;
+        let u = units
+        console.log(p.units);
+        if (!p.options){
+
+        }
+        else{
+        if ((u === 0) || u === undefined)
+        {
+            p.options = p.options.map(o => {
+                o.selectedOptionProducts =  o.selectedOptionProducts.map((sp) => {
+                    sp = false;
+                    return sp;
+                });
+                return o;
+            });
+            props.setProduct(p);
+        }
+        }
+        
     }, [])
 
 
     useEffect(() => {
-        if (props.Product)
+        if (props.Product.units !== units)
         {
-           setListIsChecked(props.option.selectedOptionProducts);
+            setUnits(units);
         }
-    }, [JSON.stringify(props.Product), props.justChanged])
+    }, [props.Product])
 
-    
+
+
+
     useEffect(() => {
 
     }, [JSON.stringify(ListIsChecked)])
 
 
     const toggleCheckbox = async (index:number) => {
+
         if (!props.Product.options) return
         let temp = ListIsChecked;
         temp[index] = !temp[index];
         setListIsChecked(temp);
         let p = props.Product;
-
+        if (props.Product.units !== units && props.Product.units)
+        {
+            console.log("here")
+            setUnits(units);
+        }
         if (p.options)
         {
             if (p.options[indexForOptions])
@@ -60,9 +98,10 @@ export const ProductOptionsList = (props: Props) => {
             
 
         }
-        if (props.Product.units && props.Product.units> 0)
+        console.log("units from options :"+units +"and real units :" + props.Product.units);
+        if (units && units> 0)
         {
-        props.setJustChanged(true);
+            props.setJustChanged(true);
         }
         else{
             
