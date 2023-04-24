@@ -22,41 +22,12 @@ interface Props {
 const ProductTab = (props: Props) => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const [price, setPrice] = useState("" + (props.Product.price.price / 1000).toString());
-
+    const [Product, setProduct] = useState<Product>(props.Product);
     const [glowing, setGlowing] = useState(false);
     const [units, setUnits] = useState<number>(props.Product.units || 0);
-    const [idnexForSavedOrder, setIndexSavedOrder] = useState(-1);
 
 
     useEffect(() => {
-        console.log(JSON.stringify(props.Product, null, 2));
-    }, [JSON.stringify(props.Product)])
-
-
-
-    useEffect(() => {
-
-
-        if (!props.savedOrder) return;
-        let found = false;
-        props.savedOrder.selecedProdcuts.forEach((p, index) => {
-            if (JSON.stringify(p) === JSON.stringify(props.Product))
-            {
-                found = true;
-                setIndexSavedOrder(index); 
-                
-            }
-        });
-        if (!found)
-        {
-            props.Product.units = 0;
-            props.Product.options?.forEach((option) => {
-                option.selectedOptionProducts = option.selectedOptionProducts.map(() => {
-                    return false;
-                })
-            })
-        }
-
     }, [])
 
     useEffect(() => {

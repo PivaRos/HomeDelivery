@@ -36,6 +36,7 @@ export default function App() {
 
   const Stack = createNativeStackNavigator();
 
+
   const [fontsLoaded] = useFonts({
     'Inter-Black': require('./assets/fonts/Inter-Black.otf'),
   });
@@ -48,8 +49,14 @@ export default function App() {
   onLayoutRootView();
 
   useEffect(() => {
-    
-  }, [savedOrder?.selecedProdcuts.length])
+    if (selectedProduct && !selectedProduct?.units)
+    {
+      let p = selectedProduct;
+      p.units = 0;
+      setSelectedProduct(p);
+
+    }
+  }, [selectedProduct])
 
 
   const getContent = () => {
@@ -66,7 +73,7 @@ export default function App() {
               <Stack.Screen name='tabs' children={() => <Tabs savedOrder={savedOrder} setSavedOrder={setSavedOrder} homeMadeStores={homeMadeStores} setHomeMadeStores={setHomeMadeStores} refreshing={refreshing} setSelectedStore={setSelectedStore} foodStores={foodStores} setFoodStores={setFoodStores} location={thelocation} />} />
               {selectedStore && <Stack.Screen name='ViewStore' children={() => <ViewStore savedOrder={savedOrder} setSavedOrder={setSavedOrder}  setSelectedProduct={setSelectedProduct} thelocation={thelocation} Store={selectedStore} />} />}
               {!selectedStore && <Stack.Screen name='ViewStore' children={() => <View><Text>asasd</Text></View>} />}
-              {(selectedProduct && selectedStore && savedOrder) && <Stack.Screen name='ViewProduct' children={() => <ViewProduct  setSavedOrder={setSavedOrder} Store={selectedStore} savedOrder={savedOrder} setSelectedProduct={setSelectedProduct} Product={selectedProduct} thelocation={thelocation} />} />}
+              {(selectedProduct && selectedStore && savedOrder) && <Stack.Screen name='ViewProduct' children={() => <ViewProduct  setSavedOrder={setSavedOrder} Store={selectedStore} savedOrder={savedOrder} setSelectedProduct={setSelectedProduct} selectedProduct={selectedProduct} thelocation={thelocation} />} />}
               {savedOrder && <Stack.Screen name='ViewOrder' children={() => <ViewOrder/>} />}
               {!selectedProduct && <Stack.Screen name='ViewProduct' children={() => <View><Text>asdasd</Text></View>} />}
             </Stack.Navigator>

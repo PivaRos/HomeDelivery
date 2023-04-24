@@ -67,7 +67,10 @@ export interface Product {
 export interface Option {
     _id:ObjectId,
     optionProducts: ObjectId[],
-    selectedOptionProducts:boolean[],
+    selectedOptionProducts:{
+        selected:boolean,
+        units:number;
+    }[],
     maxPicks: number,
     additionalAllowed: boolean,
     additionalMax: number,

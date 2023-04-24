@@ -4,26 +4,34 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList, Store } from '../../../interfaces';
 import { ObjectId } from 'mongodb';
-import { GetOptionProduct } from '../../../functions';
+import BouncyCheckbox from 'react-native-bouncy-checkbox';
 
 
 interface Props {
-    optionProductId:ObjectId;
-    store:Store;
+    
 }
 
 
 const OptionProductTab = (props: Props) => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
-    const [optionProduct, setOptionProduct] = useState(GetOptionProduct(props.store, props.optionProductId));
+    const [isChecked, setIsChecked] = useState(false);
+    const [units, setUnits ] = useState(0);
+    const CheckBoxPressed = () => {
 
+    }
+
+    const comp = <View><Text>asdasdas</Text></View>;
 
     return (
-            <View>
-                <Text>{optionProduct?.name}</Text>
-            </View>);
+        <View style={{padding:5, marginLeft:5}}>
+        <BouncyCheckbox isChecked={isChecked}
+        fillColor="lightgreen"
+        textComponent={comp}
+        onPress={() => CheckBoxPressed()}
+        /></View>);
 
 }
+
 
 
 export default OptionProductTab;
