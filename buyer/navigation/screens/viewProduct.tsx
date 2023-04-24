@@ -91,7 +91,9 @@ export const ViewProduct = (props: Props) => {
                         </View>
                     </View>
                     <ScrollView style={[styles.restView, {height:340, paddingBottom:10,}]}>
-                     <ProductOptionsList/>
+                    {props.selectedProduct.options && props.selectedProduct.options.map((option, index) => {
+                        return <ProductOptionsList setSelectedProduct={props.setSelectedProduct} selectedProduct={props.selectedProduct} key={index} store={props.Store} option={option}/>
+                    })}
                     </ScrollView>
   
 

@@ -7,32 +7,51 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import OptionProductTab from "./optionProductTab";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { ObjectId } from "mongodb";
+import { GetOptionProduct } from "../../../functions";
 
 interface Props {
+    option:Option;
+    store:Store;
+    setSelectedProduct:React.Dispatch<React.SetStateAction<Product | undefined>>;
+    selectedProduct:Product;
 }
 
 export const ProductOptionsList = (props: Props) => {
+    const [optionProductCheckedState, setOptionProductCheckedState] = useState<boolean[]>(props.option.optionProducts.map(() => {return false}));
+    const [optionProductUnits, setOptionProductUnits] = useState<number[]>(props.option.optionProducts.map(() => {
+        return 0;
+    }));
 
-
-
-    const [ListIsChecked, setListIsChecked] = useState<boolean[]>([]);
-    const [indexForOptions, setIndexForOptions] = useState(-1);
-
-        //gets the index of current option in the product options
     useEffect(() => {
-
+        
+        if (props.option.selectedOptionProducts) //if product is not default *
+        {
+        // need to update checkedState 
+        setOptionProductCheckedState(props.option.selectedOptionProducts.map((v) => {
+            return v.selected;
+        }))
+        // need to update units
+        setOptionProductUnits(props.option.selectedOptionProducts.map((v) => {
+            return v.units;
+        }))
+        }
     }, [])
 
-    useEffect(() => {  
-
-    }, [JSON.stringify(ListIsChecked)])
-
-
-
-
+    useEffect(() => {
+        let option = props.option;
+        option.selectedOptionProducts = option.optionProducts.map((v, index) => {
+            return {
+                selected:optionProductCheckedState[index],
+                units:optionProductUnits[index]
+            };
+        })
+    }, [JSON.stringify(optionProductCheckedState), JSON.stringify(optionProductUnits)])
 
     return (<View style={styles.mainGrid}>
-        <OptionProductTab/>
+        <Text style={{fontWeight:'bold'}}>{props.option.name}</Text>
+        {props.option.optionProducts.map((OptionProduct, index) => {
+           return <OptionProductTab optionProductCheckedState={optionProductCheckedState} units={optionProductUnits} setUnits={setOptionProductUnits} isChecked={optionProductCheckedState[index]} setOptionProductCheckedState={setOptionProductCheckedState} key={index} index={index} optionProduct={GetOptionProduct(props.store ,OptionProduct)}/>
+        })}
     </View>);
 }
 

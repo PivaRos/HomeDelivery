@@ -67,7 +67,7 @@ export interface Product {
 export interface Option {
     _id:ObjectId,
     optionProducts: ObjectId[],
-    selectedOptionProducts:{
+    selectedOptionProducts?:{
         selected:boolean,
         units:number;
     }[],
