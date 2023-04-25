@@ -1,8 +1,7 @@
 import { type Request, type Response, type NextFunction } from 'express'
-import { Accounts } from './index'
+import { Accounts } from '.';
 
 export const processPayment = async (req: Request, res: Response, next: NextFunction) => {
-
   // make api call to privider of services
 
   // get responce of 200
@@ -25,7 +24,7 @@ export const checkValidation = (req: Request, res: Response, next: NextFunction)
     return res.json({
       err: true,
       msg: 'unable to verify user',
-      not: null, // number of tries left
+      not: null // number of tries left
     });
   }
 }

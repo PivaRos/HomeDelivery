@@ -1,9 +1,8 @@
-import express, { NextFunction, type Request, type Response, request } from 'express'
+import express, { type Request, type Response } from 'express'
 import type mongodb from 'mongodb'
 import { ObjectId } from 'mongodb'
-import { checkValidation, processPayment, isSeller, isBuyer } from '../middleware'
-import { type Account, LocationObject, type Order, PaymentLog, productOrder, type Store, store_category } from '../interfaces'
-import { getDistance, isOpen, timeToSecondsFromStartOfDay } from '../functions'
+import { type Account, type Order, type Store } from '../interfaces'
+import { getDistance, isOpen } from '../functions'
 
 const Router = (MongoObject: {
   databases: {

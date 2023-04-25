@@ -2,7 +2,7 @@ import express, { type Request, type Response } from 'express'
 import type mongodb from 'mongodb'
 import { ObjectId } from 'mongodb'
 import { isSeller } from '../middleware'
-import { type Account, type Order, type Store, order_status } from '../interfaces'
+import { type Account, type Order, type Store, OrderStatus } from '../interfaces'
 
 const Router = (MongoObject: {
   databases: {
@@ -65,8 +65,8 @@ const Router = (MongoObject: {
         ]
       }) as Order
       if (order === null) throw new Error('null order')
-      if (order.status !== order_status.pending) throw new Error('status not pending')
-      await MongoObject.collections.Orders.updateOne({ _id: new ObjectId(order_id) }, { $set: { status: order_status.accepted } })
+      if (order.status !== OrderStatus.pending) throw new Error('status not pending')
+      await MongoObject.collections.Orders.updateOne({ _id: new ObjectId(order_id) }, { $set: { status: OrderStatus.accepted } })
       return res.sendStatus(200)
     } catch {
       res.sendStatus(500)

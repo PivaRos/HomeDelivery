@@ -1,8 +1,8 @@
-import express, { NextFunction, type Request, type Response } from 'express'
+import express, { type Request, type Response } from 'express'
 import type mongodb from 'mongodb'
 import { ObjectId } from 'mongodb'
-import { checkValidation, processPayment, isSeller, isBuyer } from '../middleware'
-import { type Account, LocationObject, type Order, PaymentLog, type productOrder, type Store } from '../interfaces'
+import { checkValidation, processPayment, isBuyer } from '../middleware'
+import { type Account, type Order, type ProductOrder, type Store } from '../interfaces'
 import { getDistance } from '../functions'
 
 const Router = (MongoObject: {
@@ -64,7 +64,7 @@ const Router = (MongoObject: {
       const Order: Order = {
         seller: new ObjectId(req.body.store),
         buyer: new ObjectId(user._id),
-        products: req.body.products.map((product: productOrder) => {
+        products: req.body.products.map((product: ProductOrder) => {
           return {
             productId: new ObjectId(product.productId),
             details: {}

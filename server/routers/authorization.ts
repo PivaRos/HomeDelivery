@@ -1,9 +1,8 @@
-import express, { type Request, type Response, NextFunction } from 'express'
+import express, { type Request, type Response } from 'express'
 import type mongodb from 'mongodb'
-import { MongoClient, ObjectId } from 'mongodb'
 import { type Account, type Order, type Store } from '../interfaces'
-import { body, check, validationResult } from 'express-validator'
-import { makeid } from '../functions'
+import { check, validationResult } from 'express-validator'
+import { v4 as uuid } from 'uuid';
 
 const Router = (MongoObject: {
   databases: {
@@ -17,7 +16,8 @@ const Router = (MongoObject: {
     Applications: mongodb.Collection<mongodb.BSON.Document>
     Transactions: mongodb.Collection<mongodb.BSON.Document>
     ClosedApplications: mongodb.Collection<mongodb.BSON.Document>
-  } }) => {
+  }
+}) => {
   const AuthorizationRouter = express.Router()
 
   AuthorizationRouter.post('/account', check('username').exists().isLength({ min: 4 }), check('password').exists().isLength({ min: 7 }), async (req: Request, res: Response) => {
@@ -29,7 +29,7 @@ const Router = (MongoObject: {
           { password: req.body.password }
         ]
       })
-      const sessionid = makeid(14)
+      const sessionid = uuid();
       if (user != null) {
         const updatevar = await MongoObject.collections.Accounts.updateOne({ _id: user._id }, { $set: { sessionid } })
         if (updatevar.acknowledged) {

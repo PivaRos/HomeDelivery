@@ -1,4 +1,4 @@
-import { type ObjectId, Timestamp, type WithId, type Document, Decimal128, Double } from 'mongodb'
+import { type ObjectId, type WithId, type Document } from 'mongodb';
 
 export enum Pages {
   Stores = 'Stores',
@@ -7,7 +7,7 @@ export enum Pages {
   Home = 'Home'
 }
 
-export interface availableStores {
+export interface AvailableStores {
   Closed: Store[]
   Open: Store[]
 }
@@ -17,7 +17,7 @@ export interface RootStackParamList {
   tabs: { id: number } | undefined
 }
 
-export enum account_type {
+export enum AccountType {
   Seller = 2,
   Buyer = 1,
   Delivery = 3,
@@ -25,7 +25,7 @@ export enum account_type {
   Admin = 5
 }
 
-export enum store_category {
+export enum StoreCategory {
   food = 1,
   homeMade = 2
 }
@@ -34,7 +34,7 @@ export interface StorageData {
   sessionid: string
 }
 
-export enum order_status {
+export enum OrderStatus {
   pending = 1,
   cancelled = 0,
   accepted = 2,
@@ -76,17 +76,17 @@ export interface Store extends WithId<Document> {
   authorizedUsers: string[]
   location: LocationObject
   deliveryDistance: number
-  openHoursObject: openHoursObject
-  category: store_category
+  openHoursObject: OpenHoursObject
+  category: StoreCategory
 }
 
-export interface openHoursObject {
+export interface OpenHoursObject {
   openFrom: number
   closedFrom: number
 }
 
 export interface Account {
-  type: account_type
+  type: AccountType
   username: string
   password: string
   phoneNumber: string
@@ -100,8 +100,8 @@ export interface Order {
   _id?: ObjectId
   seller: ObjectId
   buyer: ObjectId
-  date: dateObject
-  products: productOrder[]
+  date: DateObject
+  products: ProductOrder[]
   totalPrice: number
   location: LocationObject
   city: string
@@ -109,15 +109,14 @@ export interface Order {
   homenumber: string
   zipcode: string
   delivery?: ObjectId
-  status: order_status
+  status: OrderStatus
 }
 
-export interface dateObject {
+export interface DateObject {
   date: Date
   timestamp: number
 }
-
-export interface dataObject {
+export interface DataObject {
   err: boolean
   msg: string
   data: any
@@ -125,7 +124,7 @@ export interface dataObject {
 
 }
 
-export interface productOrder {
+export interface ProductOrder {
   productId: ObjectId
   details: {
 
