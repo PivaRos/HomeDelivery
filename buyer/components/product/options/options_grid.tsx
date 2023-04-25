@@ -11,6 +11,7 @@ import { GetOptionProduct } from "../../../functions";
 
 interface Props {
     option:Option;
+    optionIndex:number;
     store:Store;
     setSelectedProduct:React.Dispatch<React.SetStateAction<Product | undefined>>;
     selectedProduct:Product;
@@ -45,6 +46,12 @@ export const ProductOptionsList = (props: Props) => {
                 units:optionProductUnits[index]
             };
         })
+        let TselectedProduct = props.selectedProduct;
+        if (TselectedProduct.options)
+        {
+            TselectedProduct.options[props.optionIndex] = option;
+        }
+        props.setSelectedProduct(TselectedProduct);
     }, [JSON.stringify(optionProductCheckedState), JSON.stringify(optionProductUnits)])
 
     return (<View style={styles.mainGrid}>
