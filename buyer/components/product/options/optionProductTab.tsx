@@ -28,12 +28,12 @@ const OptionProductTab = (props: Props) => {
     }
 
     const setChecked = (isChecked: boolean) => {
-        let ToptionProductCheckedState = props.optionProductCheckedState;
+        let ToptionProductCheckedState = JSON.parse(JSON.stringify(props.optionProductCheckedState));
         ToptionProductCheckedState[props.index] = isChecked;
         if (isChecked === false) {
             setUnits(0);
             props.setOptionProductUnits(realoptionProductUnits => {
-                let Tunits = realoptionProductUnits
+                let Tunits = JSON.parse(JSON.stringify(realoptionProductUnits));
                 Tunits[props.index] = 0;
                 return Tunits;
             });
@@ -41,10 +41,10 @@ const OptionProductTab = (props: Props) => {
         else {
             setUnits(1);
             props.setOptionProductUnits(realoptionProductUnits => {
-                console.log(realoptionProductUnits);
-                let Tunits = realoptionProductUnits
+                let Tunits = JSON.parse(JSON.stringify(realoptionProductUnits));
                 Tunits[props.index] = 1;
                 return Tunits;
+    
             });
         }
         props.setOptionProductCheckedState(ToptionProductCheckedState);
@@ -69,12 +69,11 @@ const OptionProductTab = (props: Props) => {
                 setUnits(currentValue => {
                     return currentValue - 1;
                 });
-                let Tunits = props.optionProductUnits;
+                let Tunits = JSON.parse(JSON.stringify(props.optionProductUnits));
                 Tunits[props.index] = units - 1;
                 props.setOptionProductUnits(value => {
                     let Tunits = value
                     Tunits[props.index] = units;
-                    console.log(Tunits);
                     return Tunits;
                 });
 
