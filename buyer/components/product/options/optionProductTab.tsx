@@ -22,6 +22,11 @@ const OptionProductTab = (props: Props) => {
     const [isChecked, setIsChecked] = useState(props.isChecked);
     const [units, setUnits] = useState(props.optionProductUnits[props.index]);
 
+    useEffect(() => {
+        setIsChecked(props.optionProductCheckedState[props.index]);
+        setUnits(props.optionProductUnits[props.index]);
+    }, [JSON.stringify(props.isChecked), JSON.stringify(props.optionProductUnits[props.index])])
+
     const CheckBoxPressed = (isChecked: boolean) => {
         setIsChecked(isChecked);
         setChecked(isChecked);
@@ -64,16 +69,15 @@ const OptionProductTab = (props: Props) => {
         if (units > 0) {
 
             if (units - 1 === 0) {
+                //nothing
             }
             else {
                 setUnits(currentValue => {
                     return currentValue - 1;
                 });
-                let Tunits = JSON.parse(JSON.stringify(props.optionProductUnits));
-                Tunits[props.index] = units - 1;
                 props.setOptionProductUnits(value => {
-                    let Tunits = value
-                    Tunits[props.index] = units;
+                    let Tunits = JSON.parse(JSON.stringify(value));
+                    Tunits[props.index] = units-1;
                     return Tunits;
                 });
 

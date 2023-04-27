@@ -25,6 +25,11 @@ const Tabs = (props:Props) => {
 
 const Tab = createBottomTabNavigator();
 
+  React.useEffect(() => {
+    props.setSavedOrder(undefined);
+  }, [])
+
+
     return (
     <Tab.Navigator
         initialRouteName={Pages.Stores}

@@ -1,9 +1,10 @@
 
 import * as Location from 'expo-location';
-import { LocationObject, LocationType, Order, Product, StorageData, Store, optionProduct } from './interfaces';
+import { LocationObject, LocationType, Order, PriceObject, Product, StorageData, Store, optionProduct } from './interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 import { ObjectId } from 'mongodb';
+import getSymbolFromCurrency from 'currency-symbol-map';
 
 
 export const registerForPushNotificationsAsync = async () => {
@@ -95,7 +96,6 @@ export const RemoveOrAddFromOrder = (removeOrAdd:0|1, setSavedOrder:React.Dispat
     var previousOrder = savedOrder;
     if (previousOrder)
     {
-      console.log("here");
         previousOrder.selecedProdcuts.push(SelectedProduct);
         setSavedOrder(previousOrder);
         console.log(savedOrder.selecedProdcuts);
@@ -127,4 +127,16 @@ export const getDistance = (Location1:LocationObject, Location2:LocationObject )
   else{
       return 0;
   }
+}
+
+export const PriceString = (price:number, currency:string):string => {
+    //price string
+    let symbol = "";
+    const thesymb = getSymbolFromCurrency(currency);
+    if (thesymb) {
+        symbol = thesymb;
+    }
+    const sherit = price % 1000;
+    if (!sherit) return (symbol + (price / 1000).toString() + "." + sherit.toString());
+    return  symbol + (price / 1000).toString()
 }

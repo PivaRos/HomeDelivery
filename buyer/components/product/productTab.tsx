@@ -34,7 +34,7 @@ const ProductTab = (props: Props) => {
         if (props.savedOrder)
         {
            const number =  props.Product.units;
-           if (number)
+           if (number && number > 0)
            {
                 setGlowing(true);
            }
@@ -46,7 +46,7 @@ const ProductTab = (props: Props) => {
            setUnits(number || 0);
            
         }
-    }, [JSON.stringify(props.savedOrder?.selecedProdcuts), JSON.stringify(props.Product)])
+    }, [])
 
 
     useEffect(() => {

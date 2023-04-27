@@ -7,7 +7,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { ProductOptionsList } from "../../components/product/options/options_grid";
 import getSymbolFromCurrency from "currency-symbol-map";
 import { ObjectId } from "mongodb";
-import { RemoveOrAddFromOrder, getUnits } from "../../functions";
+import { PriceString, RemoveOrAddFromOrder, getUnits } from "../../functions";
 
 
 interface Props {
@@ -28,47 +28,71 @@ export const ViewProduct = (props: Props) => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const [productPrice, setProductPrice] = useState("");
     const [justChanged, setJustChanged] = useState(false);
-
+    const [Product, setProduct] = useState<Product>(props.selectedProduct);
+    const [price, setPrice] = useState(Product.price.price);
     useEffect(() => {
 
 
         //price string
         calculatePriceString();
-
+        if (!Product.units)
+        {
+            setProduct(p => {
+                p.units = 0;
+                return p
+            })
+        }
     }, [])
+
+
+    useEffect(() => {
+
+    }, [Product])
 
 
     const calculatePriceString = () => {
         //price string
-        let symbol = "";
-        const thesymb = getSymbolFromCurrency(props.selectedProduct.price.currency);
-        if (thesymb) {
-            symbol = thesymb;
-        }
-        const sherit = props.selectedProduct.price.price % 1000;
-        if (!sherit) setProductPrice(symbol + (props.selectedProduct.price.price / 1000).toString() + "." + sherit.toString());
-        else setProductPrice(symbol + (props.selectedProduct.price.price / 1000).toString());
+       setProductPrice(PriceString(price, Product.price.currency));
     }
+
+    useEffect(() => {
+        calculatePriceString();
+    },[price])
+
 
 
 
     const addToOrder = () => {
+        console.log("add for products pressed");
+        setProduct(p => {
+            p.units = 1;
+            return p;
+        })
+        props.setSavedOrder(o => {
+            let order:Order  = JSON.parse(JSON.stringify(o));
+            order.selecedProdcuts.push(Product);
+            return order;
+        })
+        navigation.navigate("ViewStore", {id:1})
 
     }
 
     const changeUnitsUp = async () => {
+        console.log("product units pressed up");
         
     }
 
     const changeUnitsDown = async () => {
-
+        console.log("product units pressed down");
     }
     
     const RemoveFromOrder = async () => {
+        console.log("remove from products pressed");
+
     }
 
     const saveOrder =  () => {
-    
+        console.log("save product from order Pressed");
     }
 
     return (
@@ -80,20 +104,20 @@ export const ViewProduct = (props: Props) => {
                     <Pressable style={styles.backButton} onPress={() => (navigation.navigate("ViewStore", { id: 2 }))}><Text style={styles.backButtonText}>Back</Text></Pressable>
                     <Image style={styles.imageStyle} source={
                         {
-                            uri: imageUri + props.selectedProduct?.mainimage,
+                            uri: imageUri + Product?.mainimage,
                             cache: "force-cache"
                         }} />
                     <View style={styles.productInfo}>
                         <View style={{alignItems:'center'}}>
-                        <Text  style={styles.productName}>{props.selectedProduct.name}</Text>                        
+                        <Text  style={styles.productName}>{Product.name}</Text>                        
                         <Text style={styles.productPrice}>{productPrice}</Text>
-                        <Text style={styles.productDesc}>{props.selectedProduct.info}</Text>
+                        <Text style={styles.productDesc}>{Product.info}</Text>
                         </View>
                     </View>
                     <ScrollView style={[styles.restView, {height:340, paddingBottom:10,}]}>
-                    {props.selectedProduct.options && props.selectedProduct.options.map((option, index) => {
-                        return <ProductOptionsList optionIndex={index} setSelectedProduct={props.setSelectedProduct} selectedProduct={props.selectedProduct} key={index} store={props.Store} option={option}/>
-                    })}
+                     {Product.options?.map((option, index) => {
+                        return (<ProductOptionsList setPrice={setPrice} optionIndex={index}  key={index} selectedProduct={Product} setSelectedProduct={setProduct} option={option} store={props.Store} />)
+                    })}  
                     </ScrollView>
   
 
@@ -104,16 +128,16 @@ export const ViewProduct = (props: Props) => {
             <Pressable style={{left:5, position:'absolute', zIndex:3}} onPress={changeUnitsUp}>
                     <Text style={styles.buttonText}>+</Text>
             </Pressable>
-            <Text style={[styles.buttonText, {justifyContent:'center', display:'flex', flexDirection:'row', width:'100%', textAlign:'center'}]}>{props.selectedProduct.units}</Text>
+            <Text style={[styles.buttonText, {justifyContent:'center', display:'flex', flexDirection:'row', width:'100%', textAlign:'center'}]}>{Product.units}</Text>
             <Pressable style={{right:5, position:'absolute', zIndex:3}} onPress={changeUnitsDown} >
                     <Text style={styles.buttonText}>-</Text>
             </Pressable>
             </View>
-            {((props.selectedProduct.units===0) && !justChanged) && <Pressable onPress={addToOrder} style={styles.PressableAdd}>
+            {((Product.units===0) && !justChanged) && <Pressable onPress={addToOrder} style={styles.PressableAdd}>
                     <Text style={styles.buttonText}>Add to order</Text><Text style={styles.buttonPrice}>{productPrice}</Text>
             </Pressable>}
-            {(props.selectedProduct.units !== undefined && props.selectedProduct.units > 0 && !justChanged)  && <Pressable onPress={RemoveFromOrder} style={[styles.PressableAdd, {backgroundColor:"#fa3737"}]}>
-                    <Text style={styles.buttonText}>{(props.selectedProduct.units > 1) ? "Remove all" : "Remove"}</Text><Text style={styles.buttonPrice}>{"- "+productPrice}</Text>
+            {(Product.units !== undefined && Product.units > 0 && !justChanged)  && <Pressable onPress={RemoveFromOrder} style={[styles.PressableAdd, {backgroundColor:"#fa3737"}]}>
+                    <Text style={styles.buttonText}>{(Product.units > 1) ? "Remove all" : "Remove"}</Text><Text style={styles.buttonPrice}>{"- "+productPrice}</Text>
             </Pressable>}
             {(justChanged) && <Pressable onPress={saveOrder} style={styles.PressableAdd}>
                     <Text style={styles.buttonText}>Update order</Text>

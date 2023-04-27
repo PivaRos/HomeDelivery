@@ -76,6 +76,8 @@ export const ViewStore = (props: Props) => {
         let varia= arrayOfProducts;
         setArrayOfProducts(varia);
         //just to let react know
+
+        props.setSelectedProduct(undefined)
     }, [])
 
 
@@ -114,11 +116,17 @@ export const ViewStore = (props: Props) => {
                         localproducts.push(displayProducts[i]);
                     }
                 }
-                return <ProductsGrid savedOrder={props.savedOrder} setSavedOrder={props.setSavedOrder} key={index} title={categoryname} thelocation={props.thelocation}  displayProducts={displayProducts} setSelectedProduct={props.setSelectedProduct} />
-            
-            })}
+                return <ProductsGrid 
+                savedOrder={props.savedOrder} 
+                setSavedOrder={props.setSavedOrder} 
+                key={index} 
+                title={categoryname} 
+                thelocation={props.thelocation}  
+                displayProducts={displayProducts} 
+                setSelectedProduct={props.setSelectedProduct} />})}
+
                 {props.savedOrder?.selecedProdcuts && arrayOfProducts.map((categoryname, index) => {
-                if (!displayProducts) return 
+                if (!displayProducts || !props.savedOrder?.selecedProdcuts) return 
                 let localproducts = new Array();
                 for (let i = 0; i < displayProducts?.length; i++) {
                     if (displayProducts[i].category === categoryname) {
@@ -131,10 +139,9 @@ export const ViewStore = (props: Props) => {
                 key={index} 
                 title={categoryname} 
                 thelocation={props.thelocation}  
-                displayProducts={displayProducts} 
+                displayProducts={displayProducts.concat(props.savedOrder?.selecedProdcuts)} 
                 setSelectedProduct={props.setSelectedProduct}/>)
-            
-            })}
+                })}
             </ScrollView>
             {(props.savedOrder  && (props.savedOrder.selecedProdcuts.length > 0 )) && 
                 <Pressable onPress={() => (navigation.navigate('ViewOrder', {id:4}))} style={styles.ViewOrderButton}>

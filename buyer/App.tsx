@@ -59,6 +59,10 @@ export default function App() {
   }, [selectedProduct])
 
 
+  useEffect(() => {
+    
+  }, [JSON.stringify(savedOrder)])
+
   const getContent = () => {
     if (loading) return <ActivityIndicator size="small" style={{ opacity: 1, marginTop: '100%' }} />;
     if (!thelocation) return <SafeAreaView><Text style={{ fontWeight: "bold", textAlign: 'center' }}>Please Allow HomeDelivery To Use Location In Order To Continue Using The App</Text><Button onPress={PressLocation} title='Allow Access' /></SafeAreaView>
