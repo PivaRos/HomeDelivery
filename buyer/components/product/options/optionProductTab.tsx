@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import ReactNative, { StyleSheet, View, Text, Image, Dimensions, TouchableWithoutFeedback, Animated, Easing, ScrollView, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList, Store, optionProduct } from '../../../interfaces';
+import { Option, RootStackParamList, Store, optionProduct } from '../../../interfaces';
 import BouncyCheckbox from 'react-native-bouncy-checkbox';
+import { getTotalUnits } from '../../../functions';
 
 
 interface Props {
@@ -14,6 +15,7 @@ interface Props {
     setOptionProductUnits: React.Dispatch<React.SetStateAction<number[]>>
     setOptionProductCheckedState: React.Dispatch<React.SetStateAction<boolean[]>>;
     optionProductCheckedState: boolean[];
+    option:Option;
 }
 
 
@@ -28,8 +30,23 @@ const OptionProductTab = (props: Props) => {
     }, [JSON.stringify(props.isChecked), JSON.stringify(props.optionProductUnits[props.index])])
 
     const CheckBoxPressed = (isChecked: boolean) => {
-        setIsChecked(isChecked);
-        setChecked(isChecked);
+        if (isChecked)
+        {
+        if ((props.option.additionalAllowed && ((props.option.maxPicks +props.option.additionalMax) > getTotalUnits(props.optionProductUnits))) || !props.option.additionalAllowed && (props.option.maxPicks > getTotalUnits(props.optionProductUnits)))
+        {
+            setIsChecked(isChecked);
+            setChecked(isChecked);
+        }
+        else{
+            //animation;
+
+        }
+        }
+        else{
+            setIsChecked(isChecked);
+            setChecked(isChecked);   
+        }
+
     }
 
     const setChecked = (isChecked: boolean) => {
@@ -56,13 +73,20 @@ const OptionProductTab = (props: Props) => {
     }
 
     const changeUnitsUp = async () => {
-        setUnits(realunits => { return realunits + 1 });
-        props.setOptionProductUnits(realoptionProductUnits => {
-            let Tunits = JSON.parse(JSON.stringify(realoptionProductUnits));
-            Tunits[props.index] = Tunits[props.index] + 1;
-            return Tunits;
+        if ((props.option.additionalAllowed && ((props.option.maxPicks +props.option.additionalMax) > getTotalUnits(props.optionProductUnits))) || !props.option.additionalAllowed && (props.option.maxPicks > getTotalUnits(props.optionProductUnits)))
+        {
+            setUnits(realunits => { return realunits + 1 });
+            props.setOptionProductUnits(realoptionProductUnits => {
+                let Tunits = JSON.parse(JSON.stringify(realoptionProductUnits));
+                Tunits[props.index] = Tunits[props.index] + 1;
+                return Tunits;
+    
+            });   
+        }
+        else{
+            //animation
+        }
 
-        });
     }
 
     const changeUnitsDown = async () => {

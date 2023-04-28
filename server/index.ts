@@ -34,6 +34,7 @@ const MongoObject = {
     data:data,
     log:log,
     uploads:uploads
+  
   }, 
   collections:{
     Stores:Stores,

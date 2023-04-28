@@ -7,7 +7,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import OptionProductTab from "./optionProductTab";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { ObjectId } from "mongodb";
-import { GetOptionProduct, PriceString } from "../../../functions";
+import { GetOptionProduct, PriceString, getTotalUnits } from "../../../functions";
 import { BackHandler } from "react-native";
 
 interface Props {
@@ -26,15 +26,6 @@ export const ProductOptionsList = (props: Props) => {
     }));
     
 
-    const getTotalUnits = (array: number[]) => {
-        let TotalUnits = 0;
-        array.forEach(units => {
-            if (units) {
-                TotalUnits += units;
-            }
-        });
-        return TotalUnits;
-    }
 
     useEffect(() => {
         if (getTotalUnits(optionProductUnits)> props.option.maxPicks)
@@ -86,7 +77,7 @@ export const ProductOptionsList = (props: Props) => {
         {props.option.maxPicks > 1 && <Text style={{ padding: 2, color: "grey", paddingLeft: 13, }}>ניתן לבחור עד {props.option.maxPicks} פריטים</Text>}
         {props.option.maxPicks === 1 && <Text style={{ padding: 2, color: "grey", paddingLeft: 13, }}> {getTotalUnits(optionProductUnits) > props.option.maxPicks && PriceString(props.option.additionalPricePerUnit.price*(getTotalUnits(optionProductUnits) - props.option.maxPicks), props.option.additionalPricePerUnit.currency) +"+"} ניתן לבחור עד פריט אחד</Text>}
         {props.option.optionProducts.map((OptionProduct, index) => {
-            return <OptionProductTab optionProductCheckedState={optionProductCheckedState} optionProductUnits={optionProductUnits} setOptionProductUnits={setOptionProductUnits} isChecked={optionProductCheckedState[index]} setOptionProductCheckedState={setOptionProductCheckedState} key={index} index={index} optionProduct={GetOptionProduct(props.store, OptionProduct)} />
+            return <OptionProductTab option={props.option} optionProductCheckedState={optionProductCheckedState} optionProductUnits={optionProductUnits} setOptionProductUnits={setOptionProductUnits} isChecked={optionProductCheckedState[index]} setOptionProductCheckedState={setOptionProductCheckedState} key={index} index={index} optionProduct={GetOptionProduct(props.store, OptionProduct)} />
         })}
     </View>);
 }

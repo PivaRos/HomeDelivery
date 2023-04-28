@@ -140,3 +140,13 @@ export const PriceString = (price:number, currency:string):string => {
     if (!sherit) return (symbol + (price / 1000).toString() + "." + sherit.toString());
     return  symbol + (price / 1000).toString()
 }
+
+export const getTotalUnits = (array: number[]) => {
+  let TotalUnits = 0;
+  array.forEach(units => {
+      if (units) {
+          TotalUnits += units;
+      }
+  });
+  return TotalUnits;
+}
