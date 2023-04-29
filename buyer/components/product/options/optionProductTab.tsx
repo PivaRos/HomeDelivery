@@ -38,7 +38,7 @@ const OptionProductTab = (props: Props) => {
             setChecked(isChecked);
         }
         else{
-            //animation;
+            //no animation;
 
         }
         }
@@ -126,10 +126,11 @@ const OptionProductTab = (props: Props) => {
     return (
         <View style={{ padding: 10, marginLeft: 5 }}>
             <BouncyCheckbox
+                disableBuiltInState={true}
                 isChecked={isChecked}
                 fillColor="lightgreen"
                 textComponent={comp}
-                onPress={(isChecked) => CheckBoxPressed(isChecked)}
+                onPress={() => CheckBoxPressed(!isChecked)}
             /></View>);
 
 }
