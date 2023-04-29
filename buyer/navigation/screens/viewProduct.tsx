@@ -7,7 +7,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { ProductOptionsList } from "../../components/product/options/options_grid";
 import getSymbolFromCurrency from "currency-symbol-map";
 import { ObjectId } from "mongodb";
-import { PriceString, RemoveOrAddFromOrder, getUnits } from "../../functions";
+import { PriceString, RemoveOrAddFromOrder, getTotalUnits, getUnits } from "../../functions";
 
 
 interface Props {
@@ -45,10 +45,6 @@ export const ViewProduct = (props: Props) => {
     }, [])
 
 
-    useEffect(() => {
-
-    }, [Product])
-
 
     const calculatePriceString = () => {
         //price string
@@ -60,21 +56,48 @@ export const ViewProduct = (props: Props) => {
     },[price])
 
 
+    useEffect(() => {
+        //calculates price
+        let pricePerUnit = +Product.price.price;
+        if (Product.options)
+        {
+
+            for(let i = 0; i< Product.options?.length;i++)
+            {
+                if (Product.options[i].additionalAllowed)
+                {
+                let option = Product.options[i];
+                let maxPicks = +Product.options[i].maxPicks;
+                let OptionTotalPicks = +getTotalUnits(option.selectedOptionProducts?.map((v) => {
+                    return v.units
+                }) || []);
+                if(OptionTotalPicks-maxPicks > 0)
+                {
+
+                    pricePerUnit += (OptionTotalPicks-maxPicks)*option.additionalPricePerUnit.price;
+                }
+                }
+            }
+        }
+        setPrice(+pricePerUnit*(Product.units || 1))
+    }, [Product.units, JSON.stringify(Product)])
 
 
-    const addToOrder = () => {
+
+
+    const addToOrder = async () => {
         console.log("add for products pressed");
-        setProduct(p => {
+        
+       await setProduct(p => {
             p.units = 1;
             return p;
         })
-        props.setSavedOrder(o => {
+      await  props.setSavedOrder(o => {
             let order:Order  = JSON.parse(JSON.stringify(o));
             order.selecedProdcuts.push(Product);
             return order;
         })
-        navigation.navigate("ViewStore", {id:1})
-
+        navigation.navigate("ViewStore", {id:2})
     }
 
     const changeUnitsUp = async () => {
@@ -88,7 +111,22 @@ export const ViewProduct = (props: Props) => {
     
     const RemoveFromOrder = async () => {
         console.log("remove from products pressed");
+        props.setSavedOrder(o => {
+            let order:Order  = JSON.parse(JSON.stringify(o));
+            for(let i = 0 ;i < order.selecedProdcuts.length;i++)
+            {
+                let ps = order.selecedProdcuts[i];
+                if (JSON.stringify(ps) === JSON.stringify(Product))
+                {
+                    order.selecedProdcuts.splice(i, 1);
+                    navigation.navigate("ViewStore", {id:2});
 
+                    
+                }
+            }
+            
+            return order;
+        })
     }
 
     const saveOrder =  () => {
@@ -116,7 +154,7 @@ export const ViewProduct = (props: Props) => {
                     </View>
                     <ScrollView style={[styles.restView, {height:340, paddingBottom:10,}]}>
                      {Product.options?.map((option, index) => {
-                        return (<ProductOptionsList setPrice={setPrice} optionIndex={index}  key={index} selectedProduct={Product} setSelectedProduct={setProduct} option={option} store={props.Store} />)
+                        return (<ProductOptionsList price={price} setPrice={setPrice} optionIndex={index}  key={index} selectedProduct={Product} setSelectedProduct={setProduct} option={option} store={props.Store} />)
                     })}  
                     </ScrollView>
   

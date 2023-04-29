@@ -6,7 +6,7 @@ import { uri } from '../../envVars';
 import { StackNavigationProp } from '@react-navigation/stack';
 import getSymbolFromCurrency from 'currency-symbol-map'
 import { getExpoPushTokenAsync } from 'expo-notifications';
-import { getUnits } from '../../functions';
+import { PriceString, getTotalUnits, getUnits } from '../../functions';
 
 
 interface Props {
@@ -21,19 +21,20 @@ interface Props {
 
 const ProductTab = (props: Props) => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
-    const [price, setPrice] = useState("" + (props.Product.price.price / 1000).toString());
+    const [priceString, setPriceString] = useState("");
     const [Product, setProduct] = useState<Product>(props.Product);
     const [glowing, setGlowing] = useState(false);
     const [units, setUnits] = useState<number>(props.Product.units || 0);
-
+    const [price, setPrice] = useState(Product.price.price);
 
     useEffect(() => {
-    }, [])
+        setPriceString(PriceString(price, Product.price.currency));
+    }, [price])
 
     useEffect(() => {
         if (props.savedOrder)
         {
-           const number =  props.Product.units;
+           const number =  Product.units;
            if (number && number > 0)
            {
                 setGlowing(true);
@@ -48,27 +49,44 @@ const ProductTab = (props: Props) => {
         }
     }, [])
 
-
     useEffect(() => {
-        console.log("productTab: props.product Changed");
-    }, [JSON.stringify(props.Product)])
+        //calculates price
+        let pricePerUnit = +Product.price.price;
+        if (Product.options)
+        {
 
-    useEffect(() => {
+            for(let i = 0; i< Product.options?.length;i++)
+            {
+                if (Product.options[i].additionalAllowed)
+                {
+                let option = Product.options[i];
+                let maxPicks = +Product.options[i].maxPicks;
+                let OptionTotalPicks = +getTotalUnits(option.selectedOptionProducts?.map((v) => {
+                    return v.units
+                }) || []);
+                if(OptionTotalPicks-maxPicks > 0)
+                {
 
-        let symbol = "";
-        const thesymb = getSymbolFromCurrency(props.Product.price.currency);
-        if (thesymb) {
-            symbol = thesymb;
+                    pricePerUnit += (OptionTotalPicks-maxPicks)*option.additionalPricePerUnit.price;
+                }
+                }
+            }
         }
+        setPrice(+pricePerUnit*(Product.units || 1))
+    }, [Product.units, JSON.stringify(Product)])
 
-        const sherit = props.Product.price.price % 1000;
-        if (!sherit) setPrice(symbol + (props.Product.price.price / 1000).toString() + "." + sherit.toString());
-        else setPrice(symbol + (props.Product.price.price / 1000).toString());
+
+    useEffect(() => {
+        console.log("productTab: product Changed");
+    }, [JSON.stringify(Product)])
+
+    useEffect(() => {
+
     }, [])
 
 
     const ProductPressed = () => {
-        props.setSelectedProduct(props.Product);
+        props.setSelectedProduct(Product);
         navigation.navigate("ViewProduct", { id: 3 });
 
     }
@@ -80,15 +98,15 @@ const ProductTab = (props: Props) => {
                 <View style={ !glowing ? styles.view : styles.viewGlowing}>
                     <View style={styles.TextView}>
                     <View style={{flexDirection:'row'}}>
-                        <Text style={styles.title}>{props.Product.name}</Text>
+                        <Text style={styles.title}>{Product.name}</Text>
                     <Text style={styles.units}> x {units}</Text>
                     </View>
-                        <Text numberOfLines={2} style={styles.info_text}>{props.Product.info}</Text>
-                        <Text style={styles.price_text}>{price}</Text>
+                        <Text numberOfLines={2} style={styles.info_text}>{Product.info}</Text>
+                        <Text style={styles.price_text}>{priceString}</Text>
                     </View>
                     <Image source={
                         {
-                            uri: uri + "data/file/" + props.Product.mainimage,
+                            uri: uri + "data/file/" + Product.mainimage,
                             cache: 'force-cache'
                         }} style={styles.image} />
     
@@ -102,14 +120,14 @@ const ProductTab = (props: Props) => {
                     <View style={ !glowing ? styles.view : styles.viewGlowing}>
                         <View style={styles.TextView}>
                         <View style={{flexDirection:'row'}}>
-                            <Text style={styles.title}>{props.Product.name}</Text>
+                            <Text style={styles.title}>{Product.name}</Text>
                         </View>
-                            <Text numberOfLines={2} style={styles.info_text}>{props.Product.info}</Text>
-                            <Text style={styles.price_text}>{price}</Text>
+                            <Text numberOfLines={2} style={styles.info_text}>{Product.info}</Text>
+                            <Text style={styles.price_text}>{priceString}</Text>
                         </View>
                         <Image source={
                             {
-                                uri: uri + "data/file/" + props.Product.mainimage,
+                                uri: uri + "data/file/" + Product.mainimage,
                                 cache: 'force-cache'
                             }} style={styles.image} />
         

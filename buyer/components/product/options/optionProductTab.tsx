@@ -23,6 +23,9 @@ const OptionProductTab = (props: Props) => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const [isChecked, setIsChecked] = useState(props.isChecked);
     const [units, setUnits] = useState(props.optionProductUnits[props.index]);
+    const [price, setPrice] = useState();
+
+    
 
     useEffect(() => {
         setIsChecked(props.optionProductCheckedState[props.index]);

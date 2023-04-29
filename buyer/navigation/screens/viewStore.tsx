@@ -61,7 +61,6 @@ export const ViewStore = (props: Props) => {
             }
             
             props.setSavedOrder(neworder);
-            console.log("neworderCreated")
         }
         else
         {
@@ -77,12 +76,8 @@ export const ViewStore = (props: Props) => {
         setArrayOfProducts(varia);
         //just to let react know
 
-        props.setSelectedProduct(undefined)
     }, [])
 
-
-    useEffect(() => {
-    }, [JSON.stringify(props.savedOrder)])
     
 
 

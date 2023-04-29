@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { View, Text, Button, Pressable, StyleSheet, ScrollView, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { LocationObject, PriceObject, Product, RootStackParamList, Store, Option } from "../../../interfaces";
@@ -17,6 +17,7 @@ interface Props {
     setSelectedProduct: React.Dispatch<React.SetStateAction<Product>>;
     selectedProduct: Product;
     setPrice:React.Dispatch<React.SetStateAction<number>>;
+    price:number;
 }
 
 export const ProductOptionsList = (props: Props) => {
@@ -24,22 +25,6 @@ export const ProductOptionsList = (props: Props) => {
     const [optionProductUnits, setOptionProductUnits] = useState<number[]>(props.option.optionProducts.map(() => {
         return 0;
     }));
-    
-
-
-    useEffect(() => {
-        if (getTotalUnits(optionProductUnits)> props.option.maxPicks)
-        {
-            props.setPrice(price => {
-              let p =  price + (props.option.additionalPricePerUnit.price*(getTotalUnits(optionProductUnits) - props.option.maxPicks))
-                return p;
-            })
-        }
-        else
-        {
-
-        }
-    }, [optionProductUnits])
 
     useEffect(() => {
         if (props.option.selectedOptionProducts && props.option.selectedOptionProducts.length > 0) //if product is not default *
@@ -57,7 +42,6 @@ export const ProductOptionsList = (props: Props) => {
 
 
     useEffect(() => {
-        // not working properly 
         let option = props.option;
         option.selectedOptionProducts = option.optionProducts.map((v, index) => {
             return {
