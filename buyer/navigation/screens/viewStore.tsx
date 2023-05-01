@@ -78,7 +78,22 @@ export const ViewStore = (props: Props) => {
 
     }, [])
 
-    
+    useEffect(() => {
+        console.log("here");
+        let newDisplayProducts:Product[] = JSON.parse(JSON.stringify(props.Store.products));
+        let selectedProductOrder:Product[] = JSON.parse(JSON.stringify(props.savedOrder?.selecedProdcuts || []))
+        console.log(props.savedOrder?.selecedProdcuts.map((product, index) => {
+            return product.units;
+        }))
+        setDisplayProducts(newDisplayProducts.concat(selectedProductOrder))
+        }, [JSON.stringify(props.savedOrder?.selecedProdcuts)])
+
+        useEffect(() => {
+            console.log("displayProductChanged2");
+            console.log(displayProducts.map(p => {
+                return p.units;
+            }))
+        }, [displayProducts])
 
 
     const BackPress = () => {
@@ -89,7 +104,7 @@ export const ViewStore = (props: Props) => {
     return (
 
         <View style={{ backgroundColor: 'white', height:'100%', justifyContent:'center', flexDirection:'row' }}>
-            <ScrollView >
+            <View style={{paddingLeft:10, paddingRight:10}}>
                 <View style={styles.Conteintor}>
                     <Pressable style={styles.backButton} onPress={BackPress}><Text style={styles.backButtonText}>Back</Text></Pressable>
                     <Image style={styles.imageStyle} source={
@@ -103,7 +118,8 @@ export const ViewStore = (props: Props) => {
                         <View style={styles.detailsView}><Text style={styles.detailsText}>{OpenDateString + " - " + CloseDateString}</Text><Text style={styles.detailsText}>{Math.round(getDistance(props.Store.location, props.thelocation)) + " km"}</Text></View>
                     </View>
                 </View>
-                {!props.savedOrder?.selecedProdcuts && arrayOfProducts.map((categoryname, index) => {
+                <ScrollView>
+                {arrayOfProducts.map((categoryname, index) => {
                 if (!displayProducts) return 
                 let localproducts = new Array<Product>();
                 for (let i = 0; i < displayProducts?.length; i++) {
@@ -119,25 +135,8 @@ export const ViewStore = (props: Props) => {
                 thelocation={props.thelocation}  
                 displayProducts={displayProducts} 
                 setSelectedProduct={props.setSelectedProduct} />})}
-
-                {props.savedOrder?.selecedProdcuts && arrayOfProducts.map((categoryname, index) => {
-                if (!displayProducts || !props.savedOrder?.selecedProdcuts) return 
-                let localproducts = new Array();
-                for (let i = 0; i < displayProducts?.length; i++) {
-                    if (displayProducts[i].category === categoryname) {
-                        localproducts.push(displayProducts[i]);
-                    }
-                }
-                return(
-                <ProductsGrid 
-                savedOrder={props.savedOrder} setSavedOrder={props.setSavedOrder} 
-                key={index} 
-                title={categoryname} 
-                thelocation={props.thelocation}  
-                displayProducts={displayProducts.concat(props.savedOrder?.selecedProdcuts)} 
-                setSelectedProduct={props.setSelectedProduct}/>)
-                })}
-            </ScrollView>
+                </ScrollView>
+            </View>
             {(props.savedOrder  && (props.savedOrder.selecedProdcuts.length > 0 )) && 
                 <Pressable onPress={() => (navigation.navigate('ViewOrder', {id:4}))} style={styles.ViewOrderButton}>
                     <Text style={{width:'100%', textAlign:'center', top:6, fontSize:16, fontWeight:'bold'}}>View Order</Text>

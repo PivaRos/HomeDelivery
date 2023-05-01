@@ -150,3 +150,19 @@ export const getTotalUnits = (array: number[]) => {
   });
   return TotalUnits;
 }
+
+
+export const setOrderSelectedProductByIndex = (order:Order, product:Product, index:number):Order => {
+    let newOrder:Order = JSON.parse(JSON.stringify(order));
+    newOrder.selecedProdcuts =  order.selecedProdcuts.map((p, theIndex) => {
+      if (index !== theIndex)
+      {
+          return p;
+      }
+      else
+      {
+        return product;
+      }
+    })
+    return newOrder;
+}

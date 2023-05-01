@@ -22,19 +22,18 @@ interface Props {
 const ProductTab = (props: Props) => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const [priceString, setPriceString] = useState("");
-    const [Product, setProduct] = useState<Product>(props.Product);
     const [glowing, setGlowing] = useState(false);
     const [units, setUnits] = useState<number>(props.Product.units || 0);
-    const [price, setPrice] = useState(Product.price.price);
+    const [price, setPrice] = useState(props.Product.price.price);
 
     useEffect(() => {
-        setPriceString(PriceString(price, Product.price.currency));
+        setPriceString(PriceString(price, props.Product.price.currency));
     }, [price])
 
     useEffect(() => {
         if (props.savedOrder)
         {
-           const number =  Product.units;
+           const number =  props.Product.units;
            if (number && number > 0)
            {
                 setGlowing(true);
@@ -51,16 +50,16 @@ const ProductTab = (props: Props) => {
 
     useEffect(() => {
         //calculates price
-        let pricePerUnit = +Product.price.price;
-        if (Product.options)
+        let pricePerUnit = +props.Product.price.price;
+        if (props.Product.options)
         {
 
-            for(let i = 0; i< Product.options?.length;i++)
+            for(let i = 0; i< props.Product.options?.length;i++)
             {
-                if (Product.options[i].additionalAllowed)
+                if (props.Product.options[i].additionalAllowed)
                 {
-                let option = Product.options[i];
-                let maxPicks = +Product.options[i].maxPicks;
+                let option = props.Product.options[i];
+                let maxPicks = +props.Product.options[i].maxPicks;
                 let OptionTotalPicks = +getTotalUnits(option.selectedOptionProducts?.map((v) => {
                     return v.units
                 }) || []);
@@ -72,13 +71,13 @@ const ProductTab = (props: Props) => {
                 }
             }
         }
-        setPrice(+pricePerUnit*(Product.units || 1))
-    }, [Product.units, JSON.stringify(Product)])
+        setPrice(+pricePerUnit*(props.Product.units || 1))
+    }, [props.Product.units, JSON.stringify(props.Product)])
 
 
     useEffect(() => {
         console.log("productTab: product Changed");
-    }, [JSON.stringify(Product)])
+    }, [JSON.stringify(props.Product)])
 
     useEffect(() => {
 
@@ -86,57 +85,32 @@ const ProductTab = (props: Props) => {
 
 
     const ProductPressed = () => {
-        props.setSelectedProduct(Product);
+        props.setSelectedProduct(JSON.parse(JSON.stringify(props.Product)));
         navigation.navigate("ViewProduct", { id: 3 });
 
     }
 
-    const GetContent = () => {
-        if (units){
-        return (
-            <TouchableWithoutFeedback onPress={ProductPressed}>
-                <View style={ !glowing ? styles.view : styles.viewGlowing}>
-                    <View style={styles.TextView}>
-                    <View style={{flexDirection:'row'}}>
-                        <Text style={styles.title}>{Product.name}</Text>
-                    <Text style={styles.units}> x {units}</Text>
-                    </View>
-                        <Text numberOfLines={2} style={styles.info_text}>{Product.info}</Text>
-                        <Text style={styles.price_text}>{priceString}</Text>
-                    </View>
-                    <Image source={
-                        {
-                            uri: uri + "data/file/" + Product.mainimage,
-                            cache: 'force-cache'
-                        }} style={styles.image} />
-    
-                </View>
-            </TouchableWithoutFeedback>);
-        }
-        else
-        {
-            return (
-                <TouchableWithoutFeedback onPress={ProductPressed}>
-                    <View style={ !glowing ? styles.view : styles.viewGlowing}>
-                        <View style={styles.TextView}>
-                        <View style={{flexDirection:'row'}}>
-                            <Text style={styles.title}>{Product.name}</Text>
-                        </View>
-                            <Text numberOfLines={2} style={styles.info_text}>{Product.info}</Text>
-                            <Text style={styles.price_text}>{priceString}</Text>
-                        </View>
-                        <Image source={
-                            {
-                                uri: uri + "data/file/" + Product.mainimage,
-                                cache: 'force-cache'
-                            }} style={styles.image} />
-        
-                    </View>
-                </TouchableWithoutFeedback>);
-        }
-    }
 
-    return GetContent();
+    return (
+        <TouchableWithoutFeedback onPress={ProductPressed}>
+            <View style={ !glowing ? styles.view : styles.viewGlowing}>
+                <View style={styles.TextView}>
+                <View style={{flexDirection:'row'}}>
+                    <Text style={styles.title}>{props.Product.name}</Text>
+                    {props.Product.units && <Text style={styles.units}> x {props.Product.units}</Text>}
+                </View>
+                    <Text numberOfLines={2} style={styles.info_text}>{props.Product.info}</Text>
+                    <Text style={styles.price_text}>{priceString}</Text>
+                </View>
+                <Image source={
+                    {
+                        uri: uri + "data/file/" + props.Product.mainimage,
+                        cache: 'force-cache'
+                    }} style={styles.image} />
+
+            </View>
+        </TouchableWithoutFeedback>);
+
 }
 
 

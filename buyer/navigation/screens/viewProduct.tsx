@@ -7,7 +7,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { ProductOptionsList } from "../../components/product/options/options_grid";
 import getSymbolFromCurrency from "currency-symbol-map";
 import { ObjectId } from "mongodb";
-import { PriceString, RemoveOrAddFromOrder, getTotalUnits, getUnits } from "../../functions";
+import { PriceString, RemoveOrAddFromOrder, getTotalUnits, getUnits, setOrderSelectedProductByIndex } from "../../functions";
 
 
 interface Props {
@@ -28,7 +28,7 @@ export const ViewProduct = (props: Props) => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const [productPrice, setProductPrice] = useState("");
     const [justChanged, setJustChanged] = useState(false);
-    const [Product, setProduct] = useState<Product>(props.selectedProduct);
+    const [Product, setProduct] = useState<Product>(JSON.parse(JSON.stringify(props.selectedProduct)));
     const [price, setPrice] = useState(Product.price.price);
     useEffect(() => {
 
@@ -87,16 +87,56 @@ export const ViewProduct = (props: Props) => {
 
     const addToOrder = async () => {
         console.log("add for products pressed");
-        
-       await setProduct(p => {
-            p.units = 1;
-            return p;
+        let foundInOrder = false;
+        let theindex= -1;
+        //check if the prodcut exists in the current order
+        props.savedOrder.selecedProdcuts.map((p , index) => {
+            let pClone = JSON.parse(JSON.stringify(p)); pClone.units=0;
+            let currentProductClone = JSON.parse(JSON.stringify(Product)); currentProductClone.units = 0;
+            if (JSON.stringify(pClone) === JSON.stringify(currentProductClone))
+            {
+                theindex = index;
+                foundInOrder = true;
+            }
         })
-      await  props.setSavedOrder(o => {
-            let order:Order  = JSON.parse(JSON.stringify(o));
-            order.selecedProdcuts.push(Product);
-            return order;
-        })
+        if (!foundInOrder)
+        {
+            //if the product is selected for the first time 
+            if (Product.units == 0)
+            {
+                await setProduct(p => {
+                    p.units = 1;
+                    return p;
+                })
+            }
+            console.log(Product.units);
+            await  props.setSavedOrder(o => {
+                let order:Order  = JSON.parse(JSON.stringify(o));
+                order.selecedProdcuts.push(Product);
+                return order;
+            })
+        }
+        else
+        {
+            console.log("this product is allready exists in the current order");
+            if (Product.units == 0)
+            {
+                await setProduct(p => {
+                    p.units = 1;
+                    return p;
+                })
+            }
+            let currentProduct:Product = JSON.parse(JSON.stringify(props.savedOrder.selecedProdcuts[theindex]));
+            if (currentProduct.units === undefined || Product.units === undefined) return;
+            let cpu = currentProduct.units;
+            currentProduct.units = (cpu+Product.units);
+
+            await  props.setSavedOrder(o => {
+                let order:Order  = JSON.parse(JSON.stringify(o));
+                let neworder =setOrderSelectedProductByIndex(order, currentProduct, theindex);
+                return neworder;
+            })
+        }
         navigation.navigate("ViewStore", {id:2})
     }
 
