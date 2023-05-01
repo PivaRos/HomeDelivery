@@ -37,7 +37,7 @@ export const ViewStore = (props: Props) => {
 
 
 
-        if (!props.savedOrder)
+        if (!props.savedOrder || JSON.stringify(props.savedOrder.seller) !== JSON.stringify(props.Store._id))
         {
             //Create new order
             let neworder: Order =  {
@@ -79,12 +79,8 @@ export const ViewStore = (props: Props) => {
     }, [])
 
     useEffect(() => {
-        console.log("here");
         let newDisplayProducts:Product[] = JSON.parse(JSON.stringify(props.Store.products));
         let selectedProductOrder:Product[] = JSON.parse(JSON.stringify(props.savedOrder?.selecedProdcuts || []))
-        console.log(props.savedOrder?.selecedProdcuts.map((product, index) => {
-            return product.units;
-        }))
         setDisplayProducts(newDisplayProducts.concat(selectedProductOrder))
         }, [JSON.stringify(props.savedOrder?.selecedProdcuts)])
 
@@ -97,7 +93,6 @@ export const ViewStore = (props: Props) => {
 
 
     const BackPress = () => {
-        props.setSavedOrder(null);
         navigation.navigate("tabs", { id: 1 })
     }
 
@@ -118,7 +113,7 @@ export const ViewStore = (props: Props) => {
                         <View style={styles.detailsView}><Text style={styles.detailsText}>{OpenDateString + " - " + CloseDateString}</Text><Text style={styles.detailsText}>{Math.round(getDistance(props.Store.location, props.thelocation)) + " km"}</Text></View>
                     </View>
                 </View>
-                <ScrollView>
+                <ScrollView style={{marginBottom:60}}>
                 {arrayOfProducts.map((categoryname, index) => {
                 if (!displayProducts) return 
                 let localproducts = new Array<Product>();
