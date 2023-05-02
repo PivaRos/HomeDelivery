@@ -11,11 +11,11 @@ import { PriceString, getTotalUnits, getUnits } from '../../functions';
 
 interface Props {
     Product: Product;
-    selectedOptions?:selectedOption[];
+    selectedOptions?: selectedOption[];
     setSelectedProduct: React.Dispatch<React.SetStateAction<Product | undefined>>
     thelocation: LocationObject;
-    savedOrder:Order | undefined |  null;
-    setSelectedOrder:React.Dispatch<React.SetStateAction<Order | undefined | null>>
+    savedOrder: Order | undefined | null;
+    setSelectedOrder: React.Dispatch<React.SetStateAction<Order | undefined | null>>
 }
 
 
@@ -31,53 +31,43 @@ const ProductTab = (props: Props) => {
     }, [price])
 
     useEffect(() => {
-        if (props.savedOrder)
-        {
-           const number =  props.Product.units;
-           if (number && number > 0)
-           {
+        if (props.savedOrder) {
+            const number = props.Product.units;
+            if (number && number > 0) {
                 setGlowing(true);
-           }
-           else
-           {
+            }
+            else {
                 setGlowing(false);
-           }
+            }
 
-           setUnits(number || 0);
-           
+            setUnits(number || 0);
+
         }
     }, [])
 
     useEffect(() => {
         //calculates price
         let pricePerUnit = +props.Product.price.price;
-        if (props.Product.options)
-        {
+        if (props.Product.options) {
 
-            for(let i = 0; i< props.Product.options?.length;i++)
-            {
-                if (props.Product.options[i].additionalAllowed)
-                {
-                let option = props.Product.options[i];
-                let maxPicks = +props.Product.options[i].maxPicks;
-                let OptionTotalPicks = +getTotalUnits(option.selectedOptionProducts?.map((v) => {
-                    return v.units
-                }) || []);
-                if(OptionTotalPicks-maxPicks > 0)
-                {
+            for (let i = 0; i < props.Product.options?.length; i++) {
+                if (props.Product.options[i].additionalAllowed) {
+                    let option = props.Product.options[i];
+                    let maxPicks = +props.Product.options[i].maxPicks;
+                    let OptionTotalPicks = +getTotalUnits(option.selectedOptionProducts?.map((v) => {
+                        return v.units
+                    }) || []);
+                    if (OptionTotalPicks - maxPicks > 0) {
 
-                    pricePerUnit += (OptionTotalPicks-maxPicks)*option.additionalPricePerUnit.price;
-                }
+                        pricePerUnit += (OptionTotalPicks - maxPicks) * option.additionalPricePerUnit.price;
+                    }
                 }
             }
         }
-        setPrice(+pricePerUnit*(props.Product.units || 1))
+        setPrice(+pricePerUnit * (props.Product.units || 1))
     }, [props.Product.units, JSON.stringify(props.Product)])
 
 
-    useEffect(() => {
-        console.log("productTab: product Changed");
-    }, [JSON.stringify(props.Product)])
 
     useEffect(() => {
 
@@ -93,12 +83,12 @@ const ProductTab = (props: Props) => {
 
     return (
         <TouchableWithoutFeedback onPress={ProductPressed}>
-            <View style={ !glowing ? styles.view : styles.viewGlowing}>
+            <View style={!glowing ? styles.view : styles.viewGlowing}>
                 <View style={styles.TextView}>
-                <View style={{flexDirection:'row'}}>
-                    <Text style={styles.title}>{props.Product.name}</Text>
-                    {props.Product.units && <Text style={styles.units}> x {props.Product.units}</Text>}
-                </View>
+                    <View style={{ flexDirection: 'row' }}>
+                        <Text style={styles.title}>{props.Product.name}</Text>
+                        {props.Product.units && <Text style={styles.units}> x {props.Product.units}</Text>}
+                    </View>
                     <Text numberOfLines={2} style={styles.info_text}>{props.Product.info}</Text>
                     <Text style={styles.price_text}>{priceString}</Text>
                 </View>
@@ -115,18 +105,18 @@ const ProductTab = (props: Props) => {
 
 
 const styles = StyleSheet.create({
-    units:{
-        top :0,
+    units: {
+        top: 0,
     },
-    viewGlowing:{
+    viewGlowing: {
         display: 'flex',
         flexDirection: 'row',
         width: '100%',
         marginTop: 5,
         height: 100,
         backgroundColor: "white",
-        borderColor:"lightgreen",
-        borderWidth:1,
+        borderColor: "lightgreen",
+        borderWidth: 1,
         alignItems: 'center',
         shadowColor: "lightgreen",
         shadowOffset: {

@@ -49,8 +49,7 @@ export default function App() {
   onLayoutRootView();
 
   useEffect(() => {
-    if (selectedProduct && !selectedProduct?.units)
-    {
+    if (selectedProduct && !selectedProduct?.units) {
       let p = selectedProduct;
       p.units = 0;
       setSelectedProduct(p);
@@ -60,7 +59,7 @@ export default function App() {
 
 
   useEffect(() => {
-    
+
   }, [JSON.stringify(savedOrder)])
 
   const getContent = () => {
@@ -75,10 +74,10 @@ export default function App() {
           <NavigationContainer>
             <Stack.Navigator screenOptions={{ headerShown: false, fullScreenGestureEnabled: true }}>
               <Stack.Screen name='tabs' children={() => <Tabs savedOrder={savedOrder} setSavedOrder={setSavedOrder} homeMadeStores={homeMadeStores} setHomeMadeStores={setHomeMadeStores} refreshing={refreshing} setSelectedStore={setSelectedStore} foodStores={foodStores} setFoodStores={setFoodStores} location={thelocation} />} />
-              {selectedStore && <Stack.Screen name='ViewStore' children={() => <ViewStore savedOrder={savedOrder} setSavedOrder={setSavedOrder}  setSelectedProduct={setSelectedProduct} thelocation={thelocation} Store={selectedStore} />} />}
+              {selectedStore && <Stack.Screen name='ViewStore' children={() => <ViewStore savedOrder={savedOrder} setSavedOrder={setSavedOrder} setSelectedProduct={setSelectedProduct} thelocation={thelocation} Store={selectedStore} />} />}
               {!selectedStore && <Stack.Screen name='ViewStore' children={() => <View><Text>asasd</Text></View>} />}
-              {(selectedProduct && selectedStore && savedOrder) && <Stack.Screen name='ViewProduct' children={() => <ViewProduct  setSavedOrder={setSavedOrder} Store={selectedStore} savedOrder={savedOrder} setSelectedProduct={setSelectedProduct} selectedProduct={selectedProduct} thelocation={thelocation} />} />}
-              {savedOrder && <Stack.Screen name='ViewOrder' children={() => <ViewOrder/>} />}
+              {(selectedProduct && selectedStore && savedOrder) && <Stack.Screen name='ViewProduct' children={() => <ViewProduct setSavedOrder={setSavedOrder} Store={selectedStore} savedOrder={savedOrder} setSelectedProduct={setSelectedProduct} selectedProduct={selectedProduct} thelocation={thelocation} />} />}
+              {savedOrder && <Stack.Screen name='ViewOrder' children={() => <ViewOrder Order={savedOrder} />} />}
               {!selectedProduct && <Stack.Screen name='ViewProduct' children={() => <View><Text>asdasd</Text></View>} />}
             </Stack.Navigator>
           </NavigationContainer>

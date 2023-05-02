@@ -1,7 +1,18 @@
 import { View, Text } from "react-native";
+import { Order } from "../../interfaces";
+import ProductSumTab from "../../components/product/productSumTab";
 
 
-export const ViewOrder = () => {
 
-    return (<View><Text>this is order view</Text></View>);
+interface props {
+    Order: Order;
+}
+
+export const ViewOrder = (props: props) => {
+
+    return (<View>
+        {props.Order.selecedProdcuts.map((Product, index) => {
+            return <ProductSumTab Product={Product} key={index} />
+        })}
+    </View>);
 }

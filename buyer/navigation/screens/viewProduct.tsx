@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Button, Pressable, StyleSheet, ScrollView, Image } from 'react-native';
+import { View, Text, Pressable, StyleSheet, ScrollView, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { LocationObject, Order, Product, RootStackParamList, Store, selectedOption } from "../../interfaces";
+import { LocationObject, Order, Product, RootStackParamList, Store } from "../../interfaces";
 import { uri } from "../../envVars";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { ProductOptionsList } from "../../components/product/options/options_grid";
-import getSymbolFromCurrency from "currency-symbol-map";
-import { ObjectId } from "mongodb";
-import { PriceString, RemoveOrAddFromOrder, getTotalUnits, getUnits, setOrderSelectedProductByIndex } from "../../functions";
+import { PriceString, getTotalUnits, setOrderSelectedProductByIndex } from "../../functions";
 
 
 interface Props {
@@ -31,9 +29,9 @@ export const ViewProduct = (props: Props) => {
     const [Product, setProduct] = useState<Product>(JSON.parse(JSON.stringify(props.selectedProduct)));
     const [price, setPrice] = useState(Product.price.price);
     const [selectedProductIndex, setSelectedProductIndex] = useState(-1);
+
+
     useEffect(() => {
-
-
         //price string
         calculatePriceString();
         if (!Product.units) {
@@ -47,10 +45,6 @@ export const ViewProduct = (props: Props) => {
 
 
     }, [])
-
-
-
-
 
     useEffect(() => {
         //if the Product is in selectedProducts list then we update the selectedProductIndex
@@ -68,8 +62,6 @@ export const ViewProduct = (props: Props) => {
             setSelectedProductIndex(tempindex);
         }
     }, [])
-
-
 
     const calculatePriceString = () => {
         //price string
@@ -103,14 +95,8 @@ export const ViewProduct = (props: Props) => {
         setPrice(+pricePerUnit * (Product.units || 1))
     }, [Product.units, JSON.stringify(Product)])
 
-
-
-
-
     const checkIfNeedUpdate = () => {
-
         let same = JSON.stringify(props.selectedProduct) === JSON.stringify(Product)
-
         if (props.selectedProduct.units && !same) {
 
             setJustChanged(true);
@@ -119,8 +105,6 @@ export const ViewProduct = (props: Props) => {
             setJustChanged(false);
         }
     }
-
-
 
     const addToOrder = async () => {
         let foundInOrder = false;
@@ -180,8 +164,6 @@ export const ViewProduct = (props: Props) => {
             }
             return newProduct
         })
-        console.log(props.selectedProduct.units)
-        console.log(Product.units);
         if (!Product.units) return;
         if (props.selectedProduct.units !== Product.units + 1) {
             setJustChanged(true);
@@ -223,10 +205,9 @@ export const ViewProduct = (props: Props) => {
     }
 
     const saveOrder = () => {
-        console.log("save product from order Pressed");
         if (selectedProductIndex === -1) {
             //the Product is not in selectedProduct list and we need to add to the list for the first time
-
+            //nothing should happen;
         }
         else {
             props.setSavedOrder(o => {
