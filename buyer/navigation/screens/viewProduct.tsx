@@ -15,9 +15,9 @@ interface Props {
     thelocation: LocationObject;
     setSelectedProduct: React.Dispatch<React.SetStateAction<Product | undefined>>;
     savedOrder: Order;
-    setSavedOrder:React.Dispatch<React.SetStateAction<Order | undefined | null>>;
+    setSavedOrder: React.Dispatch<React.SetStateAction<Order | undefined | null>>;
     Store: Store;
-    indexinSelectedProduct?:number;
+    indexinSelectedProduct?: number;
 }
 
 const imageUri = uri + "data/file/";
@@ -36,8 +36,7 @@ export const ViewProduct = (props: Props) => {
 
         //price string
         calculatePriceString();
-        if (!Product.units)
-        {
+        if (!Product.units) {
             console.log("changed Units");
             setProduct(p => {
                 p.units = 0;
@@ -50,78 +49,73 @@ export const ViewProduct = (props: Props) => {
     }, [])
 
 
-    
+
 
 
     useEffect(() => {
         //if the Product is in selectedProducts list then we update the selectedProductIndex
         let found = false;
         let tempindex = -1;
-        props.savedOrder.selecedProdcuts.map((p , index) => {
-            let pClone:Product = JSON.parse(JSON.stringify(p));
-            let currentProductClone:Product = JSON.parse(JSON.stringify(props.selectedProduct));
-            if (JSON.stringify(pClone) === JSON.stringify(currentProductClone))
-            {
+        props.savedOrder.selecedProdcuts.map((p, index) => {
+            let pClone: Product = JSON.parse(JSON.stringify(p));
+            let currentProductClone: Product = JSON.parse(JSON.stringify(props.selectedProduct));
+            if (JSON.stringify(pClone) === JSON.stringify(currentProductClone)) {
                 tempindex = index;
                 found = true;
             }
         })
-        if (found)
-        {
+        if (found) {
             setSelectedProductIndex(tempindex);
         }
-    }, []) 
+    }, [])
 
 
 
     const calculatePriceString = () => {
         //price string
-       setProductPrice(PriceString(price, Product.price.currency));
+        setProductPrice(PriceString(price, Product.price.currency));
     }
 
     useEffect(() => {
         calculatePriceString();
-    },[price])
+    }, [price])
 
 
     useEffect(() => {
         //calculates price
         let pricePerUnit = +Product.price.price;
-        if (Product.options)
-        {
+        if (Product.options) {
 
-            for(let i = 0; i< Product.options?.length;i++)
-            {
-                if (Product.options[i].additionalAllowed)
-                {
-                let option = Product.options[i];
-                let maxPicks = +Product.options[i].maxPicks;
-                let OptionTotalPicks = +getTotalUnits(option.selectedOptionProducts?.map((v) => {
-                    return v.units
-                }) || []);
-                if(OptionTotalPicks-maxPicks > 0)
-                {
+            for (let i = 0; i < Product.options?.length; i++) {
+                if (Product.options[i].additionalAllowed) {
+                    let option = Product.options[i];
+                    let maxPicks = +Product.options[i].maxPicks;
+                    let OptionTotalPicks = +getTotalUnits(option.selectedOptionProducts?.map((v) => {
+                        return v.units
+                    }) || []);
+                    if (OptionTotalPicks - maxPicks > 0) {
 
-                    pricePerUnit += (OptionTotalPicks-maxPicks)*option.additionalPricePerUnit.price;
-                }
+                        pricePerUnit += (OptionTotalPicks - maxPicks) * option.additionalPricePerUnit.price;
+                    }
                 }
             }
         }
-        setPrice(+pricePerUnit*(Product.units || 1))
+        setPrice(+pricePerUnit * (Product.units || 1))
     }, [Product.units, JSON.stringify(Product)])
 
-    const checkIfNeedUpdate = () => {
-        
-        let same = JSON.stringify(props.selectedProduct) === JSON.stringify(Product)
-        console.log(props.selectedProduct.units);
-        console.log(same);
 
-        if (props.selectedProduct.units && !same)
-        {   
+
+
+
+    const checkIfNeedUpdate = () => {
+
+        let same = JSON.stringify(props.selectedProduct) === JSON.stringify(Product)
+
+        if (props.selectedProduct.units && !same) {
 
             setJustChanged(true);
         }
-        else{
+        else {
             setJustChanged(false);
         }
     }
@@ -129,137 +123,128 @@ export const ViewProduct = (props: Props) => {
 
 
     const addToOrder = async () => {
-        console.log("add for products pressed");
         let foundInOrder = false;
-        let theindex= -1;
+        let theindex = -1;
         //check if the prodcut exists in the current order
-        props.savedOrder.selecedProdcuts.map((p , index) => {
-            let pClone = JSON.parse(JSON.stringify(p)); pClone.units=0;
+        props.savedOrder.selecedProdcuts.map((p, index) => {
+            let pClone = JSON.parse(JSON.stringify(p)); pClone.units = 0;
             let currentProductClone = JSON.parse(JSON.stringify(Product)); currentProductClone.units = 0;
-            if (JSON.stringify(pClone) === JSON.stringify(currentProductClone))
-            {
+            if (JSON.stringify(pClone) === JSON.stringify(currentProductClone)) {
                 theindex = index;
                 foundInOrder = true;
             }
         })
-        if (!foundInOrder)
-        {
+        if (!foundInOrder) {
             //if the product is selected for the first time 
-            if (Product.units == 0)
-            {
+            if (Product.units == 0) {
                 await setProduct(p => {
                     p.units = 1;
                     return p;
                 })
             }
-            await  props.setSavedOrder(o => {
-                let order:Order  = JSON.parse(JSON.stringify(o));
+            await props.setSavedOrder(o => {
+                let order: Order = JSON.parse(JSON.stringify(o));
                 order.selecedProdcuts.push(Product);
                 return order;
             })
         }
-        else
-        {
-            if (Product.units == 0)
-            {
+        else {
+            if (Product.units == 0) {
                 await setProduct(p => {
                     p.units = 1;
                     return p;
                 })
             }
-            let currentProduct:Product = JSON.parse(JSON.stringify(props.savedOrder.selecedProdcuts[theindex]));
+            let currentProduct: Product = JSON.parse(JSON.stringify(props.savedOrder.selecedProdcuts[theindex]));
             if (currentProduct.units === undefined || Product.units === undefined) return;
             let cpu = currentProduct.units;
-            currentProduct.units = (cpu+Product.units);
+            currentProduct.units = (cpu + Product.units);
 
-            await  props.setSavedOrder(o => {
-                let order:Order  = JSON.parse(JSON.stringify(o));
-                let neworder =setOrderSelectedProductByIndex(order, currentProduct, theindex);
+            await props.setSavedOrder(o => {
+                let order: Order = JSON.parse(JSON.stringify(o));
+                let neworder = setOrderSelectedProductByIndex(order, currentProduct, theindex);
                 return neworder;
             })
         }
-        navigation.navigate("ViewStore", {id:2})
+        navigation.navigate("ViewStore", { id: 2 })
     }
 
     const changeUnitsUp = async () => {
-        console.log("product units pressed up");
         setProduct(Product => {
-            let newProduct:Product = JSON.parse(JSON.stringify(Product));
-            if (newProduct.units !== undefined)
-            {
-            newProduct.units = newProduct.units+1;
+            let newProduct: Product = JSON.parse(JSON.stringify(Product));
+            if (newProduct.units !== undefined) {
+                newProduct.units = newProduct.units + 1;
             }
-            else
-            {
+            else {
                 newProduct.units = 1;
             }
             return newProduct
         })
-        checkIfNeedUpdate();
+        console.log(props.selectedProduct.units)
+        console.log(Product.units);
+        if (!Product.units) return;
+        if (props.selectedProduct.units !== Product.units + 1) {
+            setJustChanged(true);
+        }
     }
 
     const changeUnitsDown = async () => {
-        console.log("product units pressed down");
-        if (Product.units !== undefined &&  Product.units > 0)
-        {
+        if (Product.units !== undefined && Product.units > 0) {
             setProduct(Product => {
-                let newProduct:Product = JSON.parse(JSON.stringify(Product));
-                if (newProduct.units !== undefined)
-                {
-                newProduct.units = newProduct.units-1;
+                let newProduct: Product = JSON.parse(JSON.stringify(Product));
+                if (newProduct.units !== undefined) {
+                    newProduct.units = newProduct.units - 1;
                 }
                 return newProduct
             })
         }
-        checkIfNeedUpdate();
+        if (!Product.units) return;
+        if (props.selectedProduct.units !== Product.units - 1) {
+            setJustChanged(true);
+        }
     }
-    
+
     const RemoveFromOrder = async () => {
-        console.log("remove from products pressed");
         props.setSavedOrder(o => {
-            let order:Order  = JSON.parse(JSON.stringify(o));
-            for(let i = 0 ;i < order.selecedProdcuts.length;i++)
-            {
+            let order: Order = JSON.parse(JSON.stringify(o));
+            for (let i = 0; i < order.selecedProdcuts.length; i++) {
                 let ps = order.selecedProdcuts[i];
-                if (JSON.stringify(ps) === JSON.stringify(Product))
-                {
+                if (JSON.stringify(ps) === JSON.stringify(Product)) {
                     order.selecedProdcuts.splice(i, 1);
 
-                    
+
                 }
             }
-            
+
             return order;
         })
-        navigation.navigate("ViewStore", {id:2})
+        navigation.navigate("ViewStore", { id: 2 })
 
     }
 
-    const saveOrder =  () => {
+    const saveOrder = () => {
         console.log("save product from order Pressed");
-        if (selectedProductIndex === -1)
-        {
+        if (selectedProductIndex === -1) {
             //the Product is not in selectedProduct list and we need to add to the list for the first time
 
         }
-        else
-        {
+        else {
             props.setSavedOrder(o => {
-                let newOrder:Order = JSON.parse(JSON.stringify(o));
-                let NewProduct :Product = JSON.parse(JSON.stringify(Product));
+                let newOrder: Order = JSON.parse(JSON.stringify(o));
+                let NewProduct: Product = JSON.parse(JSON.stringify(Product));
                 newOrder.selecedProdcuts[selectedProductIndex] = NewProduct;
                 return newOrder
             })
         }
-        navigation.navigate("ViewStore", {id:2});
+        navigation.navigate("ViewStore", { id: 2 });
 
     }
 
     return (
 
         <View style={{ backgroundColor: 'white', height: '100%' }}>
-            
-                <View >
+
+            <View >
                 <ScrollView>
                     <Pressable style={styles.backButton} onPress={() => (navigation.navigate("ViewStore", { id: 2 }))}><Text style={styles.backButtonText}>Back</Text></Pressable>
                     <Image style={styles.imageStyle} source={
@@ -268,123 +253,123 @@ export const ViewProduct = (props: Props) => {
                             cache: "force-cache"
                         }} />
                     <View style={styles.productInfo}>
-                        <View style={{alignItems:'center'}}>
-                        <Text  style={styles.productName}>{Product.name}</Text>                        
-                        <Text style={styles.productPrice}>{productPrice}</Text>
-                        <Text style={styles.productDesc}>{Product.info}</Text>
+                        <View style={{ alignItems: 'center' }}>
+                            <Text style={styles.productName}>{Product.name}</Text>
+                            <Text style={styles.productPrice}>{productPrice}</Text>
+                            <Text style={styles.productDesc}>{Product.info}</Text>
                         </View>
                     </View>
-                    <ScrollView style={[styles.restView, {height:340, paddingBottom:10,}]}>
-                     {Product.options?.map((option, index) => {
-                        return (<ProductOptionsList checkIfNeedUpdate={checkIfNeedUpdate} price={price} setPrice={setPrice} optionIndex={index}  key={index} selectedProduct={Product} setSelectedProduct={setProduct} option={option} store={props.Store} />)
-                    })}  
+                    <ScrollView style={[styles.restView, { height: 340, paddingBottom: 10, }]}>
+                        {Product.options?.map((option, index) => {
+                            return (<ProductOptionsList checkIfNeedUpdate={checkIfNeedUpdate} price={price} setPrice={setPrice} optionIndex={index} key={index} selectedProduct={Product} setSelectedProduct={setProduct} option={option} store={props.Store} />)
+                        })}
                     </ScrollView>
-  
 
 
-            </ScrollView>
+
+                </ScrollView>
             </View >
-            <View  style={styles.PressableUnits}>
-            <Pressable style={{left:5, position:'absolute', zIndex:3}} onPress={changeUnitsUp}>
+            <View style={styles.PressableUnits}>
+                <Pressable style={{ left: 5, position: 'absolute', zIndex: 3 }} onPress={changeUnitsUp}>
                     <Text style={styles.buttonText}>+</Text>
-            </Pressable>
-            <Text style={[styles.buttonText, {justifyContent:'center', display:'flex', flexDirection:'row', width:'100%', textAlign:'center'}]}>{Product.units}</Text>
-            <Pressable style={{right:5, position:'absolute', zIndex:3}} onPress={changeUnitsDown} >
+                </Pressable>
+                <Text style={[styles.buttonText, { justifyContent: 'center', display: 'flex', flexDirection: 'row', width: '100%', textAlign: 'center' }]}>{Product.units}</Text>
+                <Pressable style={{ right: 5, position: 'absolute', zIndex: 3 }} onPress={changeUnitsDown} >
                     <Text style={styles.buttonText}>-</Text>
-            </Pressable>
+                </Pressable>
             </View>
-            {((Product.units===0) && !justChanged) && <Pressable onPress={addToOrder} style={styles.PressableAdd}>
-                    <Text style={styles.buttonText}>Add to order</Text><Text style={styles.buttonPrice}>{productPrice}</Text>
+            {((Product.units === 0) && !justChanged) && <Pressable onPress={addToOrder} style={styles.PressableAdd}>
+                <Text style={styles.buttonText}>Add to order</Text><Text style={styles.buttonPrice}>{productPrice}</Text>
             </Pressable>}
-            { (Product.units !== undefined && Product.units > 0 && !justChanged)  && <Pressable onPress={RemoveFromOrder} style={[styles.PressableAdd, {backgroundColor:"#fa3737"}]}>
-                    <Text style={styles.buttonText}>{(Product.units > 1) ? "Remove all" : "Remove"}</Text><Text style={styles.buttonPrice}>{"- "+productPrice}</Text>
+            {(Product.units !== undefined && Product.units > 0 && !justChanged) && <Pressable onPress={RemoveFromOrder} style={[styles.PressableAdd, { backgroundColor: "#fa3737" }]}>
+                <Text style={styles.buttonText}>{(Product.units > 1) ? "Remove all" : "Remove"}</Text><Text style={styles.buttonPrice}>{"- " + productPrice}</Text>
             </Pressable>}
             {justChanged && <Pressable onPress={saveOrder} style={styles.PressableAdd}>
-                    <Text style={styles.buttonText}>Update order</Text>
+                <Text style={styles.buttonText}>Update order</Text>
             </Pressable>}
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    restView:{
-        marginTop:180,
+    restView: {
+        marginTop: 180,
     },
-    productName:{
-        fontSize:24,
-        fontWeight:'bold'
+    productName: {
+        fontSize: 24,
+        fontWeight: 'bold'
     },
-    productPrice:{
-        fontSize:18,
+    productPrice: {
+        fontSize: 18,
         color: '#5C985C',
-        padding:5,
-        right:0
+        padding: 5,
+        right: 0
     },
-    productDesc:{
-        fontSize:20,
+    productDesc: {
+        fontSize: 20,
         color: 'grey',
-        padding:5,
+        padding: 5,
     },
-    productInfo:{
-        justifyContent:'center',
-        display:'flex',
-        flexDirection:'row',
-        width:'100%',
-        top:160,
-        padding:10,
-        borderBottomWidth:1,
+    productInfo: {
+        justifyContent: 'center',
+        display: 'flex',
+        flexDirection: 'row',
+        width: '100%',
+        top: 160,
+        padding: 10,
+        borderBottomWidth: 1,
     },
-    PressableAdd:{
-        height:50,
-        width:'60%',
-        backgroundColor:"lightgreen",
-        bottom:8,
-        borderRadius:10,
-        right:8,
-        position:'absolute',
+    PressableAdd: {
+        height: 50,
+        width: '60%',
+        backgroundColor: "lightgreen",
+        bottom: 8,
+        borderRadius: 10,
+        right: 8,
+        position: 'absolute',
         shadowColor: "#000",
-    shadowOffset: {
-        width: 0,
-        height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
 
-    elevation: 5,
+        elevation: 5,
     },
-    PressableUnits:{
-        flexDirection:'row',
-        height:50,
-        width:'35%',
-        backgroundColor:"white",
-        bottom:8,
-        borderRadius:10,
-        left:5,
-        position:'absolute',   
+    PressableUnits: {
+        flexDirection: 'row',
+        height: 50,
+        width: '35%',
+        backgroundColor: "white",
+        bottom: 8,
+        borderRadius: 10,
+        left: 5,
+        position: 'absolute',
         shadowColor: "#000",
-    shadowOffset: {
-        width: 0,
-        height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
 
-    elevation: 5,
+        elevation: 5,
     },
-    buttonText:{
-        fontSize:16,
-        top:0,
-        left:0,
-        padding:15,
-        fontWeight:'bold',
+    buttonText: {
+        fontSize: 16,
+        top: 0,
+        left: 0,
+        padding: 15,
+        fontWeight: 'bold',
     },
-    buttonPrice:{
-        fontSize:16,
-        fontWeight:'bold',
-        position:'absolute',
-        right:0,
-        padding:15,
-        top:0,
+    buttonPrice: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        position: 'absolute',
+        right: 0,
+        padding: 15,
+        top: 0,
     },
     backButton: {
         zIndex: 3,
@@ -411,9 +396,9 @@ const styles = StyleSheet.create({
         height: 'auto',
     },
     imageStyle: {
-        top:0,
-        position:'absolute',
-        width:'100%',
-        height:200,
+        top: 0,
+        position: 'absolute',
+        width: '100%',
+        height: 200,
     }
 })
