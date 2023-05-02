@@ -22,47 +22,51 @@ const Router = (MongoObject) => {
     // get all orders no metter what status
     SellerRouter.get('/orders', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const Orders = yield MongoObject.collections.Orders.find({ $and: [
+            const orders = yield MongoObject.collections.Orders.countDocuments({
+                $and: [
                     { seller: new mongodb_1.ObjectId(res.locals.account._id) },
                     { status: { $ne: 0 } }
-                ] }).toArray();
-            if (Orders.length) {
-                return res.json({
+                ]
+            });
+            if (orders > 0) {
+                res.json({
                     err: false,
-                    msg: "ok",
-                    data: Orders
+                    msg: 'ok',
+                    data: orders
                 });
             }
             else {
-                return res.json({
+                res.json({
                     err: false,
-                    msg: "not found",
+                    msg: 'not found',
                     data: null
                 });
             }
         }
         catch (_a) {
             res.status(500);
-            return res.json({
+            res.json({
                 err: true,
-                msg: "unable to verify request"
+                msg: 'unable to verify request'
             });
         }
     }));
-    //accept new order *
+    // accept new order *
     SellerRouter.post('/order/accept', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const order_id = req.body.Orderid;
             const store = yield MongoObject.collections.Stores.findOne({ authorizedUsers: { $elemMatch: res.locals.account._id } });
-            const order = yield MongoObject.collections.Orders.findOne({ $and: [
+            const order = yield MongoObject.collections.Orders.findOne({
+                $and: [
                     { _id: new mongodb_1.ObjectId(order_id) },
                     { store_id: store._id }
-                ] });
+                ]
+            });
             if (order === null)
-                throw new Error("null order");
-            if (order.status !== interfaces_1.order_status.pending)
-                throw new Error("status not pending");
-            yield MongoObject.collections.Orders.updateOne({ _id: new mongodb_1.ObjectId(order_id) }, { $set: { status: interfaces_1.order_status.accepted } });
+                throw new Error('null order');
+            if (order.status !== interfaces_1.OrderStatus.pending)
+                throw new Error('status not pending');
+            yield MongoObject.collections.Orders.updateOne({ _id: new mongodb_1.ObjectId(order_id) }, { $set: { status: interfaces_1.OrderStatus.accepted } });
             return res.sendStatus(200);
         }
         catch (_b) {

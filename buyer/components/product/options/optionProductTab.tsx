@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import ReactNative, { StyleSheet, View, Text, Image, Dimensions, TouchableWithoutFeedback, Animated, Easing, ScrollView, Pressable } from 'react-native';
+import  { StyleSheet, View, Text, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Option, RootStackParamList, Store, optionProduct } from '../../../interfaces';
@@ -16,14 +16,13 @@ interface Props {
     setOptionProductCheckedState: React.Dispatch<React.SetStateAction<boolean[]>>;
     optionProductCheckedState: boolean[];
     option:Option;
+    checkIfNeedUpdate:() => void
 }
 
 
 const OptionProductTab = (props: Props) => {
-    const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const [isChecked, setIsChecked] = useState(props.isChecked);
     const [units, setUnits] = useState(props.optionProductUnits[props.index]);
-    const [price, setPrice] = useState();
 
     
 
@@ -35,21 +34,25 @@ const OptionProductTab = (props: Props) => {
     const CheckBoxPressed = (isChecked: boolean) => {
         if (isChecked)
         {
-        if ((props.option.additionalAllowed && ((props.option.maxPicks +props.option.additionalMax) > getTotalUnits(props.optionProductUnits))) || !props.option.additionalAllowed && (props.option.maxPicks > getTotalUnits(props.optionProductUnits)))
-        {
-            setIsChecked(isChecked);
-            setChecked(isChecked);
-        }
-        else{
-            //no animation;
+            //if user wants to check the box
+            if ((props.option.additionalAllowed && ((props.option.maxPicks +props.option.additionalMax) > getTotalUnits(props.optionProductUnits))) || !props.option.additionalAllowed && (props.option.maxPicks > getTotalUnits(props.optionProductUnits)))
+            {
+                setIsChecked(isChecked);
+                setChecked(isChecked);
+                
+            }
+            else{
+                //no animation;
 
+            }
         }
-        }
-        else{
+        else
+        {
+            //if user wants to uncheck the box
             setIsChecked(isChecked);
             setChecked(isChecked);   
         }
-
+        
     }
 
     const setChecked = (isChecked: boolean) => {

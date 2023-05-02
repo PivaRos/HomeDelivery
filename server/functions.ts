@@ -14,25 +14,27 @@ export const getDistance = (Location1: LocationObject, Location2: LocationObject
   }
 }
 
-export const getSeconds = (addDay: boolean) => {
-  if (addDay) return (moment().get('seconds') - moment().startOf('day').add(1, 'day').get('seconds'));
-  return (moment().get('seconds') - moment().startOf('day').get('seconds'));
-};
+export const getSeconds = (addDay:boolean) => {
+  if (addDay) return (+moment() - +moment().startOf('day')) / 1000 + 86400;
+  return (+moment() - +moment().startOf('day')) / 1000;
+}
 
-export const isOpen = (openHoursObject: OpenHoursObject, hasCloseNextDay: boolean) => {
-  const time = getSeconds(hasCloseNextDay);
-  return time < openHoursObject.closedFrom && time > openHoursObject.openFrom;
-};
+export const isOpen = (openHoursObject:OpenHoursObject, hasCloseNextDay:boolean) => {
+  const time = getSeconds(hasCloseNextDay) ;
+  if (time < openHoursObject.closedFrom && time > openHoursObject.openFrom) return true;
+  return false;
+}
 
-export const timeToSecondsFromStartOfDay = (time: string, isNextDay: boolean) => {
-  try {
-    const timeAndDate = moment(`2023031T${time}`);
-    let asd = ((+timeAndDate - +timeAndDate.startOf('day')) / 1000);
-    if (isNextDay) {
-      asd += 86400
-    }
-    return asd
-  } catch {
+export const timeToSecondsFromStartOfDay = (time:string, isNextDay:Boolean) => {
+  try{
+  var timeAndDate = moment("2023031" + 'T' + time);
+  var asd = ((+timeAndDate - +timeAndDate.startOf('day')) / 1000);
+  if (isNextDay)
+  {
+      asd += 86400;
+  }
+  return asd;
+  }catch{
 
   }
 }

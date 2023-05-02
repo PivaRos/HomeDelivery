@@ -24,12 +24,14 @@ export const ViewStore = (props: Props) => {
     const [displayProducts, setDisplayProducts] = useState<Product[]>(props.Store.products);
     const [arrayOfProducts, setArrayOfProducts] = useState<string[]>([]);
 
+    const DistanceKm : number = getDistance(props.Store.location, props.thelocation);
+
+
     useEffect(() => {
         const OpenDate = toDateTime(props.Store.openHoursObject.openFrom).toLocaleTimeString().split(":");
 
         if (props.Store.openHoursObject.closedFrom > 86400) props.Store.openHoursObject.closedFrom -= 86400
         const CloseDate = toDateTime(props.Store.openHoursObject.closedFrom).toLocaleTimeString().split(":");
-
 
 
         setOpenDateString(OpenDate[0] + ":" + OpenDate[1]);
@@ -84,12 +86,6 @@ export const ViewStore = (props: Props) => {
         setDisplayProducts(newDisplayProducts.concat(selectedProductOrder))
         }, [JSON.stringify(props.savedOrder?.selecedProdcuts)])
 
-        useEffect(() => {
-            console.log("displayProductChanged2");
-            console.log(displayProducts.map(p => {
-                return p.units;
-            }))
-        }, [displayProducts])
 
 
     const BackPress = () => {
@@ -110,7 +106,8 @@ export const ViewStore = (props: Props) => {
                         }} />
                     <View style={styles.storeInfo}>
                         <Text style={styles.StoreName}>{props.Store?.name}</Text>
-                        <View style={styles.detailsView}><Text style={styles.detailsText}>{OpenDateString + " - " + CloseDateString}</Text><Text style={styles.detailsText}>{Math.round(getDistance(props.Store.location, props.thelocation)) + " km"}</Text></View>
+                        { DistanceKm > 1 &&  <View style={styles.detailsView}><Text style={styles.detailsText}>{OpenDateString + " - " + CloseDateString}</Text><Text style={styles.detailsText}>{Math.round(getDistance(props.Store.location, props.thelocation)) + " km"}</Text></View>}
+                        { DistanceKm < 1 &&  <View style={styles.detailsView}><Text style={styles.detailsText}>{OpenDateString + " - " + CloseDateString}</Text><Text style={styles.detailsText}>{Math.round(getDistance(props.Store.location, props.thelocation))*1000 + " m"}</Text></View>}
                     </View>
                 </View>
                 <ScrollView style={{marginBottom:60}}>

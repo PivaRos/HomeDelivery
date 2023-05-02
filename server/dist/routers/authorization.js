@@ -14,34 +14,36 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const express_validator_1 = require("express-validator");
-const functions_1 = require("../functions");
+const uuid_1 = require("uuid");
 const Router = (MongoObject) => {
     const AuthorizationRouter = express_1.default.Router();
-    AuthorizationRouter.post("/account", (0, express_validator_1.check)('username').exists().isLength({ min: 4 }), (0, express_validator_1.check)("password").exists().isLength({ min: 7 }), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    AuthorizationRouter.post('/account', (0, express_validator_1.check)('username').exists().isLength({ min: 4 }), (0, express_validator_1.check)('password').exists().isLength({ min: 7 }), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             (0, express_validator_1.validationResult)(req).throw();
-            var user = yield MongoObject.collections.Accounts.findOne({ $and: [
+            const user = yield MongoObject.collections.Accounts.findOne({
+                $and: [
                     { username: req.body.username },
                     { password: req.body.password }
-                ] });
-            var sessionid = (0, functions_1.makeid)(14);
-            if (user) {
-                var updatevar = yield MongoObject.collections.Accounts.updateOne({ _id: user._id }, { $set: { sessionid: sessionid } });
+                ]
+            });
+            const sessionid = (0, uuid_1.v4)();
+            if (user != null) {
+                const updatevar = yield MongoObject.collections.Accounts.updateOne({ _id: user._id }, { $set: { sessionid } });
                 if (updatevar.acknowledged) {
                     res.status(200);
                     return res.json({
                         err: false,
                         accountType: user.type,
-                        sessionid: sessionid
+                        sessionid
                     });
                 }
-                throw new Error("unable to update sessionid");
+                throw new Error('unable to update sessionid');
             }
             else {
                 res.status(500);
                 return res.json({
                     err: true,
-                    msg: "no user found",
+                    msg: 'no user found',
                     not: null // number of tries left
                 });
             }
@@ -50,7 +52,7 @@ const Router = (MongoObject) => {
             res.status(500);
             return res.json({
                 err: true,
-                msg: "unable to verify user",
+                msg: 'unable to verify user',
                 not: null // number of tries left
             });
         }

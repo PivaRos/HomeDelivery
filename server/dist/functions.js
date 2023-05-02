@@ -3,33 +3,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.timeToSecondsFromStartOfDay = exports.isOpen = exports.getSeconds = exports.makeid = exports.getDistance = void 0;
+exports.timeToSecondsFromStartOfDay = exports.isOpen = exports.getSeconds = exports.getDistance = void 0;
 const moment_1 = __importDefault(require("moment"));
-//returns distance (km)
+// returns distance (km)
 const getDistance = (Location1, Location2) => {
-    if (Location1.coordinates && Location2.coordinates) {
+    const longAndLatToKm = 110.574;
+    if ((Location1.coordinates != null) && (Location2.coordinates != null)) {
         const dy = (+Location1.coordinates[0]) - (+Location2.coordinates[0]);
         const dx = (+Location1.coordinates[1]) - (+Location2.coordinates[1]);
-        const distance = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 110.574; //im km
-        return distance;
+        // im km
+        return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * longAndLatToKm;
     }
     else {
         return 0;
     }
 };
 exports.getDistance = getDistance;
-const makeid = (length) => {
-    let result = '';
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    const charactersLength = characters.length;
-    let counter = 0;
-    while (counter < length) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
-        counter += 1;
-    }
-    return result;
-};
-exports.makeid = makeid;
 const getSeconds = (addDay) => {
     if (addDay)
         return (+(0, moment_1.default)() - +(0, moment_1.default)().startOf('day')) / 1000 + 86400;

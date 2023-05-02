@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LocationType = exports.order_status = exports.store_category = exports.account_type = exports.Pages = void 0;
+exports.LocationType = exports.OrderStatus = exports.StoreCategory = exports.AccountType = exports.Pages = void 0;
 var Pages;
 (function (Pages) {
     Pages["Stores"] = "Stores";
@@ -8,27 +8,27 @@ var Pages;
     Pages["Account"] = "Account";
     Pages["Home"] = "Home";
 })(Pages = exports.Pages || (exports.Pages = {}));
-var account_type;
-(function (account_type) {
-    account_type[account_type["Seller"] = 2] = "Seller";
-    account_type[account_type["Buyer"] = 1] = "Buyer";
-    account_type[account_type["Delivery"] = 3] = "Delivery";
-    account_type[account_type["Support"] = 4] = "Support";
-    account_type[account_type["Admin"] = 5] = "Admin";
-})(account_type = exports.account_type || (exports.account_type = {}));
-var store_category;
-(function (store_category) {
-    store_category[store_category["food"] = 1] = "food";
-    store_category[store_category["homeMade"] = 2] = "homeMade";
-})(store_category = exports.store_category || (exports.store_category = {}));
-var order_status;
-(function (order_status) {
-    order_status[order_status["pending"] = 1] = "pending";
-    order_status[order_status["cancelled"] = 0] = "cancelled";
-    order_status[order_status["accepted"] = 2] = "accepted";
-    order_status[order_status["onDelivery"] = 3] = "onDelivery";
-    order_status[order_status["done"] = 4] = "done";
-})(order_status = exports.order_status || (exports.order_status = {}));
+var AccountType;
+(function (AccountType) {
+    AccountType[AccountType["Seller"] = 2] = "Seller";
+    AccountType[AccountType["Buyer"] = 1] = "Buyer";
+    AccountType[AccountType["Delivery"] = 3] = "Delivery";
+    AccountType[AccountType["Support"] = 4] = "Support";
+    AccountType[AccountType["Admin"] = 5] = "Admin";
+})(AccountType = exports.AccountType || (exports.AccountType = {}));
+var StoreCategory;
+(function (StoreCategory) {
+    StoreCategory[StoreCategory["food"] = 1] = "food";
+    StoreCategory[StoreCategory["homeMade"] = 2] = "homeMade";
+})(StoreCategory = exports.StoreCategory || (exports.StoreCategory = {}));
+var OrderStatus;
+(function (OrderStatus) {
+    OrderStatus[OrderStatus["pending"] = 1] = "pending";
+    OrderStatus[OrderStatus["cancelled"] = 0] = "cancelled";
+    OrderStatus[OrderStatus["accepted"] = 2] = "accepted";
+    OrderStatus[OrderStatus["onDelivery"] = 3] = "onDelivery";
+    OrderStatus[OrderStatus["done"] = 4] = "done";
+})(OrderStatus = exports.OrderStatus || (exports.OrderStatus = {}));
 var LocationType;
 (function (LocationType) {
     LocationType["point"] = "point";

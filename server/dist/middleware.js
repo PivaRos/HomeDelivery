@@ -10,20 +10,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.isSupport = exports.isAdmin = exports.isDelivery = exports.isSeller = exports.isBuyer = exports.InputValidator = exports.checkValidation = exports.processPayment = void 0;
-const index_1 = require("./index");
+const _1 = require(".");
 const processPayment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    const cardNumber = req.body.cardNumber;
-    const cardExpireDate = req.body.cardExpireDate;
-    const cardCVV = req.body.cardCVV;
-    const cardHolderId = req.body.cardHolderId;
     // make api call to privider of services
-    //get responce of 200
+    // get responce of 200
     res.locals.PaymentLog = {
         accepted: true,
         timestamp: new Date().getTime(),
         priceCharged: 0 // the price
     };
-    //and then call next()
+    // and then call next()
     next();
 });
 exports.processPayment = processPayment;
@@ -37,7 +33,7 @@ const checkValidation = (req, res, next) => {
         res.status(500);
         return res.json({
             err: true,
-            msg: "unable to verify user",
+            msg: 'unable to verify user',
             not: null // number of tries left
         });
     }
@@ -48,7 +44,7 @@ const InputValidator = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
 });
 exports.InputValidator = InputValidator;
 const isBuyer = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    res.locals.account = yield index_1.Accounts.findOne({ sessionid: req.headers.authorization });
+    res.locals.account = yield _1.Accounts.findOne({ sessionid: req.headers.authorization });
     if (res.locals.account && res.locals.account.type === 1) {
         next();
     }
@@ -58,8 +54,8 @@ const isBuyer = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
 });
 exports.isBuyer = isBuyer;
 const isSeller = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    res.locals.account = yield index_1.Accounts.findOne({ sessionid: req.headers.authorization });
-    if (res.locals.account && res.locals.account.type === 3) {
+    res.locals.account = yield _1.Accounts.findOne({ sessionid: req.headers.authorization });
+    if ((res.locals.account != null) && res.locals.account.type === 3) {
         next();
     }
     else {
@@ -68,7 +64,7 @@ const isSeller = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
 });
 exports.isSeller = isSeller;
 const isDelivery = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    res.locals.account = yield index_1.Accounts.findOne({ sessionid: req.headers.authorization });
+    res.locals.account = yield _1.Accounts.findOne({ sessionid: req.headers.authorization });
     if (res.locals.account && res.locals.account.type === 2) {
         next();
     }
@@ -78,7 +74,7 @@ const isDelivery = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
 });
 exports.isDelivery = isDelivery;
 const isAdmin = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    res.locals.account = yield index_1.Accounts.findOne({ sessionid: req.headers.authorization });
+    res.locals.account = yield _1.Accounts.findOne({ sessionid: req.headers.authorization });
     if (res.locals.account && res.locals.account.type === 5) {
         next();
     }
@@ -88,7 +84,7 @@ const isAdmin = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
 });
 exports.isAdmin = isAdmin;
 const isSupport = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    res.locals.account = yield index_1.Accounts.findOne({ sessionid: req.headers.authorization });
+    res.locals.account = yield _1.Accounts.findOne({ sessionid: req.headers.authorization });
     if (res.locals.account && res.locals.account.type === 4) {
         next();
     }

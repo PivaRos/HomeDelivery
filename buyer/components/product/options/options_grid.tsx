@@ -1,14 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
-import { View, Text, Button, Pressable, StyleSheet, ScrollView, Image } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { LocationObject, PriceObject, Product, RootStackParamList, Store, Option } from "../../../interfaces";
-import { uri } from "../../../envVars";
-import { StackNavigationProp } from "@react-navigation/stack";
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet } from 'react-native';
+import { Product, Store, Option } from "../../../interfaces";
 import OptionProductTab from "./optionProductTab";
-import BouncyCheckbox from "react-native-bouncy-checkbox";
-import { ObjectId } from "mongodb";
 import { GetOptionProduct, PriceString, getTotalUnits } from "../../../functions";
-import { BackHandler } from "react-native";
 
 interface Props {
     option: Option;
@@ -18,6 +12,8 @@ interface Props {
     selectedProduct: Product;
     setPrice:React.Dispatch<React.SetStateAction<number>>;
     price:number;
+    checkIfNeedUpdate:() => void
+
 }
 
 export const ProductOptionsList = (props: Props) => {
@@ -54,6 +50,9 @@ export const ProductOptionsList = (props: Props) => {
             TselectedProduct.options[props.optionIndex] = option;
         }
         props.setSelectedProduct(TselectedProduct);
+
+        props.checkIfNeedUpdate();
+
     }, [JSON.stringify(optionProductCheckedState), JSON.stringify(optionProductUnits)])
 
     return (<View style={styles.mainGrid}>
@@ -61,7 +60,7 @@ export const ProductOptionsList = (props: Props) => {
         {props.option.maxPicks > 1 && <Text style={{ padding: 2, color: "grey", paddingLeft: 13, }}>ניתן לבחור עד {props.option.maxPicks} פריטים</Text>}
         {props.option.maxPicks === 1 && <Text style={{ padding: 2, color: "grey", paddingLeft: 13, }}> {getTotalUnits(optionProductUnits) > props.option.maxPicks && PriceString(props.option.additionalPricePerUnit.price*(getTotalUnits(optionProductUnits) - props.option.maxPicks), props.option.additionalPricePerUnit.currency) +"+"} ניתן לבחור עד פריט אחד</Text>}
         {props.option.optionProducts.map((OptionProduct, index) => {
-            return <OptionProductTab option={props.option} optionProductCheckedState={optionProductCheckedState} optionProductUnits={optionProductUnits} setOptionProductUnits={setOptionProductUnits} isChecked={optionProductCheckedState[index]} setOptionProductCheckedState={setOptionProductCheckedState} key={index} index={index} optionProduct={GetOptionProduct(props.store, OptionProduct)} />
+            return <OptionProductTab checkIfNeedUpdate={props.checkIfNeedUpdate} option={props.option} optionProductCheckedState={optionProductCheckedState} optionProductUnits={optionProductUnits} setOptionProductUnits={setOptionProductUnits} isChecked={optionProductCheckedState[index]} setOptionProductCheckedState={setOptionProductCheckedState} key={index} index={index} optionProduct={GetOptionProduct(props.store, OptionProduct)} />
         })}
     </View>);
 }

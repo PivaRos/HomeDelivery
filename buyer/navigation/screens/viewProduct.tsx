@@ -38,6 +38,7 @@ export const ViewProduct = (props: Props) => {
         calculatePriceString();
         if (!Product.units)
         {
+            console.log("changed Units");
             setProduct(p => {
                 p.units = 0;
                 return p
@@ -47,6 +48,8 @@ export const ViewProduct = (props: Props) => {
 
 
     }, [])
+
+
     
 
 
@@ -54,20 +57,17 @@ export const ViewProduct = (props: Props) => {
         //if the Product is in selectedProducts list then we update the selectedProductIndex
         let found = false;
         let tempindex = -1;
-        console.log("asd");
         props.savedOrder.selecedProdcuts.map((p , index) => {
-            let pClone = JSON.parse(JSON.stringify(p));
-            let currentProductClone = JSON.parse(JSON.stringify(Product));
+            let pClone:Product = JSON.parse(JSON.stringify(p));
+            let currentProductClone:Product = JSON.parse(JSON.stringify(props.selectedProduct));
             if (JSON.stringify(pClone) === JSON.stringify(currentProductClone))
             {
-                console.log("found");
                 tempindex = index;
                 found = true;
             }
         })
         if (found)
         {
-            console.log("the index is : "+ tempindex);
             setSelectedProductIndex(tempindex);
         }
     }, []) 
@@ -110,6 +110,21 @@ export const ViewProduct = (props: Props) => {
         setPrice(+pricePerUnit*(Product.units || 1))
     }, [Product.units, JSON.stringify(Product)])
 
+    const checkIfNeedUpdate = () => {
+        
+        let same = JSON.stringify(props.selectedProduct) === JSON.stringify(Product)
+        console.log(props.selectedProduct.units);
+        console.log(same);
+
+        if (props.selectedProduct.units && !same)
+        {   
+
+            setJustChanged(true);
+        }
+        else{
+            setJustChanged(false);
+        }
+    }
 
 
 
@@ -180,7 +195,7 @@ export const ViewProduct = (props: Props) => {
             }
             return newProduct
         })
-        setJustChanged(true);
+        checkIfNeedUpdate();
     }
 
     const changeUnitsDown = async () => {
@@ -196,8 +211,7 @@ export const ViewProduct = (props: Props) => {
                 return newProduct
             })
         }
-        setJustChanged(true);
-
+        checkIfNeedUpdate();
     }
     
     const RemoveFromOrder = async () => {
@@ -230,7 +244,6 @@ export const ViewProduct = (props: Props) => {
         }
         else
         {
-            console.log("here11");
             props.setSavedOrder(o => {
                 let newOrder:Order = JSON.parse(JSON.stringify(o));
                 let NewProduct :Product = JSON.parse(JSON.stringify(Product));
@@ -263,7 +276,7 @@ export const ViewProduct = (props: Props) => {
                     </View>
                     <ScrollView style={[styles.restView, {height:340, paddingBottom:10,}]}>
                      {Product.options?.map((option, index) => {
-                        return (<ProductOptionsList price={price} setPrice={setPrice} optionIndex={index}  key={index} selectedProduct={Product} setSelectedProduct={setProduct} option={option} store={props.Store} />)
+                        return (<ProductOptionsList checkIfNeedUpdate={checkIfNeedUpdate} price={price} setPrice={setPrice} optionIndex={index}  key={index} selectedProduct={Product} setSelectedProduct={setProduct} option={option} store={props.Store} />)
                     })}  
                     </ScrollView>
   
@@ -283,10 +296,10 @@ export const ViewProduct = (props: Props) => {
             {((Product.units===0) && !justChanged) && <Pressable onPress={addToOrder} style={styles.PressableAdd}>
                     <Text style={styles.buttonText}>Add to order</Text><Text style={styles.buttonPrice}>{productPrice}</Text>
             </Pressable>}
-            {(Product.units !== undefined && Product.units > 0 && !justChanged)  && <Pressable onPress={RemoveFromOrder} style={[styles.PressableAdd, {backgroundColor:"#fa3737"}]}>
+            { (Product.units !== undefined && Product.units > 0 && !justChanged)  && <Pressable onPress={RemoveFromOrder} style={[styles.PressableAdd, {backgroundColor:"#fa3737"}]}>
                     <Text style={styles.buttonText}>{(Product.units > 1) ? "Remove all" : "Remove"}</Text><Text style={styles.buttonPrice}>{"- "+productPrice}</Text>
             </Pressable>}
-            {(justChanged) && <Pressable onPress={saveOrder} style={styles.PressableAdd}>
+            {justChanged && <Pressable onPress={saveOrder} style={styles.PressableAdd}>
                     <Text style={styles.buttonText}>Update order</Text>
             </Pressable>}
         </View>

@@ -18,11 +18,11 @@ const functions_1 = require("../functions");
 const Router = (MongoObject) => {
     const DeliveryRouter = express_1.default.Router(); // all http requests that are made with delivery
     DeliveryRouter.use(middleware_1.isDelivery);
-    //recives sessionid and returns all open orders that are waiting delivery and within the range
-    DeliveryRouter.get("/waiting", middleware_1.checkValidation, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    // recives sessionid and returns all open orders that are waiting delivery and within the range
+    DeliveryRouter.get('/waiting', middleware_1.checkValidation, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const user = res.locals.account;
-            let returnOrders = [];
+            const returnOrders = [];
             const Orders = yield MongoObject.collections.Orders.find({}).toArray();
             Orders.forEach(Order => {
                 if (Order.status === 2) {
@@ -35,7 +35,7 @@ const Router = (MongoObject) => {
             res.status(200);
             return res.json({
                 err: false,
-                msg: "ok",
+                msg: 'ok',
                 data: returnOrders
             });
         }
@@ -43,7 +43,7 @@ const Router = (MongoObject) => {
             res.status(500);
             return res.json({
                 err: true,
-                msg: "unable to verify user",
+                msg: 'unable to verify user',
                 not: null // number of tries left
             });
         }

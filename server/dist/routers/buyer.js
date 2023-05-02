@@ -20,12 +20,12 @@ const Router = (MongoObject) => {
     const buyerRouter = express_1.default.Router();
     buyerRouter.use([middleware_1.checkValidation, middleware_1.isBuyer]);
     // loggedin Account tring to get all sellers that are available in his range
-    buyerRouter.get("/sellers", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    buyerRouter.get('/sellers', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const projection = { authorizedUsers: 0 };
             const user = res.locals.account;
-            let sellers = yield MongoObject.collections.Stores.find({}).project(projection).toArray();
-            let returnSellers = [];
+            const sellers = yield MongoObject.collections.Stores.find({}).project(projection).toArray();
+            const returnSellers = [];
             sellers.forEach(seller => {
                 const distance = (0, functions_1.getDistance)(seller.location, user.location);
                 if (distance < seller.deliveryDistance) {
@@ -35,7 +35,7 @@ const Router = (MongoObject) => {
             res.status(200);
             return res.json({
                 err: false,
-                msg: "ok",
+                msg: 'ok',
                 data: returnSellers
             });
         }
@@ -43,7 +43,7 @@ const Router = (MongoObject) => {
             res.status(500);
             return res.json({
                 err: true,
-                msg: "unable to verify user",
+                msg: 'unable to verify user',
                 not: null // number of tries left
             });
         }
@@ -54,14 +54,14 @@ const Router = (MongoObject) => {
                 if (!res.locals.PaymentLog.accepted)
                     throw new Error();
                 const user = res.locals.account;
-                //check if user can order
+                // check if user can order
                 const store = yield MongoObject.collections.Stores.findOne({ _id: new mongodb_1.ObjectId(req.body.store) });
                 if (!store)
-                    throw new Error("no store found");
+                    throw new Error('no store found');
                 const distance = (0, functions_1.getDistance)(store.location, user.location);
                 if (distance > store.deliveryDistance)
-                    throw new Error("out of service distance");
-                //make order
+                    throw new Error('out of service distance');
+                // make order
                 const Order = {
                     seller: new mongodb_1.ObjectId(req.body.store),
                     buyer: new mongodb_1.ObjectId(user._id),
@@ -86,7 +86,7 @@ const Router = (MongoObject) => {
                 const result = yield MongoObject.collections.Orders.insertOne(Order);
                 return res.json({
                     err: false,
-                    msg: "ok",
+                    msg: 'ok',
                     data: {
                         order: result.insertedId
                     }
@@ -97,23 +97,23 @@ const Router = (MongoObject) => {
                 console.log(e);
                 return res.json({
                     err: true,
-                    msg: "server error",
+                    msg: 'server error',
                     not: null // number of tries left
                 });
             }
         });
     }
-    //first stage when buyer sends order to seller
-    buyerRouter.post("/order", middleware_1.processPayment, createOrder);
-    buyerRouter.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    // first stage when buyer sends order to seller
+    buyerRouter.post('/order', middleware_1.processPayment, createOrder);
+    buyerRouter.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         return res.json(res.locals.account);
     }));
-    buyerRouter.post("/new/get/sellers", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    buyerRouter.post('/new/get/sellers', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const buyerLocation = req.body.location;
         try {
             const projection = { authorizedUsers: 0 };
-            let sellers = yield MongoObject.collections.Stores.find({}).project(projection).toArray();
-            let returnSellers = [];
+            const sellers = yield MongoObject.collections.Stores.find({}).project(projection).toArray();
+            const returnSellers = [];
             sellers.forEach(seller => {
                 const distance = (0, functions_1.getDistance)(seller.location, buyerLocation);
                 if (distance < seller.deliveryDistance) {
@@ -123,7 +123,7 @@ const Router = (MongoObject) => {
             res.status(200);
             return res.json({
                 err: false,
-                msg: "ok",
+                msg: 'ok',
                 data: returnSellers
             });
         }
@@ -131,7 +131,7 @@ const Router = (MongoObject) => {
             res.status(500);
             return res.json({
                 err: true,
-                msg: "unable to verify user",
+                msg: 'unable to verify user',
                 not: null // number of tries left
             });
         }
