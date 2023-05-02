@@ -14,8 +14,6 @@ interface Props {
     setSelectedProduct: React.Dispatch<React.SetStateAction<Product | undefined>>;
     savedOrder:Order | null | undefined;
     setSavedOrder:React.Dispatch<React.SetStateAction<Order | undefined | null>>;
-    setSelectedProductUnits:React.Dispatch<React.SetStateAction<number>>;
-    selectedProductUnits:number;
 }
 
 const imageUri = uri + "data/file/";
@@ -23,8 +21,8 @@ export const ViewStore = (props: Props) => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const [OpenDateString, setOpenDateString] = useState("");
     const [CloseDateString, setCloseDateString] = useState("");
-    const [displayProducts, setDisplayProducts] = useState<Product[]>();
-    
+    const [displayProducts, setDisplayProducts] = useState<Product[]>(props.Store.products);
+    const [arrayOfProducts, setArrayOfProducts] = useState<string[]>([]);
 
     useEffect(() => {
         const OpenDate = toDateTime(props.Store.openHoursObject.openFrom).toLocaleTimeString().split(":");
@@ -39,7 +37,7 @@ export const ViewStore = (props: Props) => {
 
 
 
-        if (!props.savedOrder)
+        if (!props.savedOrder || JSON.stringify(props.savedOrder.seller) !== JSON.stringify(props.Store._id))
         {
             //Create new order
             let neworder: Order =  {
@@ -63,51 +61,45 @@ export const ViewStore = (props: Props) => {
             }
             
             props.setSavedOrder(neworder);
-            console.log("neworderCreated")
         }
+        else
+        {
+        }
+
+        props.Store.products.map((product) => {
+            const index = arrayOfProducts.indexOf(product.category);
+            if (index === -1) {
+                arrayOfProducts.push(product.category);
+            }
+        })
+        let varia= arrayOfProducts;
+        setArrayOfProducts(varia);
+        //just to let react know
 
     }, [])
 
     useEffect(() => {
-        (async () => {
-            setDisplayProducts(props.Store.products);
-        })()
-    }, [props.Store])
+        let newDisplayProducts:Product[] = JSON.parse(JSON.stringify(props.Store.products));
+        let selectedProductOrder:Product[] = JSON.parse(JSON.stringify(props.savedOrder?.selecedProdcuts || []))
+        setDisplayProducts(newDisplayProducts.concat(selectedProductOrder))
+        }, [JSON.stringify(props.savedOrder?.selecedProdcuts)])
 
+        useEffect(() => {
+            console.log("displayProductChanged2");
+            console.log(displayProducts.map(p => {
+                return p.units;
+            }))
+        }, [displayProducts])
 
-    const getProductGrids = () => {
-
-        var arrayOfProducts = new Array<string>();
-
-        props.Store.products.map((product) => {
-            const index = arrayOfProducts.indexOf(product.category);
-            if (index == -1) {
-                arrayOfProducts.push(product.category);
-            }
-        })
-
-        return arrayOfProducts.map((categoryname, index) => {
-            if (displayProducts) {
-                let localproducts = new Array();
-                for (let i = 0; i < displayProducts?.length; i++) {
-                    if (displayProducts[i].category === categoryname) {
-                        localproducts.push(displayProducts[i]);
-                    }
-                }
-                return <ProductsGrid selectedProductUnits={props.selectedProductUnits} setSelectedProductUnits={props.setSelectedProductUnits} savedOrder={props.savedOrder} setSavedOrder={props.setSavedOrder} key={index} title={categoryname} thelocation={props.thelocation} displayProducts={localproducts} setSelectedProduct={props.setSelectedProduct} />
-            }
-        })
-    }
 
     const BackPress = () => {
-        props.setSavedOrder(null);
         navigation.navigate("tabs", { id: 1 })
     }
 
     return (
 
-        <View style={{ backgroundColor: 'white' }}>
-            <ScrollView >
+        <View style={{ backgroundColor: 'white', height:'100%', justifyContent:'center', flexDirection:'row' }}>
+            <View style={{paddingLeft:10, paddingRight:10}}>
                 <View style={styles.Conteintor}>
                     <Pressable style={styles.backButton} onPress={BackPress}><Text style={styles.backButtonText}>Back</Text></Pressable>
                     <Image style={styles.imageStyle} source={
@@ -121,14 +113,54 @@ export const ViewStore = (props: Props) => {
                         <View style={styles.detailsView}><Text style={styles.detailsText}>{OpenDateString + " - " + CloseDateString}</Text><Text style={styles.detailsText}>{Math.round(getDistance(props.Store.location, props.thelocation)) + " km"}</Text></View>
                     </View>
                 </View>
-                {getProductGrids()}
-
-            </ScrollView>
+                <ScrollView style={{marginBottom:60}}>
+                {arrayOfProducts.map((categoryname, index) => {
+                if (!displayProducts) return 
+                let localproducts = new Array<Product>();
+                for (let i = 0; i < displayProducts?.length; i++) {
+                    if (displayProducts[i].category === categoryname) {
+                        localproducts.push(displayProducts[i]);
+                    }
+                }
+                return <ProductsGrid 
+                savedOrder={props.savedOrder} 
+                setSavedOrder={props.setSavedOrder} 
+                key={index} 
+                title={categoryname} 
+                thelocation={props.thelocation}  
+                displayProducts={displayProducts} 
+                setSelectedProduct={props.setSelectedProduct} />})}
+                </ScrollView>
+            </View>
+            {(props.savedOrder  && (props.savedOrder.selecedProdcuts.length > 0 )) && 
+                <Pressable onPress={() => (navigation.navigate('ViewOrder', {id:4}))} style={styles.ViewOrderButton}>
+                    <Text style={{width:'100%', textAlign:'center', top:6, fontSize:16, fontWeight:'bold'}}>View Order</Text>
+                </Pressable>}
         </View>
     );
 }
 
 const styles = StyleSheet.create({
+    ViewOrderButton:{
+        flexDirection:'row',
+        height:50,
+        width:'90%',
+        padding:10,
+        backgroundColor:"lightgreen",
+        textAlign:'center',
+        bottom:8,
+        borderRadius:10,
+        position:'absolute',   
+        shadowColor: "#000",
+    shadowOffset: {
+        width: 0,
+        height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+
+    elevation: 5,
+    },
     backButton: {
         zIndex: 3,
         borderTopRightRadius: 40,

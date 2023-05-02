@@ -6,7 +6,7 @@ import { uri } from '../../envVars';
 import { StackNavigationProp } from '@react-navigation/stack';
 import getSymbolFromCurrency from 'currency-symbol-map'
 import { getExpoPushTokenAsync } from 'expo-notifications';
-import { getOccurrence } from '../../functions';
+import { PriceString, getTotalUnits, getUnits } from '../../functions';
 
 
 interface Props {
@@ -16,27 +16,25 @@ interface Props {
     thelocation: LocationObject;
     savedOrder:Order | undefined |  null;
     setSelectedOrder:React.Dispatch<React.SetStateAction<Order | undefined | null>>
-    setSelectedProductUnits:React.Dispatch<React.SetStateAction<number>>;
-    selectedProductUnits:number;
 }
 
 
 const ProductTab = (props: Props) => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
-    const [price, setPrice] = useState("" + (props.Product.price.price / 1000).toString());
-
+    const [priceString, setPriceString] = useState("");
     const [glowing, setGlowing] = useState(false);
-    const [units, setUnits] = useState<number>(0);
+    const [units, setUnits] = useState<number>(props.Product.units || 0);
+    const [price, setPrice] = useState(props.Product.price.price);
+
+    useEffect(() => {
+        setPriceString(PriceString(price, props.Product.price.currency));
+    }, [price])
 
     useEffect(() => {
         if (props.savedOrder)
         {
-            const newarray = props.savedOrder.selecedProdcuts.map((product) => {
-                return product._id;
-            });
-           const number =  getOccurrence(newarray, props.Product._id);
-           console.log(number);
-           if (number)
+           const number =  props.Product.units;
+           if (number && number > 0)
            {
                 setGlowing(true);
            }
@@ -44,76 +42,75 @@ const ProductTab = (props: Props) => {
            {
                 setGlowing(false);
            }
-           setUnits(number);
+
+           setUnits(number || 0);
+           
         }
-    }, [props.savedOrder?.selecedProdcuts.length])
+    }, [])
+
+    useEffect(() => {
+        //calculates price
+        let pricePerUnit = +props.Product.price.price;
+        if (props.Product.options)
+        {
+
+            for(let i = 0; i< props.Product.options?.length;i++)
+            {
+                if (props.Product.options[i].additionalAllowed)
+                {
+                let option = props.Product.options[i];
+                let maxPicks = +props.Product.options[i].maxPicks;
+                let OptionTotalPicks = +getTotalUnits(option.selectedOptionProducts?.map((v) => {
+                    return v.units
+                }) || []);
+                if(OptionTotalPicks-maxPicks > 0)
+                {
+
+                    pricePerUnit += (OptionTotalPicks-maxPicks)*option.additionalPricePerUnit.price;
+                }
+                }
+            }
+        }
+        setPrice(+pricePerUnit*(props.Product.units || 1))
+    }, [props.Product.units, JSON.stringify(props.Product)])
+
+
+    useEffect(() => {
+        console.log("productTab: product Changed");
+    }, [JSON.stringify(props.Product)])
 
     useEffect(() => {
 
-        let symbol = "";
-        const thesymb = getSymbolFromCurrency(props.Product.price.currency);
-        if (thesymb) {
-            symbol = thesymb;
-        }
-
-        const sherit = props.Product.price.price % 1000;
-        if (!sherit) setPrice(symbol + (props.Product.price.price / 1000).toString() + "." + sherit.toString());
-        else setPrice(symbol + (props.Product.price.price / 1000).toString());
     }, [])
 
 
     const ProductPressed = () => {
-        props.setSelectedProduct(props.Product);
+        props.setSelectedProduct(JSON.parse(JSON.stringify(props.Product)));
         navigation.navigate("ViewProduct", { id: 3 });
 
     }
 
-    const GetContent = () => {
-        if (units){
-        return (
-            <TouchableWithoutFeedback onPress={ProductPressed}>
-                <View style={ !glowing ? styles.view : styles.viewGlowing}>
-                    <View style={styles.TextView}>
-                    <View style={{flexDirection:'row'}}>
-                        <Text style={styles.title}>{props.Product.name}</Text>
-                    <Text style={styles.units}> x {units}</Text>
-                    </View>
-                        <Text numberOfLines={2} style={styles.info_text}>{props.Product.info}</Text>
-                        <Text style={styles.price_text}>{price}</Text>
-                    </View>
-                    <Image source={
-                        {
-                            uri: uri + "data/file/" + props.Product.mainimage,
-                            cache: 'force-cache'
-                        }} style={styles.image} />
-    
-                </View>
-            </TouchableWithoutFeedback>);
-        }
-        else
-        {
-            return (
-                <TouchableWithoutFeedback onPress={ProductPressed}>
-                    <View style={ !glowing ? styles.view : styles.viewGlowing}>
-                        <View style={styles.TextView}>
-                        <View style={{flexDirection:'row'}}>
-                            <Text style={styles.title}>{props.Product.name}</Text>
-                        </View>
-                            <Text numberOfLines={2} style={styles.info_text}>{props.Product.info}</Text>
-                            <Text style={styles.price_text}>{price}</Text>
-                        </View>
-                        <Image source={
-                            {
-                                uri: uri + "data/file/" + props.Product.mainimage,
-                                cache: 'force-cache'
-                            }} style={styles.image} />
-        
-                    </View>
-                </TouchableWithoutFeedback>);
-        }
-    }
 
-    return GetContent();
+    return (
+        <TouchableWithoutFeedback onPress={ProductPressed}>
+            <View style={ !glowing ? styles.view : styles.viewGlowing}>
+                <View style={styles.TextView}>
+                <View style={{flexDirection:'row'}}>
+                    <Text style={styles.title}>{props.Product.name}</Text>
+                    {props.Product.units && <Text style={styles.units}> x {props.Product.units}</Text>}
+                </View>
+                    <Text numberOfLines={2} style={styles.info_text}>{props.Product.info}</Text>
+                    <Text style={styles.price_text}>{priceString}</Text>
+                </View>
+                <Image source={
+                    {
+                        uri: uri + "data/file/" + props.Product.mainimage,
+                        cache: 'force-cache'
+                    }} style={styles.image} />
+
+            </View>
+        </TouchableWithoutFeedback>);
+
 }
 
 

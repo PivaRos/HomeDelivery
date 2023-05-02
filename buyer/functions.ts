@@ -1,9 +1,10 @@
 
 import * as Location from 'expo-location';
-import { LocationObject, LocationType, Order, Product, StorageData, Store } from './interfaces';
+import { LocationObject, LocationType, Order, PriceObject, Product, StorageData, Store, optionProduct } from './interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 import { ObjectId } from 'mongodb';
+import getSymbolFromCurrency from 'currency-symbol-map';
 
 
 export const registerForPushNotificationsAsync = async () => {
@@ -40,7 +41,7 @@ export const registerForPushNotificationsAsync = async () => {
         return Store.optionProducts[i];
       }
     }
-    return;
+    return <optionProduct>{}
   }
   
  export const CheckLocation = async () => {
@@ -65,21 +66,19 @@ export const registerForPushNotificationsAsync = async () => {
     }
   }
 
-  export const getOccurrence = (array:Array<any>, value:any) => {
+  export const getUnits = (array:Array<Product>, value:Product) => {
     var count = 0;
-    array.forEach((v) => (v === value && count++));
+    array.forEach((v) => ((JSON.stringify(v) === JSON.stringify(value) && value.units) && (count = value.units)));
     return count;
 }
 
 export const RemoveOrAddFromOrder = (removeOrAdd:0|1, setSavedOrder:React.Dispatch<React.SetStateAction<Order | undefined| null>>, savedOrder:Order | undefined| null, SelectedProduct:Product) => {
   if (!savedOrder) return false;
-  console.log(savedOrder.selecedProdcuts);
   if (removeOrAdd === 0)
   {
     //remove
     for (let i = 0; i < savedOrder.selecedProdcuts.length; i++)
     {
-      console.log(SelectedProduct);
       if (JSON.stringify(savedOrder.selecedProdcuts[i]) === JSON.stringify(SelectedProduct))
       {
         
@@ -97,7 +96,6 @@ export const RemoveOrAddFromOrder = (removeOrAdd:0|1, setSavedOrder:React.Dispat
     var previousOrder = savedOrder;
     if (previousOrder)
     {
-      console.log("here");
         previousOrder.selecedProdcuts.push(SelectedProduct);
         setSavedOrder(previousOrder);
         console.log(savedOrder.selecedProdcuts);
@@ -129,4 +127,42 @@ export const getDistance = (Location1:LocationObject, Location2:LocationObject )
   else{
       return 0;
   }
+}
+
+export const PriceString = (price:number, currency:string):string => {
+    //price string
+    let symbol = "";
+    const thesymb = getSymbolFromCurrency(currency);
+    if (thesymb) {
+        symbol = thesymb;
+    }
+    const sherit = price % 1000;
+    if (!sherit) return (symbol + (price / 1000).toString() + "." + sherit.toString());
+    return  symbol + (price / 1000).toString()
+}
+
+export const getTotalUnits = (array: number[]) => {
+  let TotalUnits = 0;
+  array.forEach(units => {
+      if (units) {
+          TotalUnits += units;
+      }
+  });
+  return TotalUnits;
+}
+
+
+export const setOrderSelectedProductByIndex = (order:Order, product:Product, index:number):Order => {
+    let newOrder:Order = JSON.parse(JSON.stringify(order));
+    newOrder.selecedProdcuts =  order.selecedProdcuts.map((p, theIndex) => {
+      if (index !== theIndex)
+      {
+          return p;
+      }
+      else
+      {
+        return product;
+      }
+    })
+    return newOrder;
 }

@@ -35,19 +35,21 @@ const ClosedApplications = log.collection('ClosedApplications')
 // MongoDB Object
 // should be passed to global router!
 const MongoObject = {
-  client,
-  databases: {
-    data,
-    log,
-    uploads
-  },
-  collections: {
-    Stores,
-    Orders,
-    Accounts,
-    Applications,
-    Transactions,
-    ClosedApplications
+  client:client,
+  databases:{
+    data:data,
+    log:log,
+    uploads:uploads
+  
+  }, 
+  collections:{
+    Stores:Stores,
+    Orders:Orders,
+    Accounts:Accounts,
+    Applications:Applications,
+    Transactions:Transactions,
+    ClosedApplications:ClosedApplications
+
   }
 }
 app.use('/data', DataRouter(MongoObject))
