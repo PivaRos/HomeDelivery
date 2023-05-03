@@ -29,7 +29,7 @@ export const ViewProduct = (props: Props) => {
     const [Product, setProduct] = useState<Product>(JSON.parse(JSON.stringify(props.selectedProduct)));
     const [price, setPrice] = useState(Product.price.price);
     const [selectedProductIndex, setSelectedProductIndex] = useState(-1);
-
+    const [arrayOfShakes, setArrayOfShakes] = useState<(() => void)[]>([]);
 
     useEffect(() => {
         //price string
@@ -106,51 +106,95 @@ export const ViewProduct = (props: Props) => {
         }
     }
 
-    const addToOrder = async () => {
-        let foundInOrder = false;
-        let theindex = -1;
-        //check if the prodcut exists in the current order
-        props.savedOrder.selecedProdcuts.map((p, index) => {
-            let pClone = JSON.parse(JSON.stringify(p)); pClone.units = 0;
-            let currentProductClone = JSON.parse(JSON.stringify(Product)); currentProductClone.units = 0;
-            if (JSON.stringify(pClone) === JSON.stringify(currentProductClone)) {
-                theindex = index;
-                foundInOrder = true;
+
+    useEffect(() => {
+            arrayOfShakes.map(shake => {
+                if (shake)
+                {
+                shake();
+                }
+
+            })
+            console.log(arrayOfShakes);
+    }, [])
+
+
+    const canAdd = ():boolean => {
+        let cantAdd = false;
+        let ProblemIndexes:number[] = [];
+        Product.options?.map((option, index) => {
+            if (option.selectedOptionProducts)
+            {
+                let totalUnitsOfOption = getTotalUnits(option.selectedOptionProducts.map(p => {
+                    return p.units;
+                }))
+                if (option.mustPicks > totalUnitsOfOption)
+                {
+                    cantAdd = true;
+                    ProblemIndexes.push(index);
+                }
             }
         })
-        if (!foundInOrder) {
-            //if the product is selected for the first time 
-            if (Product.units == 0) {
-                await setProduct(p => {
-                    p.units = 1;
-                    return p;
-                })
-            }
-            await props.setSavedOrder(o => {
-                let order: Order = JSON.parse(JSON.stringify(o));
-                order.selecedProdcuts.push(Product);
-                return order;
+        if (cantAdd)
+        {
+            ProblemIndexes.map(index => {
+                //arrayOfShakes[index]();
             })
+            return false;
         }
-        else {
-            if (Product.units == 0) {
-                await setProduct(p => {
-                    p.units = 1;
-                    return p;
-                })
-            }
-            let currentProduct: Product = JSON.parse(JSON.stringify(props.savedOrder.selecedProdcuts[theindex]));
-            if (currentProduct.units === undefined || Product.units === undefined) return;
-            let cpu = currentProduct.units;
-            currentProduct.units = (cpu + Product.units);
+        return true;
+    }
 
-            await props.setSavedOrder(o => {
-                let order: Order = JSON.parse(JSON.stringify(o));
-                let neworder = setOrderSelectedProductByIndex(order, currentProduct, theindex);
-                return neworder;
+
+
+
+    const addToOrder = async () => {
+        if (canAdd()) {
+            let foundInOrder = false;
+            let theindex = -1;
+            //check if the prodcut exists in the current order
+            props.savedOrder.selecedProdcuts.map((p, index) => {
+                let pClone = JSON.parse(JSON.stringify(p)); pClone.units = 0;
+                let currentProductClone = JSON.parse(JSON.stringify(Product)); currentProductClone.units = 0;
+                if (JSON.stringify(pClone) === JSON.stringify(currentProductClone)) {
+                    theindex = index;
+                    foundInOrder = true;
+                }
             })
+            if (!foundInOrder) {
+                //if the product is selected for the first time 
+                if (Product.units == 0) {
+                    await setProduct(p => {
+                        p.units = 1;
+                        return p;
+                    })
+                }
+                await props.setSavedOrder(o => {
+                    let order: Order = JSON.parse(JSON.stringify(o));
+                    order.selecedProdcuts.push(Product);
+                    return order;
+                })
+            }
+            else {
+                if (Product.units == 0) {
+                    await setProduct(p => {
+                        p.units = 1;
+                        return p;
+                    })
+                }
+                let currentProduct: Product = JSON.parse(JSON.stringify(props.savedOrder.selecedProdcuts[theindex]));
+                if (currentProduct.units === undefined || Product.units === undefined) return;
+                let cpu = currentProduct.units;
+                currentProduct.units = (cpu + Product.units);
+
+                await props.setSavedOrder(o => {
+                    let order: Order = JSON.parse(JSON.stringify(o));
+                    let neworder = setOrderSelectedProductByIndex(order, currentProduct, theindex);
+                    return neworder;
+                })
+            }
+            navigation.navigate("ViewStore", { id: 2 })
         }
-        navigation.navigate("ViewStore", { id: 2 })
     }
 
     const changeUnitsUp = async () => {
@@ -165,7 +209,7 @@ export const ViewProduct = (props: Props) => {
             return newProduct
         })
         if (!Product.units) return;
-        if (props.selectedProduct.units !== Product.units + 1) {
+        if (props.selectedProduct.units !== Product.units + 1 && props.selectedProduct.units) {
             setJustChanged(true);
         }
     }
@@ -181,7 +225,7 @@ export const ViewProduct = (props: Props) => {
             })
         }
         if (!Product.units) return;
-        if (props.selectedProduct.units !== Product.units - 1) {
+        if (props.selectedProduct.units !== Product.units - 1 && props.selectedProduct.units) {
             setJustChanged(true);
         }
     }
@@ -207,7 +251,12 @@ export const ViewProduct = (props: Props) => {
     const saveOrder = () => {
         if (selectedProductIndex === -1) {
             //the Product is not in selectedProduct list and we need to add to the list for the first time
-            //nothing should happen;
+                //if the product is selected for the first time 
+                props.setSavedOrder(o => {
+                    let order: Order = JSON.parse(JSON.stringify(o));
+                    order.selecedProdcuts.push(Product);
+                    return order;
+                })
         }
         else {
             props.setSavedOrder(o => {
@@ -240,9 +289,10 @@ export const ViewProduct = (props: Props) => {
                             <Text style={styles.productDesc}>{Product.info}</Text>
                         </View>
                     </View>
+                
                     <ScrollView style={[styles.restView, { height: 340, paddingBottom: 10, }]}>
                         {Product.options?.map((option, index) => {
-                            return (<ProductOptionsList checkIfNeedUpdate={checkIfNeedUpdate} price={price} setPrice={setPrice} optionIndex={index} key={index} selectedProduct={Product} setSelectedProduct={setProduct} option={option} store={props.Store} />)
+                            return (<ProductOptionsList setArrayOfShakes={setArrayOfShakes} arrayOfShakes={arrayOfShakes} checkIfNeedUpdate={checkIfNeedUpdate} price={price} setPrice={setPrice} optionIndex={index} key={index} selectedProduct={Product} setSelectedProduct={setProduct} option={option} store={props.Store} />)
                         })}
                     </ScrollView>
 
@@ -259,10 +309,10 @@ export const ViewProduct = (props: Props) => {
                     <Text style={styles.buttonText}>-</Text>
                 </Pressable>
             </View>
-            {((Product.units === 0) && !justChanged) && <Pressable onPress={addToOrder} style={styles.PressableAdd}>
+            {((props.selectedProduct.units === 0) && !justChanged) && <Pressable onPress={addToOrder} style={styles.PressableAdd}>
                 <Text style={styles.buttonText}>Add to order</Text><Text style={styles.buttonPrice}>{productPrice}</Text>
             </Pressable>}
-            {(Product.units !== undefined && Product.units > 0 && !justChanged) && <Pressable onPress={RemoveFromOrder} style={[styles.PressableAdd, { backgroundColor: "#fa3737" }]}>
+            {(props.selectedProduct.units !== undefined && props.selectedProduct.units !== 0) && (Product.units !== undefined && Product.units > 0 && !justChanged) && <Pressable onPress={RemoveFromOrder} style={[styles.PressableAdd, { backgroundColor: "#fa3737" }]}>
                 <Text style={styles.buttonText}>{(Product.units > 1) ? "Remove all" : "Remove"}</Text><Text style={styles.buttonPrice}>{"- " + productPrice}</Text>
             </Pressable>}
             {justChanged && <Pressable onPress={saveOrder} style={styles.PressableAdd}>

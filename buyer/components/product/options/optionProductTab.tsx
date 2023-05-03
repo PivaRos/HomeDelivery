@@ -7,6 +7,7 @@ import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import { getTotalUnits } from '../../../functions';
 
 
+
 interface Props {
     optionProduct: optionProduct;
     isChecked: boolean;
@@ -17,6 +18,7 @@ interface Props {
     optionProductCheckedState: boolean[];
     option:Option;
     checkIfNeedUpdate:() => void
+    Shake:() => void
 }
 
 
@@ -24,7 +26,6 @@ const OptionProductTab = (props: Props) => {
     const [isChecked, setIsChecked] = useState(props.isChecked);
     const [units, setUnits] = useState(props.optionProductUnits[props.index]);
 
-    
 
     useEffect(() => {
         setIsChecked(props.optionProductCheckedState[props.index]);
@@ -43,7 +44,7 @@ const OptionProductTab = (props: Props) => {
             }
             else{
                 //no animation;
-
+                props.Shake();
             }
         }
         else
@@ -90,7 +91,8 @@ const OptionProductTab = (props: Props) => {
             });   
         }
         else{
-            //animation
+            //no animation
+            props.Shake();
         }
 
     }

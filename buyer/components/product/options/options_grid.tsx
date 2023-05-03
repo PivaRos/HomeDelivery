@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { View, Text, StyleSheet } from 'react-native';
 import { Product, Store, Option } from "../../../interfaces";
 import OptionProductTab from "./optionProductTab";
 import { GetOptionProduct, PriceString, getTotalUnits } from "../../../functions";
+import ShakeText from "react-native-shake-text";
 
 interface Props {
     option: Option;
@@ -13,8 +14,11 @@ interface Props {
     setPrice:React.Dispatch<React.SetStateAction<number>>;
     price:number;
     checkIfNeedUpdate:() => void
-
+    arrayOfShakes:(() => void)[];
+    setArrayOfShakes:React.Dispatch<React.SetStateAction<(() => void)[]>>;
 }
+
+
 
 export const ProductOptionsList = (props: Props) => {
     const [optionProductCheckedState, setOptionProductCheckedState] = useState<boolean[]>(props.option.optionProducts.map(() => { return false }));
@@ -22,7 +26,12 @@ export const ProductOptionsList = (props: Props) => {
         return 0;
     }));
 
+    let ShakeRef = useRef<ShakeText>();
+
     useEffect(() => {
+        props.setArrayOfShakes(JSON.parse(JSON.stringify(props.arrayOfShakes)))
+        props.arrayOfShakes.push(Shake);
+
         if (props.option.selectedOptionProducts && props.option.selectedOptionProducts.length > 0) //if product is not default *
         {
             // need to update checkedState 
@@ -35,6 +44,41 @@ export const ProductOptionsList = (props: Props) => {
             }))
         }
     }, [])
+
+
+
+    const Shake = () => {
+        ShakeRef.current?.startShakeAnimation();
+    }
+
+    const getLimitString = (): string => {
+        if (!props.option.mustPicks)
+        {
+            if (props.option.additionalAllowed && props.option.maxPicks+props.option.additionalMax > 1)
+            {
+                return `ניתן לבחור עד ${props.option.maxPicks+props.option.additionalMax} פריטים ${props.option.maxPicks} בחינם `
+            }
+            if (!props.option.additionalAllowed && props.option.maxPicks > 1)
+            {
+                return `ניתן לבחור עד ${props.option.maxPicks} פריטים בחינם`
+            }
+            if (!props.option.additionalAllowed && props.option.maxPicks === 1)
+            {
+                return `ניתן לבחור עד פריט אחד בחינם`
+            }
+        }
+        else{
+            if (props.option.mustPicks === 1)
+            {
+                return `חובה לבחור לפחות פריט אחד`
+            }
+            if (props.option.mustPicks > 1)
+            {
+                return `חובה לבחור לפחות ${props.option.maxPicks} פריטים`
+            }
+        }
+        return "";
+    }
 
 
     useEffect(() => {
@@ -50,17 +94,20 @@ export const ProductOptionsList = (props: Props) => {
             TselectedProduct.options[props.optionIndex] = option;
         }
         props.setSelectedProduct(TselectedProduct);
-
         props.checkIfNeedUpdate();
 
     }, [JSON.stringify(optionProductCheckedState), JSON.stringify(optionProductUnits)])
 
     return (<View style={styles.mainGrid}>
         <Text style={{ fontWeight: 'bold', padding: 5, paddingLeft: 15, }}>{props.option.name}</Text>
-        {props.option.maxPicks > 1 && <Text style={{ padding: 2, color: "grey", paddingLeft: 13, }}>ניתן לבחור עד {props.option.maxPicks} פריטים</Text>}
-        {props.option.maxPicks === 1 && <Text style={{ padding: 2, color: "grey", paddingLeft: 13, }}> {getTotalUnits(optionProductUnits) > props.option.maxPicks && PriceString(props.option.additionalPricePerUnit.price*(getTotalUnits(optionProductUnits) - props.option.maxPicks), props.option.additionalPricePerUnit.currency) +"+"} ניתן לבחור עד פריט אחד</Text>}
+        <ShakeText 
+            duration={100} 
+            ref={(ref: ShakeText) => (ShakeRef.current = ref)} 
+            style={{ padding: 2, color: "grey", paddingLeft: 13, }}>
+            {getTotalUnits(optionProductUnits) > props.option.maxPicks && PriceString(props.option.additionalPricePerUnit.price*(getTotalUnits(optionProductUnits) - props.option.maxPicks), props.option.additionalPricePerUnit.currency) +" + "} {getLimitString()}
+        </ShakeText>
         {props.option.optionProducts.map((OptionProduct, index) => {
-            return <OptionProductTab checkIfNeedUpdate={props.checkIfNeedUpdate} option={props.option} optionProductCheckedState={optionProductCheckedState} optionProductUnits={optionProductUnits} setOptionProductUnits={setOptionProductUnits} isChecked={optionProductCheckedState[index]} setOptionProductCheckedState={setOptionProductCheckedState} key={index} index={index} optionProduct={GetOptionProduct(props.store, OptionProduct)} />
+            return <OptionProductTab Shake={Shake} checkIfNeedUpdate={props.checkIfNeedUpdate} option={props.option} optionProductCheckedState={optionProductCheckedState} optionProductUnits={optionProductUnits} setOptionProductUnits={setOptionProductUnits} isChecked={optionProductCheckedState[index]} setOptionProductCheckedState={setOptionProductCheckedState} key={index} index={index} optionProduct={GetOptionProduct(props.store, OptionProduct)} />
         })}
     </View>);
 }

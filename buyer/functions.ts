@@ -141,9 +141,9 @@ export const PriceString = (price:number, currency:string):string => {
     return  symbol + (price / 1000).toString()
 }
 
-export const getTotalUnits = (array: number[]) => {
+export const getTotalUnits = (ArrayToSum: number[]) => {
   let TotalUnits = 0;
-  array.forEach(units => {
+  ArrayToSum.forEach(units => {
       if (units) {
           TotalUnits += units;
       }

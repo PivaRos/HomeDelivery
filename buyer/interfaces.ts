@@ -71,6 +71,7 @@ export interface Option {
         selected:boolean,
         units:number;
     }[],
+    mustPicks:number,
     maxPicks: number,
     additionalAllowed: boolean,
     additionalMax: number,

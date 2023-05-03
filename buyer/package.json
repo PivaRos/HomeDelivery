@@ -19,11 +19,13 @@
     "expo-notifications": "^0.18.1",
     "expo-splash-screen": "~0.18.2",
     "expo-status-bar": "~1.4.4",
+    "install": "^0.13.0",
     "mongodb": "^5.1.0",
     "node-fetch": "^2.6.9",
     "react": "18.2.0",
     "react-native": "0.71.7",
     "react-native-bouncy-checkbox": "^3.0.7",
+    "react-native-shake-text": "^0.1.1",
     "react-native-splash-screen": "^3.3.0",
     "react-native-svg": "13.4.0"
   },
