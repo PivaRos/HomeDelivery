@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, Button, Pressable, StyleSheet, ScrollView, Image } from 'react-native';
+import React, { useState, useEffect, useRef } from "react";
+import { View, Text, Button, Pressable, StyleSheet, ScrollView, Image, Animated } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { LocationObject, Order, Product, RootStackParamList, Store } from "../../interfaces";
 import { uri } from "../../envVars";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { getDistance, toDateTime } from "../../functions";
 import ProductsGrid from "../../components/product/products_grid";
-import { storeActions } from "../../network_services/stores";
 
 interface Props {
     Store: Store;
@@ -25,6 +24,8 @@ export const ViewStore = (props: Props) => {
     const [arrayOfProducts, setArrayOfProducts] = useState<string[]>([]);
 
     const DistanceKm : number = getDistance(props.Store.location, props.thelocation);
+
+    const scrollOffsetY = useRef(new Animated.Value(0)).current;
 
 
     useEffect(() => {
@@ -110,7 +111,7 @@ export const ViewStore = (props: Props) => {
                         { DistanceKm < 1 &&  <View style={styles.detailsView}><Text style={styles.detailsText}>{OpenDateString + " - " + CloseDateString}</Text><Text style={styles.detailsText}>{Math.round(getDistance(props.Store.location, props.thelocation))*1000 + " m"}</Text></View>}
                     </View>
                 </View>
-                <ScrollView style={{marginBottom:60}}>
+                <ScrollView stickyHeaderHiddenOnScroll={true} style={{marginBottom:60}}>
                 {arrayOfProducts.map((categoryname, index) => {
                 if (!displayProducts) return 
                 let localproducts = new Array<Product>();

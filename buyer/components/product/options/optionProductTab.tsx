@@ -134,6 +134,9 @@ const OptionProductTab = (props: Props) => {
     return (
         <View style={{ padding: 10, marginLeft: 5 }}>
             <BouncyCheckbox
+                bounceEffectIn={1.2}
+                delayPressOut={1}
+                bounceEffectOut={1.0}
                 disableBuiltInState={true}
                 isChecked={isChecked}
                 fillColor="lightgreen"

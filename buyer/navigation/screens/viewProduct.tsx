@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, createRef } from "react";
-import { View, Text, Pressable, StyleSheet, ScrollView, Image } from 'react-native';
+import { View, Text, Pressable, StyleSheet, ScrollView, Image, Animated } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { LocationObject, Order, Product, RootStackParamList, Store } from "../../interfaces";
 import { uri } from "../../envVars";
@@ -252,24 +252,26 @@ export const ViewProduct = (props: Props) => {
     }
 
     const saveOrder = () => {
-        if (selectedProductIndex === -1) {
-            //the Product is not in selectedProduct list and we need to add to the list for the first time
-                //if the product is selected for the first time 
+        if (canSave()) {
+            if (selectedProductIndex === -1) {
+                //the Product is not in selectedProduct list and we need to add to the list for the first time
+                    //if the product is selected for the first time 
+                    props.setSavedOrder(o => {
+                        let order: Order = JSON.parse(JSON.stringify(o));
+                        order.selecedProdcuts.push(Product);
+                        return order;
+                    })
+            }
+            else {
                 props.setSavedOrder(o => {
-                    let order: Order = JSON.parse(JSON.stringify(o));
-                    order.selecedProdcuts.push(Product);
-                    return order;
+                    let newOrder: Order = JSON.parse(JSON.stringify(o));
+                    let NewProduct: Product = JSON.parse(JSON.stringify(Product));
+                    newOrder.selecedProdcuts[selectedProductIndex] = NewProduct;
+                    return newOrder
                 })
+            }
+            navigation.navigate("ViewStore", { id: 2 });
         }
-        else {
-            props.setSavedOrder(o => {
-                let newOrder: Order = JSON.parse(JSON.stringify(o));
-                let NewProduct: Product = JSON.parse(JSON.stringify(Product));
-                newOrder.selecedProdcuts[selectedProductIndex] = NewProduct;
-                return newOrder
-            })
-        }
-        navigation.navigate("ViewStore", { id: 2 });
 
     }
 
@@ -277,8 +279,8 @@ export const ViewProduct = (props: Props) => {
 
         <View style={{ backgroundColor: 'white', height: '100%' }}>
 
-            <View >
-                <ScrollView>
+            <View>
+                <View>
                     <Pressable style={styles.backButton} onPress={() => (navigation.navigate("ViewStore", { id: 2 }))}><Text style={styles.backButtonText}>Back</Text></Pressable>
                     <Image style={styles.imageStyle} source={
                         {
@@ -293,7 +295,7 @@ export const ViewProduct = (props: Props) => {
                         </View>
                     </View>
                 
-                    <ScrollView style={[styles.restView, { height: 340, paddingBottom: 10, }]}>
+                    <ScrollView pagingEnabled={true} style={[styles.restView, { height: 340, paddingBottom: 10, }]}>
                         {Product.options?.map((option, index) => {
                             return (<ProductOptionsList 
                                 ref={el => itemsRef.current[index] = el} 
@@ -309,7 +311,7 @@ export const ViewProduct = (props: Props) => {
 
 
 
-                </ScrollView>
+                </View>
             </View >
             <View style={styles.PressableUnits}>
                 <Pressable style={{ left: 5, position: 'absolute', zIndex: 3 }} onPress={changeUnitsUp}>

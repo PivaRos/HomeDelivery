@@ -86,8 +86,11 @@ const ProductTab = (props: Props) => {
             <View style={!glowing ? styles.view : styles.viewGlowing}>
                 <View style={styles.TextView}>
                     <View style={{ flexDirection: 'row' }}>
-                        <Text style={styles.title}>{props.Product.name}</Text>
-                        {props.Product.units && <Text style={styles.units}> x {props.Product.units}</Text>}
+                        <Text style={styles.title}> { props.Product.name }</Text>
+                        <View style={styles.units}>
+                            {props.Product.units && <View><Text style={{ marginTop:1}}> x </Text></View>}
+                            {props.Product.units && <View style={{borderRadius:100, backgroundColor:"lightgreen", minWidth:20, minHeight:20,  aspectRatio:1/1}}><Text style={{textAlign:'center', alignContent:'center', marginTop:1}}>{props.Product.units}</Text></View>}
+                        </View>
                     </View>
                     <Text numberOfLines={2} style={styles.info_text}>{props.Product.info}</Text>
                     <Text style={styles.price_text}>{priceString}</Text>
@@ -106,19 +109,21 @@ const ProductTab = (props: Props) => {
 
 const styles = StyleSheet.create({
     units: {
+        flexDirection:'row',
         top: 0,
+        
     },
     viewGlowing: {
         display: 'flex',
         flexDirection: 'row',
         width: '100%',
         marginTop: 5,
-        height: 100,
+        height: 120,
         backgroundColor: "white",
-        borderColor: "lightgreen",
+        borderColor: "white",
         borderWidth: 1,
         alignItems: 'center',
-        shadowColor: "lightgreen",
+
         shadowOffset: {
             width: 0,
             height: 1,
@@ -133,7 +138,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         width: '100%',
         marginTop: 5,
-        height: 100,
+        height: 120,
         backgroundColor: "white",
         alignItems: 'center',
         shadowColor: "#000",
@@ -157,7 +162,7 @@ const styles = StyleSheet.create({
     title: {
         top: 0,
         position: 'relative',
-        fontWeight: 'bold',
+        fontSize:17,
     },
     TextView: {
         height: '100%',
@@ -166,7 +171,7 @@ const styles = StyleSheet.create({
         width: '65%',
     },
     info_text: {
-        top: 6,
+        top: 10,
         color: 'grey',
     },
     price_text: {
