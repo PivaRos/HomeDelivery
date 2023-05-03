@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, createRef } from "react";
 import { View, Text, Pressable, StyleSheet, ScrollView, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { LocationObject, Order, Product, RootStackParamList, Store } from "../../interfaces";
@@ -29,7 +29,17 @@ export const ViewProduct = (props: Props) => {
     const [Product, setProduct] = useState<Product>(JSON.parse(JSON.stringify(props.selectedProduct)));
     const [price, setPrice] = useState(Product.price.price);
     const [selectedProductIndex, setSelectedProductIndex] = useState(-1);
-    const [arrayOfShakes, setArrayOfShakes] = useState<(() => void)[]>([]);
+
+    
+    const itemsRef = useRef<unknown[]>([]);
+    // you can access the elements with itemsRef.current[n]
+    useEffect(() => {
+        if (!Product.options) return;
+       itemsRef.current = itemsRef.current.slice(0, Product.options.length);
+    }, [Product.options]);
+
+
+
 
     useEffect(() => {
         //price string
@@ -107,19 +117,10 @@ export const ViewProduct = (props: Props) => {
     }
 
 
-    useEffect(() => {
-            arrayOfShakes.map(shake => {
-                if (shake)
-                {
-                shake();
-                }
-
-            })
-            console.log(arrayOfShakes);
-    }, [])
 
 
-    const canAdd = ():boolean => {
+
+    const canSave = ():boolean => {
         let cantAdd = false;
         let ProblemIndexes:number[] = [];
         Product.options?.map((option, index) => {
@@ -131,15 +132,17 @@ export const ViewProduct = (props: Props) => {
                 if (option.mustPicks > totalUnitsOfOption)
                 {
                     cantAdd = true;
+                    let ref = itemsRef.current[index] as {
+                        Shake: () => void;
+                    }
+                    ref.Shake()
+                    //arrayOfShakes[index]();
                     ProblemIndexes.push(index);
                 }
             }
         })
         if (cantAdd)
         {
-            ProblemIndexes.map(index => {
-                //arrayOfShakes[index]();
-            })
             return false;
         }
         return true;
@@ -149,7 +152,7 @@ export const ViewProduct = (props: Props) => {
 
 
     const addToOrder = async () => {
-        if (canAdd()) {
+        if (canSave()) {
             let foundInOrder = false;
             let theindex = -1;
             //check if the prodcut exists in the current order
@@ -292,7 +295,15 @@ export const ViewProduct = (props: Props) => {
                 
                     <ScrollView style={[styles.restView, { height: 340, paddingBottom: 10, }]}>
                         {Product.options?.map((option, index) => {
-                            return (<ProductOptionsList setArrayOfShakes={setArrayOfShakes} arrayOfShakes={arrayOfShakes} checkIfNeedUpdate={checkIfNeedUpdate} price={price} setPrice={setPrice} optionIndex={index} key={index} selectedProduct={Product} setSelectedProduct={setProduct} option={option} store={props.Store} />)
+                            return (<ProductOptionsList 
+                                ref={el => itemsRef.current[index] = el} 
+                                checkIfNeedUpdate={checkIfNeedUpdate} 
+                                price={price} setPrice={setPrice} 
+                                optionIndex={index} key={index} 
+                                selectedProduct={Product} 
+                                setSelectedProduct={setProduct} 
+                                option={option} 
+                                store={props.Store} />)
                         })}
                     </ScrollView>
 

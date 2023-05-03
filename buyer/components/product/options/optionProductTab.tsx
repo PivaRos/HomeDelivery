@@ -43,7 +43,7 @@ const OptionProductTab = (props: Props) => {
                 
             }
             else{
-                //no animation;
+                //"no" animation;
                 props.Shake();
             }
         }
@@ -91,7 +91,7 @@ const OptionProductTab = (props: Props) => {
             });   
         }
         else{
-            //no animation
+            //"no" animation
             props.Shake();
         }
 
