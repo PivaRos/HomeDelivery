@@ -30,6 +30,8 @@ export const ViewProduct = (props: Props) => {
     const [price, setPrice] = useState(Product.price.price);
     const [selectedProductIndex, setSelectedProductIndex] = useState(-1);
 
+
+    const scrollAnimationValue = useRef(new Animated.Value(0)).current;
     
     const itemsRef = useRef<unknown[]>([]);
     // you can access the elements with itemsRef.current[n]
@@ -278,10 +280,11 @@ export const ViewProduct = (props: Props) => {
     return (
 
         <View style={{ backgroundColor: 'white', height: '100%' }}>
-
-            <View>
-                <View>
-                    <Pressable style={styles.backButton} onPress={() => (navigation.navigate("ViewStore", { id: 2 }))}><Text style={styles.backButtonText}>Back</Text></Pressable>
+            <Pressable style={styles.backButton} onPress={() => (navigation.navigate("ViewStore", { id: 2 }))}><Text style={styles.backButtonText}>Back</Text></Pressable>
+                <ScrollView 
+                scrollEventThrottle={16}
+                pagingEnabled={true} 
+                style={[styles.restView, {marginBottom:60}]}>
                     <Image style={styles.imageStyle} source={
                         {
                             uri: imageUri + Product?.mainimage,
@@ -294,8 +297,7 @@ export const ViewProduct = (props: Props) => {
                             <Text style={styles.productDesc}>{Product.info}</Text>
                         </View>
                     </View>
-                
-                    <ScrollView pagingEnabled={true} style={[styles.restView, { height: 340, paddingBottom: 10, }]}>
+                    <View style={{ marginTop:200}}>
                         {Product.options?.map((option, index) => {
                             return (<ProductOptionsList 
                                 ref={el => itemsRef.current[index] = el} 
@@ -307,12 +309,8 @@ export const ViewProduct = (props: Props) => {
                                 option={option} 
                                 store={props.Store} />)
                         })}
+                    </View>
                     </ScrollView>
-
-
-
-                </View>
-            </View >
             <View style={styles.PressableUnits}>
                 <Pressable style={{ left: 5, position: 'absolute', zIndex: 3 }} onPress={changeUnitsUp}>
                     <Text style={styles.buttonText}>+</Text>
@@ -337,7 +335,7 @@ export const ViewProduct = (props: Props) => {
 
 const styles = StyleSheet.create({
     restView: {
-        marginTop: 180,
+        height:'100%'
     },
     productName: {
         fontSize: 24,
@@ -355,11 +353,12 @@ const styles = StyleSheet.create({
         padding: 5,
     },
     productInfo: {
+        height:120,
         justifyContent: 'center',
         display: 'flex',
         flexDirection: 'row',
         width: '100%',
-        top: 160,
+        top: 200,
         padding: 10,
         borderBottomWidth: 1,
     },
@@ -416,6 +415,7 @@ const styles = StyleSheet.create({
         top: 0,
     },
     backButton: {
+        position:'absolute',
         zIndex: 3,
         borderTopRightRadius: 40,
         borderBottomRightRadius: 40,
@@ -443,6 +443,9 @@ const styles = StyleSheet.create({
         top: 0,
         position: 'absolute',
         width: '100%',
+        transform:[
+            {scale:1}
+        ],
         height: 200,
     }
 })

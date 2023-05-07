@@ -96,9 +96,10 @@ export const ViewStore = (props: Props) => {
     return (
 
         <View style={{ backgroundColor: 'white', height:'100%', justifyContent:'center', flexDirection:'row' }}>
-            <View style={{paddingLeft:10, paddingRight:10}}>
+            <View>
+            <Pressable style={styles.backButton} onPress={BackPress}><Text style={styles.backButtonText}>Back</Text></Pressable>
+            <ScrollView stickyHeaderHiddenOnScroll={true} style={{marginBottom:60}}>
                 <View style={styles.Conteintor}>
-                    <Pressable style={styles.backButton} onPress={BackPress}><Text style={styles.backButtonText}>Back</Text></Pressable>
                     <Image style={styles.imageStyle} source={
                         {
                             uri: imageUri + props.Store?.logo,
@@ -111,7 +112,6 @@ export const ViewStore = (props: Props) => {
                         { DistanceKm < 1 &&  <View style={styles.detailsView}><Text style={styles.detailsText}>{OpenDateString + " - " + CloseDateString}</Text><Text style={styles.detailsText}>{Math.round(getDistance(props.Store.location, props.thelocation))*1000 + " m"}</Text></View>}
                     </View>
                 </View>
-                <ScrollView stickyHeaderHiddenOnScroll={true} style={{marginBottom:60}}>
                 {arrayOfProducts.map((categoryname, index) => {
                 if (!displayProducts) return 
                 let localproducts = new Array<Product>();
@@ -160,6 +160,7 @@ const styles = StyleSheet.create({
     elevation: 5,
     },
     backButton: {
+        position:'absolute',
         zIndex: 3,
         borderTopRightRadius: 40,
         borderBottomRightRadius: 40,
@@ -170,7 +171,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         display: 'flex',
         top: 10,
-        left: 25
     },
     detailsView: {
         display: 'flex',
