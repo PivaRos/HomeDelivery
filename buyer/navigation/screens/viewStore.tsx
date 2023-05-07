@@ -27,6 +27,21 @@ export const ViewStore = (props: Props) => {
 
     const scrollOffsetY = useRef(new Animated.Value(0)).current;
 
+    const opacityChange = scrollOffsetY.interpolate({
+        inputRange:[100, 150],
+        outputRange:[0, 1]
+    })
+
+    const TransformText = scrollOffsetY.interpolate({
+        inputRange:[100, 150],
+        outputRange:[26, 40]
+    })
+
+    const zindex = scrollOffsetY.interpolate({
+        inputRange:[100, 150], 
+        outputRange:[1, 3]
+    })
+
 
     useEffect(() => {
         const OpenDate = toDateTime(props.Store.openHoursObject.openFrom).toLocaleTimeString().split(":");
@@ -97,8 +112,20 @@ export const ViewStore = (props: Props) => {
 
         <View style={{ backgroundColor: 'white', height:'100%', justifyContent:'center', flexDirection:'row' }}>
             <View>
-            <Pressable style={styles.backButton} onPress={BackPress}><Text style={styles.backButtonText}>Back</Text></Pressable>
-            <ScrollView stickyHeaderHiddenOnScroll={true} style={{marginBottom:60}}>
+                
+           <Animated.View style={{
+            opacity:opacityChange,
+            backgroundColor:'white',
+            height:60,
+            width:'100%',
+            position:'absolute',
+            zIndex:2
+           }}></Animated.View>
+           <Pressable style={styles.backButton} onPress={BackPress}><Text style={styles.backButtonText}>Back</Text></Pressable>
+            <ScrollView scrollEventThrottle={16} onScroll={(event) => {
+                console.log(event.nativeEvent.contentOffset.y)
+               scrollOffsetY.setValue(event.nativeEvent.contentOffset.y);
+            }} stickyHeaderHiddenOnScroll={true} style={{marginBottom:60}}>
                 <View style={styles.Conteintor}>
                     <Image style={styles.imageStyle} source={
                         {
@@ -107,7 +134,12 @@ export const ViewStore = (props: Props) => {
 
                         }} />
                     <View style={styles.storeInfo}>
-                        <Text style={styles.StoreName}>{props.Store?.name}</Text>
+                        <Animated.Text style={[styles.StoreName, {
+                            transform:[
+                                {translateX:TransformText}
+                            ],
+                            zIndex:3
+                        }]}>{props.Store?.name}</Animated.Text>
                         { DistanceKm > 1 &&  <View style={styles.detailsView}><Text style={styles.detailsText}>{OpenDateString + " - " + CloseDateString}</Text><Text style={styles.detailsText}>{Math.round(getDistance(props.Store.location, props.thelocation)) + " km"}</Text></View>}
                         { DistanceKm < 1 &&  <View style={styles.detailsView}><Text style={styles.detailsText}>{OpenDateString + " - " + CloseDateString}</Text><Text style={styles.detailsText}>{Math.round(getDistance(props.Store.location, props.thelocation))*1000 + " m"}</Text></View>}
                     </View>
