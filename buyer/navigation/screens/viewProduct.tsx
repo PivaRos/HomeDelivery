@@ -6,6 +6,7 @@ import { uri } from "../../envVars";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { ProductOptionsList } from "../../components/product/options/options_grid";
 import { PriceString, getTotalUnits, setOrderSelectedProductByIndex } from "../../functions";
+import { userActions } from "../../network_services/user";
 
 
 interface Props {
@@ -30,9 +31,11 @@ export const ViewProduct = (props: Props) => {
     const [price, setPrice] = useState(Product.price.price);
     const [selectedProductIndex, setSelectedProductIndex] = useState(-1);
 
+    const [dataSourceCords, setDataSourceCords] = useState([] as number[]);
 
     const scrollAnimationValue = useRef(new Animated.Value(0)).current;
     
+    let scrollViewRef = useRef<ScrollView | null>(null);
     const itemsRef = useRef<unknown[]>([]);
     // you can access the elements with itemsRef.current[n]
     useEffect(() => {
@@ -120,8 +123,6 @@ export const ViewProduct = (props: Props) => {
 
 
 
-
-
     const canSave = ():boolean => {
         let cantAdd = false;
         let ProblemIndexes:number[] = [];
@@ -137,7 +138,12 @@ export const ViewProduct = (props: Props) => {
                     let ref = itemsRef.current[index] as {
                         Shake: () => void;
                     }
+                    if (scrollViewRef.current)
+                    {
+                        scrollViewRef.current.scrollTo({animated:true, y:dataSourceCords[index]});
+                    }
                     ref.Shake()
+
                     //arrayOfShakes[index]();
                     ProblemIndexes.push(index);
                 }
@@ -282,6 +288,7 @@ export const ViewProduct = (props: Props) => {
         <View style={{ backgroundColor: 'white', height: '100%' }}>
             <Pressable style={styles.backButton} onPress={() => (navigation.navigate("ViewStore", { id: 2 }))}><Text style={styles.backButtonText}>Back</Text></Pressable>
                 <ScrollView 
+                ref={(ref) => scrollViewRef.current = ref}
                 scrollEventThrottle={16}
                 pagingEnabled={true} 
                 style={[styles.restView, {marginBottom:60}]}>
@@ -300,6 +307,8 @@ export const ViewProduct = (props: Props) => {
                     <View style={{ marginTop:200}}>
                         {Product.options?.map((option, index) => {
                             return (<ProductOptionsList 
+                                positionsArray={dataSourceCords}
+                                setPositionsArray={setDataSourceCords}
                                 ref={el => itemsRef.current[index] = el} 
                                 checkIfNeedUpdate={checkIfNeedUpdate} 
                                 price={price} setPrice={setPrice} 

@@ -14,6 +14,8 @@ interface Props {
     setPrice:React.Dispatch<React.SetStateAction<number>>;
     price:number;
     checkIfNeedUpdate:() => void
+    setPositionsArray:React.Dispatch<React.SetStateAction<number[]>>
+    positionsArray:number[];
 }
 
 
@@ -100,7 +102,13 @@ export const ProductOptionsList = forwardRef((props: Props, ref:React.ForwardedR
 
     }, [JSON.stringify(optionProductCheckedState), JSON.stringify(optionProductUnits)])
 
-    return (<View style={styles.mainGrid}>
+    return (<View style={styles.mainGrid} onLayout={(event) => {
+       const layout =  event.nativeEvent.layout;
+        let array = JSON.parse(JSON.stringify(props.positionsArray));
+        array[props.optionIndex] = layout.y;
+        props.setPositionsArray(array);
+       layout.y
+    }}>
         <Text style={{ fontWeight: 'bold', padding: 5, paddingLeft: 15, }}>{props.option.name}</Text>
         <ShakeText
             duration={100} 
