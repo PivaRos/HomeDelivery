@@ -15,6 +15,13 @@ interface Props {
     setSavedOrder:React.Dispatch<React.SetStateAction<Order | undefined | null>>;
 }
 
+    enum Extarpolate {
+        clamp="clamp",
+        extend= "extend",
+        identity = "identity"
+
+    }
+
 const imageUri = uri + "data/file/";
 export const ViewStore = (props: Props) => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
@@ -32,14 +39,43 @@ export const ViewStore = (props: Props) => {
         outputRange:[0, 1]
     })
 
-    const TransformText = scrollOffsetY.interpolate({
-        inputRange:[100, 150],
-        outputRange:[26, 40]
+    const opacityOff = scrollOffsetY.interpolate({
+        inputRange:[0,20],
+        outputRange:[1,0]
     })
 
-    const zindex = scrollOffsetY.interpolate({
-        inputRange:[100, 150], 
-        outputRange:[1, 3]
+    const TransformText = scrollOffsetY.interpolate({
+        inputRange:[50, 150],
+        outputRange:[10, 78],
+        extrapolateLeft:Extarpolate.clamp,
+        extrapolateRight:Extarpolate.clamp
+    })
+    const TransformTextY = scrollOffsetY.interpolate({
+        inputRange:[0,60, 150],
+        outputRange:[210, 150, 20],
+        extrapolateRight:Extarpolate.clamp,
+        extrapolateLeft:Extarpolate.clamp,
+    })
+
+    const TransformTextScale = scrollOffsetY.interpolate({
+        inputRange:[0,60, 150],
+        outputRange:[1, 0.95, 1.05],
+        extrapolateRight:Extarpolate.clamp,
+        extrapolateLeft:Extarpolate.clamp,
+    })
+
+
+    const ImageTranslate = scrollOffsetY.interpolate({
+        inputRange:[0, 200],
+        outputRange:[0, -200],
+        extrapolateLeft:Extarpolate.clamp
+    })
+
+
+    const imageScale = scrollOffsetY.interpolate({
+        inputRange:[-100, 0],
+        outputRange:[1.2, 1],
+        extrapolateRight:Extarpolate.clamp
     })
 
 
@@ -111,8 +147,17 @@ export const ViewStore = (props: Props) => {
     return (
 
         <View style={{ backgroundColor: 'white', height:'100%', justifyContent:'center', flexDirection:'row' }}>
+            
             <View>
-                
+            <Animated.Text style={[styles.StoreName, {
+                            transform:[
+                                {translateX:TransformText},
+                                {translateY:TransformTextY},
+                                {scale:TransformTextScale}
+                            ],
+                            zIndex:3
+                            
+            }]}>{props.Store?.name}</Animated.Text>
            <Animated.View style={{
             opacity:opacityChange,
             backgroundColor:'white',
@@ -122,27 +167,24 @@ export const ViewStore = (props: Props) => {
             zIndex:2
            }}></Animated.View>
            <Pressable style={styles.backButton} onPress={BackPress}><Text style={styles.backButtonText}>Back</Text></Pressable>
-            <ScrollView scrollEventThrottle={16} onScroll={(event) => {
-                console.log(event.nativeEvent.contentOffset.y)
+           <Animated.Image style={[styles.imageStyle, {
+                transform:[
+                    {translateY:ImageTranslate},
+                    {scale:imageScale}
+                ]
+           }]} source={{
+            uri: imageUri + props.Store?.logo,
+            cache: "force-cache"}} />
+
+            <ScrollView snapToOffsets={[0, 150]} scrollEventThrottle={16} onScroll={(event) => {
                scrollOffsetY.setValue(event.nativeEvent.contentOffset.y);
             }} stickyHeaderHiddenOnScroll={true} style={{marginBottom:60}}>
                 <View style={styles.Conteintor}>
-                    <Image style={styles.imageStyle} source={
-                        {
-                            uri: imageUri + props.Store?.logo,
-                            cache: "force-cache"
-
-                        }} />
-                    <View style={styles.storeInfo}>
-                        <Animated.Text style={[styles.StoreName, {
-                            transform:[
-                                {translateX:TransformText}
-                            ],
-                            zIndex:3
-                        }]}>{props.Store?.name}</Animated.Text>
+                    
+                    <Animated.View style={[styles.storeInfo, {opacity:opacityOff}]}>
                         { DistanceKm > 1 &&  <View style={styles.detailsView}><Text style={styles.detailsText}>{OpenDateString + " - " + CloseDateString}</Text><Text style={styles.detailsText}>{Math.round(getDistance(props.Store.location, props.thelocation)) + " km"}</Text></View>}
                         { DistanceKm < 1 &&  <View style={styles.detailsView}><Text style={styles.detailsText}>{OpenDateString + " - " + CloseDateString}</Text><Text style={styles.detailsText}>{Math.round(getDistance(props.Store.location, props.thelocation))*1000 + " m"}</Text></View>}
-                    </View>
+                    </Animated.View>
                 </View>
                 {arrayOfProducts.map((categoryname, index) => {
                 if (!displayProducts) return 
@@ -206,10 +248,9 @@ const styles = StyleSheet.create({
     },
     detailsView: {
         display: 'flex',
-        flexDirection: 'row',
-
     },
     detailsText: {
+        marginTop:6,
         marginRight: 5,
     },
     backButtonText: {
