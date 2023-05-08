@@ -4,8 +4,10 @@ import { useNavigation } from '@react-navigation/native';
 import { LocationObject, Order, Product, RootStackParamList, Store } from "../../interfaces";
 import { uri } from "../../envVars";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { getDistance, toDateTime } from "../../functions";
+import { DeliveryFee, PriceString, getDistance, toDateTime } from "../../functions";
 import ProductsGrid from "../../components/product/products_grid";
+import getSymbolFromCurrency from "currency-symbol-map";
+import { SvgXml } from "react-native-svg";
 
 interface Props {
     Store: Store;
@@ -21,6 +23,11 @@ interface Props {
         identity = "identity"
 
     }
+
+    const timeSvg = '<svg height="48" fill="black" viewBox="0 96 960 960" width="48"><path d="m627 769 45-45-159-160V363h-60v225l174 181ZM480 976q-82 0-155-31.5t-127.5-86Q143 804 111.5 731T80 576q0-82 31.5-155t86-127.5Q252 239 325 207.5T480 176q82 0 155 31.5t127.5 86Q817 348 848.5 421T880 576q0 82-31.5 155t-86 127.5Q708 913 635 944.5T480 976Zm0-400Zm0 340q140 0 240-100t100-240q0-140-100-240T480 236q-140 0-240 100T140 576q0 140 100 240t240 100Z"/></svg>'
+    const DistanceSvg = '<svg fill="black" xmlns="http://www.w3.org/2000/svg" height="48" viewBox="0 96 960 960" width="48"><path d="M240 936 87 783l153-153 49 49-69 69h520l-69-69 49-49 153 153-153 153-49-49 69-69H220l69 69-49 49ZM99 521v-13q0-21.081 11.408-38.649Q121.816 451.784 142 443q25.078-10.522 51.603-16.261Q220.128 421 249.064 421t55.417 5.739Q330.963 432.478 356 443q20.184 8.784 31.592 26.351Q399 486.919 399 508v13H99Zm462 0v-13q0-21.081 11.408-38.649Q583.816 451.784 604 443q25.078-10.522 51.603-16.261Q682.128 421 711.064 421t55.417 5.739Q792.963 432.478 818 443q20.184 8.784 31.592 26.351Q861 486.919 861 508v13H561ZM248.956 366Q218 366 196 343.956q-22-22.045-22-53Q174 260 196.044 238q22.045-22 53-22Q280 216 302 238.044q22 22.045 22 53Q324 322 301.956 344q-22.045 22-53 22Zm462 0Q680 366 658 343.956q-22-22.045-22-53Q636 260 658.044 238q22.045-22 53-22Q742 216 764 238.044q22 22.045 22 53Q786 322 763.956 344q-22.045 22-53 22Z"/></svg>'
+
+    
 
 const imageUri = uri + "data/file/";
 export const ViewStore = (props: Props) => {
@@ -167,23 +174,38 @@ export const ViewStore = (props: Props) => {
             zIndex:2
            }}></Animated.View>
            <Pressable style={styles.backButton} onPress={BackPress}><Text style={styles.backButtonText}>Back</Text></Pressable>
+           <Animated.View style={[
+            {
+                transform:[
+                {translateY:ImageTranslate},
+                ],
+                position:'absolute',
+                top:0,
+            }
+           ,styles.imageStyle]}>
            <Animated.Image style={[styles.imageStyle, {
                 transform:[
-                    {translateY:ImageTranslate},
+                    
                     {scale:imageScale}
                 ]
            }]} source={{
             uri: imageUri + props.Store?.logo,
             cache: "force-cache"}} />
-
+            <View style={{flexDirection:'row', position:'absolute', 
+                top:160, left:10}}>
+                <View style={styles.imageText}><Text style={{padding:2}}>{props.Store.minOrder && "Min Order: " + PriceString(props.Store.minOrder?.price, props.Store.minOrder?.currency) || "Min Order: 0"+getSymbolFromCurrency("ILS")}</Text></View>
+                <View style={styles.imageText}><Text  style={{padding:2}} >Delivery: {PriceString(DeliveryFee(DistanceKm), "ILS")}</Text></View>
+            </View>
+            </Animated.View>
             <ScrollView snapToOffsets={[0, 150]} scrollEventThrottle={16} onScroll={(event) => {
                scrollOffsetY.setValue(event.nativeEvent.contentOffset.y);
             }} stickyHeaderHiddenOnScroll={true} style={{marginBottom:60}}>
                 <View style={styles.Conteintor}>
                     
+
                     <Animated.View style={[styles.storeInfo, {opacity:opacityOff}]}>
-                        { DistanceKm > 1 &&  <View style={styles.detailsView}><Text style={styles.detailsText}>{OpenDateString + " - " + CloseDateString}</Text><Text style={styles.detailsText}>{Math.round(getDistance(props.Store.location, props.thelocation)) + " km"}</Text></View>}
-                        { DistanceKm < 1 &&  <View style={styles.detailsView}><Text style={styles.detailsText}>{OpenDateString + " - " + CloseDateString}</Text><Text style={styles.detailsText}>{Math.round(getDistance(props.Store.location, props.thelocation))*1000 + " m"}</Text></View>}
+                        { DistanceKm > 1 &&  <View style={styles.detailsView}><Text style={styles.detailsText}><SvgXml style={{ height:16, marginTop:-2}} height={16} width={16}  xml={timeSvg}/> {" "+ OpenDateString + " - " + CloseDateString}</Text><Text style={styles.detailsText}><SvgXml style={{ height:16, marginTop:-3, paddingRight:10}} height={16} width={16}  xml={DistanceSvg}/> {" "+Math.round(getDistance(props.Store.location, props.thelocation)) + " km"}</Text></View>}
+                        { DistanceKm < 1 &&  <View style={styles.detailsView}><Text style={styles.detailsText}><SvgXml style={{ height:16}} height={16} width={16}  xml={timeSvg}/>{OpenDateString + " - " + CloseDateString}</Text><Text style={styles.detailsText}><SvgXml style={{ height:16, marginTop:-3,  paddingRight:10}} height={16} width={16}  xml={DistanceSvg}/> {" "+Math.round(getDistance(props.Store.location, props.thelocation))*1000 + " m"}</Text></View>}
                     </Animated.View>
                 </View>
                 {arrayOfProducts.map((categoryname, index) => {
@@ -283,5 +305,11 @@ const styles = StyleSheet.create({
         borderBottomRightRadius: 10,
         borderBottomLeftRadius: 10,
         width: '100%'
+    }, 
+    imageText:{
+        padding:5,
+        backgroundColor:'lightgreen',
+        borderRadius:10,
+        marginRight:15
     }
 })

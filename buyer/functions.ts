@@ -129,6 +129,17 @@ export const getDistance = (Location1:LocationObject, Location2:LocationObject )
   }
 }
 
+export const DeliveryFee = (distanceKm:number) => {
+  // in ILS;
+  let price = 8000;
+  if (distanceKm > 1)
+  {
+    price += ((distanceKm-1)/0.5)*2000 
+  }
+  return price
+
+}
+
 export const PriceString = (price:number, currency:string):string => {
     //price string
     let symbol = "";
@@ -138,7 +149,7 @@ export const PriceString = (price:number, currency:string):string => {
     }
     const sherit = price % 1000;
     if (!sherit) return (symbol + (price / 1000).toString() + "." + sherit.toString());
-    return  symbol + (price / 1000).toString()
+    return  symbol + Math.round((price / 1000)).toString()
 }
 
 export const getTotalUnits = (ArrayToSum: number[]) => {

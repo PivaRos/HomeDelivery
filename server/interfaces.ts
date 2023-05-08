@@ -78,6 +78,7 @@ export interface Store extends WithId<Document> {
   deliveryDistance: number
   openHoursObject: OpenHoursObject
   category: StoreCategory
+  minOrder?:PriceObject
 }
 
 export interface OpenHoursObject {
