@@ -66,47 +66,6 @@ export const registerForPushNotificationsAsync = async () => {
     }
   }
 
-  export const getUnits = (array:Array<Product>, value:Product) => {
-    var count = 0;
-    array.forEach((v) => ((JSON.stringify(v) === JSON.stringify(value) && value.units) && (count = value.units)));
-    return count;
-}
-
-export const RemoveOrAddFromOrder = (removeOrAdd:0|1, setSavedOrder:React.Dispatch<React.SetStateAction<Order | undefined| null>>, savedOrder:Order | undefined| null, SelectedProduct:Product) => {
-  if (!savedOrder) return false;
-  if (removeOrAdd === 0)
-  {
-    //remove
-    for (let i = 0; i < savedOrder.selecedProdcuts.length; i++)
-    {
-      if (JSON.stringify(savedOrder.selecedProdcuts[i]) === JSON.stringify(SelectedProduct))
-      {
-        
-        const savedOrder1 = savedOrder;
-        savedOrder1.selecedProdcuts.splice(i, 1);
-        setSavedOrder(savedOrder1);
-        return true;
-      }
-    }
-    return false;
-  }
-  else
-  {
-    //add
-    var previousOrder = savedOrder;
-    if (previousOrder)
-    {
-        previousOrder.selecedProdcuts.push(SelectedProduct);
-        setSavedOrder(previousOrder);
-        console.log(savedOrder.selecedProdcuts);
-        return true;
-    }
-    else
-    {
-      return false;
-    } 
-  }
-}
   
     
   export const toDateTime = (secs:number) => {
@@ -176,4 +135,25 @@ export const setOrderSelectedProductByIndex = (order:Order, product:Product, ind
       }
     })
     return newOrder;
+}
+
+export const getPricePerUnit = (Product:Product) => {
+  let pricePerUnit = +Product.price.price;
+  if (Product.options) {
+
+      for (let i = 0; i < Product.options?.length; i++) {
+          if (Product.options[i].additionalAllowed) {
+              let option = Product.options[i];
+              let maxPicks = +Product.options[i].maxPicks;
+              let OptionTotalPicks = +getTotalUnits(option.selectedOptionProducts?.map((v) => {
+                  return v.units
+              }) || []);
+              if (OptionTotalPicks - maxPicks > 0) {
+
+                  pricePerUnit += (OptionTotalPicks - maxPicks) * option.additionalPricePerUnit.price;
+              }
+          }
+      }
+  }
+  return pricePerUnit;
 }

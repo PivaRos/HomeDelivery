@@ -4,10 +4,11 @@ import { useNavigation } from '@react-navigation/native';
 import { LocationObject, Order, Product, RootStackParamList, Store } from "../../interfaces";
 import { uri } from "../../envVars";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { DeliveryFee, PriceString, getDistance, toDateTime } from "../../functions";
+import { DeliveryFee, PriceString, getDistance, getPricePerUnit, toDateTime } from "../../functions";
 import ProductsGrid from "../../components/product/products_grid";
 import getSymbolFromCurrency from "currency-symbol-map";
 import { SvgXml } from "react-native-svg";
+import ShakeText from "react-native-shake-text";
 
 interface Props {
     Store: Store;
@@ -38,6 +39,11 @@ export const ViewStore = (props: Props) => {
     const [arrayOfProducts, setArrayOfProducts] = useState<string[]>([]);
 
     const DistanceKm : number = getDistance(props.Store.location, props.thelocation);
+
+    let ShakeRef = useRef<ShakeText>();
+    let shakeLayoutY = 0;
+
+    let ScrollViewRef = useRef<ScrollView>();
 
     const scrollOffsetY = useRef(new Animated.Value(0)).current;
 
@@ -151,6 +157,35 @@ export const ViewStore = (props: Props) => {
         navigation.navigate("tabs", { id: 1 })
     }
 
+    const TotalPrice = () => {
+        let price = 0;
+         props.savedOrder?.selecedProdcuts.map((p) => {
+           price += getPricePerUnit(p)*(p.units ||1)
+        });
+        return price
+    }
+
+    const canViewOrder = () => {
+        if (props.Store.minOrder)
+        {
+            if (props.Store.minOrder.price > TotalPrice())
+            {
+                if (ShakeRef.current)
+                {
+                    ScrollViewRef.current?.scrollTo({animated:true, y:shakeLayoutY})
+                    ShakeRef.current.startShakeAnimation()
+                }
+            }
+            else{
+            navigation.navigate('ViewOrder', {id:4})
+                
+            }
+        }
+        else{
+            navigation.navigate('ViewOrder', {id:4})
+        }
+    }
+
     return (
 
         <View style={{ backgroundColor: 'white', height:'100%', justifyContent:'center', flexDirection:'row' }}>
@@ -193,11 +228,13 @@ export const ViewStore = (props: Props) => {
             cache: "force-cache"}} />
             <View style={{flexDirection:'row', position:'absolute', 
                 top:160, left:10}}>
-                <View style={styles.imageText}><Text style={{padding:2}}>{props.Store.minOrder && "Min Order: " + PriceString(props.Store.minOrder?.price, props.Store.minOrder?.currency) || "Min Order: 0"+getSymbolFromCurrency("ILS")}</Text></View>
+                <View onLayout={(e) => {
+                  shakeLayoutY = e.nativeEvent.layout.y;
+                }} style={styles.imageText}><ShakeText TextComponent={Text} duration={200} ref={(ref: ShakeText) => (ShakeRef.current = ref)}  style={{padding:2}}>{props.Store.minOrder && "Min Order: " + PriceString(props.Store.minOrder?.price, props.Store.minOrder?.currency) || "Min Order: 0"+getSymbolFromCurrency("ILS")}</ShakeText></View>
                 <View style={styles.imageText}><Text  style={{padding:2}} >Delivery: {PriceString(DeliveryFee(DistanceKm), "ILS")}</Text></View>
             </View>
             </Animated.View>
-            <ScrollView snapToOffsets={[0, 150]} scrollEventThrottle={16} onScroll={(event) => {
+            <ScrollView ref={(ref:ScrollView) => {ScrollViewRef.current = ref}} snapToOffsets={[0, 150]} scrollEventThrottle={16} onScroll={(event) => {
                scrollOffsetY.setValue(event.nativeEvent.contentOffset.y);
             }} stickyHeaderHiddenOnScroll={true} style={{marginBottom:60}}>
                 <View style={styles.Conteintor}>
@@ -227,7 +264,7 @@ export const ViewStore = (props: Props) => {
                 </ScrollView>
             </View>
             {(props.savedOrder  && (props.savedOrder.selecedProdcuts.length > 0 )) && 
-                <Pressable onPress={() => (navigation.navigate('ViewOrder', {id:4}))} style={styles.ViewOrderButton}>
+                <Pressable onPress={ canViewOrder} style={styles.ViewOrderButton}>
                     <Text style={{width:'100%', textAlign:'center', top:6, fontSize:16, fontWeight:'bold'}}>View Order</Text>
                 </Pressable>}
         </View>

@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import ReactNative, { StyleSheet, View, Text, Image, Dimensions, TouchableWithoutFeedback, Animated, Easing, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, Image, Dimensions, TouchableWithoutFeedback, Animated, Easing, ScrollView } from 'react-native';
 import { LocationObject, Order, Product, RootStackParamList, selectedOption } from '../../interfaces';
 import { useNavigation } from '@react-navigation/native';
 import { uri } from '../../envVars';
 import { StackNavigationProp } from '@react-navigation/stack';
-import getSymbolFromCurrency from 'currency-symbol-map'
-import { getExpoPushTokenAsync } from 'expo-notifications';
-import { PriceString, getTotalUnits, getUnits } from '../../functions';
+import { PriceString, getPricePerUnit, getTotalUnits } from '../../functions';
 
 
 interface Props {
@@ -30,6 +28,7 @@ const ProductTab = (props: Props) => {
         setPriceString(PriceString(price, props.Product.price.currency));
     }, [price])
 
+    
     useEffect(() => {
         if (props.savedOrder) {
             const number = props.Product.units;
@@ -47,23 +46,7 @@ const ProductTab = (props: Props) => {
 
     useEffect(() => {
         //calculates price
-        let pricePerUnit = +props.Product.price.price;
-        if (props.Product.options) {
-
-            for (let i = 0; i < props.Product.options?.length; i++) {
-                if (props.Product.options[i].additionalAllowed) {
-                    let option = props.Product.options[i];
-                    let maxPicks = +props.Product.options[i].maxPicks;
-                    let OptionTotalPicks = +getTotalUnits(option.selectedOptionProducts?.map((v) => {
-                        return v.units
-                    }) || []);
-                    if (OptionTotalPicks - maxPicks > 0) {
-
-                        pricePerUnit += (OptionTotalPicks - maxPicks) * option.additionalPricePerUnit.price;
-                    }
-                }
-            }
-        }
+        let pricePerUnit = getPricePerUnit(props.Product);
         setPrice(+pricePerUnit * (props.Product.units || 1))
     }, [props.Product.units, JSON.stringify(props.Product)])
 
