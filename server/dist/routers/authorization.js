@@ -13,13 +13,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const express_validator_1 = require("express-validator");
 const uuid_1 = require("uuid");
 const Router = (MongoObject) => {
     const AuthorizationRouter = express_1.default.Router();
-    AuthorizationRouter.post('/account', (0, express_validator_1.check)('username').exists().isLength({ min: 4 }), (0, express_validator_1.check)('password').exists().isLength({ min: 7 }), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    AuthorizationRouter.post('/account', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            (0, express_validator_1.validationResult)(req).throw();
             const user = yield MongoObject.collections.Accounts.findOne({
                 $and: [
                     { username: req.body.username },
@@ -33,26 +31,22 @@ const Router = (MongoObject) => {
                     res.status(200);
                     return res.json({
                         err: false,
-                        accountType: user.type,
-                        sessionid
+                        data: {
+                            accountType: user.type,
+                            sessionid
+                        },
+                        msg: "ok"
                     });
                 }
                 throw new Error('unable to update sessionid');
             }
-            else {
-                res.status(500);
-                return res.json({
-                    err: true,
-                    msg: 'no user found',
-                    not: null // number of tries left
-                });
-            }
+            throw new Error('no user found');
         }
         catch (exeption) {
             res.status(500);
             return res.json({
                 err: true,
-                msg: 'unable to verify user',
+                msg: exeption.message,
                 not: null // number of tries left
             });
         }

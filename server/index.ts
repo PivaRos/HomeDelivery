@@ -59,6 +59,7 @@ app.use('/delivery', DeliveryRouter(MongoObject))
 app.use('/authorization', AuthorizationRouter(MongoObject))
 app.use('/seller', SellerRouter(MongoObject))
 
+
 // running
 app.listen(8000, () => {
   console.log('⚡️[server]: Server is running at http://localhost:8000')

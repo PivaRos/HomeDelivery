@@ -20,9 +20,8 @@ const Router = (MongoObject: {
 }) => {
   const AuthorizationRouter = express.Router()
 
-  AuthorizationRouter.post('/account', check('username').exists().isLength({ min: 4 }), check('password').exists().isLength({ min: 7 }), async (req: Request, res: Response) => {
+  AuthorizationRouter.post('/account',  async (req: Request, res: Response) => {
     try {
-      validationResult(req).throw()
       const user = await MongoObject.collections.Accounts.findOne({
         $and: [
           { username: req.body.username },
@@ -36,24 +35,24 @@ const Router = (MongoObject: {
           res.status(200)
           return res.json({
             err: false,
-            accountType: user.type,
-            sessionid
+            data:{
+              accountType: user.type,
+              sessionid
+            },
+            msg:"ok"
+            
           })
         }
         throw new Error('unable to update sessionid')
-      } else {
-        res.status(500)
-        return res.json({
-          err: true,
-          msg: 'no user found',
-          not: null // number of tries left
-        })
       }
-    } catch (exeption) {
+
+      throw new Error('no user found');
+    }
+    catch (exeption:any) {
       res.status(500)
       return res.json({
         err: true,
-        msg: 'unable to verify user',
+        msg: exeption.message,
         not: null // number of tries left
       })
     }
