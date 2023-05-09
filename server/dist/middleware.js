@@ -55,7 +55,7 @@ const isBuyer = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
 exports.isBuyer = isBuyer;
 const isSeller = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     res.locals.account = yield _1.Accounts.findOne({ sessionid: req.headers.authorization });
-    if ((res.locals.account != null) && res.locals.account.type === 3) {
+    if ((res.locals.account != null) && res.locals.account.type === 2) {
         next();
     }
     else {
@@ -65,7 +65,7 @@ const isSeller = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
 exports.isSeller = isSeller;
 const isDelivery = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     res.locals.account = yield _1.Accounts.findOne({ sessionid: req.headers.authorization });
-    if (res.locals.account && res.locals.account.type === 2) {
+    if (res.locals.account && res.locals.account.type === 3) {
         next();
     }
     else {

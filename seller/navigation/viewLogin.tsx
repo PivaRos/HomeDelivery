@@ -4,9 +4,11 @@ import { useKeyboard } from "../hooks/useKeyborad";
 import { uri } from "../envVars";
 import { DataObject } from "../interfaces";
 
+interface ViewLoginProps {
+    setSessionid:React.Dispatch<React.SetStateAction<string>>
+}
 
-
-export const ViewLogin = () => {
+export const ViewLogin = ({setSessionid}:ViewLoginProps) => {
 
     let scrollViewRef = useRef<ScrollView>();
     let keyboradHeight = useKeyboard()
@@ -35,14 +37,13 @@ export const ViewLogin = () => {
             if (json.err) throw new Error(json.msg);
             
             //set sessionid
-            console.log(json.data.sessionid);
-            //redirect to other page
+            if (!json.data.sessionid || json.data.accountType !== 2) throw new Error();
+            setSessionid(json.data.sessionid);
         
         }
         catch(e:any){
             //display error message
             setMessage(e.message)
-            console.log(e.message)
         }
 
         setLoading(false);

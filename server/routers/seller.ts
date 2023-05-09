@@ -21,6 +21,12 @@ const Router = (MongoObject: {
   const SellerRouter = express.Router()
   SellerRouter.use(isSeller)
 
+
+
+  SellerRouter.get('/account', async (req:Request, res:Response) => {
+    return res.json(res.locals.account);
+  })
+
   // get all orders no metter what status
   SellerRouter.get('/orders', async (req: Request, res: Response): Promise<void> => {
     try {

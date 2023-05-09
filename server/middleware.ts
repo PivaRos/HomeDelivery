@@ -44,7 +44,7 @@ export const isBuyer = async (req: Request, res: Response, next: NextFunction) =
 
 export const isSeller = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   res.locals.account = await Accounts.findOne({ sessionid: req.headers.authorization })
-  if (((res.locals.account as { type: number } | null) != null) && res.locals.account.type === 3) {
+  if (((res.locals.account as { type: number } | null) != null) && res.locals.account.type === 2) {
     next()
   } else {
     res.sendStatus(401)
@@ -53,7 +53,7 @@ export const isSeller = async (req: Request, res: Response, next: NextFunction):
 
 export const isDelivery = async (req: Request, res: Response, next: NextFunction) => {
   res.locals.account = await Accounts.findOne({ sessionid: req.headers.authorization })
-  if (res.locals.account && res.locals.account.type === 2) {
+  if (res.locals.account && res.locals.account.type === 3) {
     next()
   } else {
     res.sendStatus(401)

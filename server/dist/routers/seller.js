@@ -19,6 +19,9 @@ const interfaces_1 = require("../interfaces");
 const Router = (MongoObject) => {
     const SellerRouter = express_1.default.Router();
     SellerRouter.use(middleware_1.isSeller);
+    SellerRouter.get('/account', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        return res.json(res.locals.account);
+    }));
     // get all orders no metter what status
     SellerRouter.get('/orders', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
