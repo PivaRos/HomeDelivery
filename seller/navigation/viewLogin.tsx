@@ -37,7 +37,7 @@ export const ViewLogin = ({setSessionid}:ViewLoginProps) => {
             if (json.err) throw new Error(json.msg);
             
             //set sessionid
-            if (!json.data.sessionid || json.data.accountType !== 2) throw new Error();
+            if (!json.data.sessionid || json.data.accountType !== 2) throw new Error("no user found");
             setSessionid(json.data.sessionid);
         
         }

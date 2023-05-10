@@ -85,6 +85,7 @@ export default function App() {
         'Content-Type': 'application/json'
       }
     })
+    if (result.status !== 200) throw new Error("");
     const json = await result.json()
     if (json)
     {
@@ -101,7 +102,7 @@ export default function App() {
         <Stack.Navigator screenOptions={{ headerShown: false, fullScreenGestureEnabled: true }}>
 
           {sessionid === "" && <Stack.Screen  name='ViewLogin' children={() => <ViewLogin setSessionid={setSessionid}/>}/>}
-          {sessionid !== "" && <Stack.Screen name='ViewApp' children={() => <ViewApp user={User} setSessionid={setSessionid} />}/>}
+          {sessionid !== "" && <Stack.Screen name='ViewApp' children={() => <ViewApp sessionid={sessionid} user={User} setSessionid={setSessionid} />}/>}
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaView>

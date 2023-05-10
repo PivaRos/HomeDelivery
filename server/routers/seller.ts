@@ -27,6 +27,16 @@ const Router = (MongoObject: {
     return res.json(res.locals.account);
   })
 
+  SellerRouter.get('/stores', async (req:Request, res:Response) => {
+      try{
+      const Stores:Store[] = await MongoObject.collections.Stores.find({authorizedUsers:{$all:[res.locals.account._id.toString()]}}).toArray();
+      return res.json({Stores});
+      }catch(e){
+        console.log(e);
+        return res.sendStatus(500);
+      }
+    })
+
   // get all orders no metter what status
   SellerRouter.get('/orders', async (req: Request, res: Response): Promise<void> => {
     try {

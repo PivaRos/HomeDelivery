@@ -22,6 +22,16 @@ const Router = (MongoObject) => {
     SellerRouter.get('/account', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         return res.json(res.locals.account);
     }));
+    SellerRouter.get('/stores', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const Stores = yield MongoObject.collections.Stores.find({ authorizedUsers: { $all: [res.locals.account._id.toString()] } }).toArray();
+            return res.json({ Stores });
+        }
+        catch (e) {
+            console.log(e);
+            return res.sendStatus(500);
+        }
+    }));
     // get all orders no metter what status
     SellerRouter.get('/orders', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
