@@ -12,10 +12,12 @@ export interface AvailableStores {
   Open: Store[]
 }
 
-export interface RootStackParamList {
-  ViewStore: { id: number } | undefined
-  tabs: { id: number } | undefined
-}
+
+export type RootStackParamList = {
+  ViewStore: { id: number } | undefined;
+  ViewApp: { id: number } | undefined;
+  ViewLogin: { id: number } | undefined
+};
 
 export enum AccountType {
   Seller = 2,

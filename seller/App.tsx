@@ -6,8 +6,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCallback, useEffect, useState } from 'react';
 import { ViewApp } from './navigation/viewApp';
 import * as SplashScreen from 'expo-splash-screen';
-import { Account } from './interfaces';
+import { Account, Store } from './interfaces';
 import { uri } from "./envVars";
+import { ViewStore } from './navigation/viewStore';
 
 
 
@@ -19,29 +20,30 @@ export default function App() {
 
   const [sessionid, setSessionid ] = useState("");
   const [User, setUser] = useState<Account>();
+  const [selectedStore, setSelectedStore] = useState<Store>();
+
 
 
   const [appIsReady, setAppIsReady] = useState(false);
 
   useEffect(() => {
-    async function prepare() {
-      try {
-        // Artificially delay for two seconds to simulate a slow loading
-        // experience. Please remove this if you copy and paste the code!
-        await setSessionid(await AsyncStorage.getItem("sessionid") || "")
-        await new Promise(resolve => setTimeout(resolve, 400));
-
-
-      } catch (e) {
-
-      } finally {
-        // Tell the application to render
-        setAppIsReady(true);
-      }
-    }
-
     prepare();
   }, []);
+
+  async function prepare() {
+    try {
+      // Artificially delay for two seconds to simulate a slow loading
+      // experience. Please remove this if you copy and paste the code!
+      await setSessionid(await AsyncStorage.getItem("sessionid") || "")
+      
+
+    } catch (e) {
+
+    } finally {
+      // Tell the application to render
+      setAppIsReady(true);
+    }
+  }
 
   const onLayoutRootView = useCallback(async () => {
     if (appIsReady) {
@@ -53,8 +55,6 @@ export default function App() {
       await SplashScreen.hideAsync();
     }
   }, [appIsReady]);
-
-  onLayoutRootView();
 
   useEffect(() => {
     AsyncStorage.getItem("sessionid").then((result) => {
@@ -97,12 +97,13 @@ export default function App() {
   }
 
   return (
-    <SafeAreaView  style={styles.container}>
+    <SafeAreaView onLayout={() => {onLayoutRootView()}}  style={styles.container}>
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false, fullScreenGestureEnabled: true }}>
 
           {sessionid === "" && <Stack.Screen  name='ViewLogin' children={() => <ViewLogin setSessionid={setSessionid}/>}/>}
-          {sessionid !== "" && <Stack.Screen name='ViewApp' children={() => <ViewApp sessionid={sessionid} user={User} setSessionid={setSessionid} />}/>}
+          {sessionid !== "" && <Stack.Screen name='ViewApp' children={() => <ViewApp setSelectedStore={setSelectedStore} sessionid={sessionid} user={User} setSessionid={setSessionid} />}/>}
+          {sessionid !== "" && selectedStore && <Stack.Screen name='ViewStore' children={() => <ViewStore Store={selectedStore} sessionid={sessionid} setSessionid={setSessionid} user={User}/>}/>}
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaView>
