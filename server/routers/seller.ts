@@ -2,7 +2,7 @@ import express, { type Request, type Response } from 'express'
 import type mongodb from 'mongodb'
 import { ObjectId } from 'mongodb'
 import { isSeller } from '../middleware'
-import { type Account, type Order, type Store, OrderStatus, StoreChangeAble } from '../interfaces'
+import { type Account, type Order, type Store, OrderStatus, StorePermissions, changeStoreBody, StoreChangeAble } from '../interfaces'
 
 const Router = (MongoObject: {
   databases: {
@@ -22,6 +22,21 @@ const Router = (MongoObject: {
   SellerRouter.use(isSeller)
 
 
+  
+
+  SellerRouter.put('/store', (req:Request, res:Response) => {
+    const Keys = Object.keys(StorePermissions);
+    const body = req.body as changeStoreBody;
+    body.fieldsToChange.map((field, index) => {
+      if (!Keys.includes(field)) return 
+      if (StorePermissions[field])
+      
+
+      
+    })
+    
+     
+  })
 
   SellerRouter.get('/account', async (req:Request, res:Response) => {
     return res.json(res.locals.account);
@@ -58,14 +73,14 @@ const Router = (MongoObject: {
   // get all orders no metter what status
   SellerRouter.get('/orders', async (req: Request, res: Response): Promise<void> => {
     try {
-      const orders: number = await MongoObject.collections.Orders.countDocuments({
+      const orders: Order[] = await MongoObject.collections.Orders.find({
         $and: [
           { seller: new ObjectId(res.locals.account._id) },
           { status: { $ne: 0 } }
 
         ]
-      })
-      if (orders > 0) {
+      }).toArray()
+      if (orders.length > 0) {
         res.json({
           err: false,
           msg: 'ok',

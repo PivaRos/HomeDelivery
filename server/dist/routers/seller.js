@@ -19,6 +19,16 @@ const interfaces_1 = require("../interfaces");
 const Router = (MongoObject) => {
     const SellerRouter = express_1.default.Router();
     SellerRouter.use(middleware_1.isSeller);
+    SellerRouter.put('/store', (req, res) => {
+        const Keys = Object.keys(interfaces_1.StorePermissions);
+        const body = req.body;
+        body.fieldsToChange.map((field, index) => {
+            if (!Keys.includes(field))
+                return;
+            if (interfaces_1.StorePermissions[field])
+                ;
+        });
+    });
     SellerRouter.get('/account', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         return res.json(res.locals.account);
     }));
@@ -35,13 +45,13 @@ const Router = (MongoObject) => {
     // get all orders no metter what status
     SellerRouter.get('/orders', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const orders = yield MongoObject.collections.Orders.countDocuments({
+            const orders = yield MongoObject.collections.Orders.find({
                 $and: [
                     { seller: new mongodb_1.ObjectId(res.locals.account._id) },
                     { status: { $ne: 0 } }
                 ]
-            });
-            if (orders > 0) {
+            }).toArray();
+            if (orders.length > 0) {
                 res.json({
                     err: false,
                     msg: 'ok',

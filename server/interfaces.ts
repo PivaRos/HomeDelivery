@@ -79,6 +79,30 @@ export interface Store extends WithId<Document> {
   openHoursObject: OpenHoursObject
   category: StoreCategory
   minOrder?:PriceObject
+  active:boolean
+}
+
+export const StorePermissions = {
+  _id:[5],
+  logo:[2,4,5],
+  name:[5,4],
+  products: [2,4,5],
+  authorizedUsers: [4,5],
+  location: [4,5],
+  deliveryDistance:[4,5],
+  openHoursObject: [2,4,5],
+  category: [4,5],
+  minOrder:[2,4,5],
+  active:[2,4,5]
+}
+
+
+export interface changeStoreBody  {
+  fieldsToChange:string[];
+  addProducts?:Product[];
+  setProducts?:{index:number, product:Product}[]
+  newValues:Array<any>;
+
 }
 
 export const StoreChangeAble = {
