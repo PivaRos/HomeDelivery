@@ -105,6 +105,26 @@ export interface changeStoreBody  {
 
 }
 
+export const StoreChangeAble = {
+  _id: {admin:true, seller:false, support:false} as ChangePremonitions,
+  logo: {admin:true, seller:true, support:true} as ChangePremonitions,
+  name: {admin:true, seller:false, support:true} as ChangePremonitions,
+  products: {admin:true, seller:true, support:true} as ChangePremonitions,
+  authorizedUsers: {admin:true, seller:false, support:true} as ChangePremonitions,
+  location: {admin:true, seller:true, support:true} as ChangePremonitions,
+  deliveryDistance: {admin:true, seller:true, support:true} as ChangePremonitions,
+  openHoursObject: {admin:true, seller:true, support:true} as ChangePremonitions,
+  category: {admin:true, seller:false, support:true} as ChangePremonitions,
+  minOrder:{admin:true, seller:true, support:true} as ChangePremonitions
+}
+
+export interface ChangePremonitions
+{
+  admin:boolean,
+  support:boolean,
+  seller:boolean
+}
+
 export interface OpenHoursObject {
   openFrom: number
   closedFrom: number
@@ -161,3 +181,4 @@ export interface PaymentLog {
   priceCharged: number
   timestamp: number
 }
+

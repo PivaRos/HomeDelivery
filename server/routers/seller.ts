@@ -2,7 +2,7 @@ import express, { type Request, type Response } from 'express'
 import type mongodb from 'mongodb'
 import { ObjectId } from 'mongodb'
 import { isSeller } from '../middleware'
-import { type Account, type Order, type Store, OrderStatus, StorePermissions, changeStoreBody } from '../interfaces'
+import { type Account, type Order, type Store, OrderStatus, StorePermissions, changeStoreBody, StoreChangeAble } from '../interfaces'
 
 const Router = (MongoObject: {
   databases: {
@@ -46,11 +46,29 @@ const Router = (MongoObject: {
       try{
       const Stores:Store[] = await MongoObject.collections.Stores.find({authorizedUsers:{$all:[res.locals.account._id.toString()]}}).toArray();
       return res.json({Stores});
-      }catch(e){
-        console.log(e);
+      }catch{
         return res.sendStatus(500);
       }
     })
+
+
+    // not done ..
+  SellerRouter.put("/store", async (req:Request, res:Response) => {
+    res.locals.ChangeFields = [];
+   const availableToChange = Object.keys(StoreChangeAble);
+
+    const NewValues = req.body.newvalues;
+    const Store_id = req.body.store_id;
+    const Stores:Store[] = await MongoObject.collections.Stores.find({authorizedUsers:{$all:[res.locals.account._id.toString()]}}).toArray();
+
+    Stores.map(store => {
+      if (store._id.toString() === Store_id)
+      {
+        res.locals.store = store;
+      }
+    })
+
+  })
 
   // get all orders no metter what status
   SellerRouter.get('/orders', async (req: Request, res: Response): Promise<void> => {
@@ -88,11 +106,17 @@ const Router = (MongoObject: {
   SellerRouter.post('/order/accept', async (req: Request, res: Response) => {
     try {
       const order_id: string = req.body.Orderid
-      const store: Store = await MongoObject.collections.Stores.findOne({ authorizedUsers: { $elemMatch: res.locals.account._id } }) as Store
-      const order = await MongoObject.collections.Orders.findOne({
+      const Stores:Store[] = await MongoObject.collections.Stores.find({authorizedUsers:{$all:[res.locals.account._id.toString()]}}).toArray();
+      Stores.map((v) =>{
+        if (v._id.toString() === req.body.order_id)
+        {
+          res.locals.store = v;
+        }
+      })
+       const order = await MongoObject.collections.Orders.findOne({
         $and: [
           { _id: new ObjectId(order_id) },
-          { store_id: store._id }
+          { store_id:  res.locals.store._id }
         ]
       }) as Order
       if (order === null) throw new Error('null order')
