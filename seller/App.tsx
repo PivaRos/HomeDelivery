@@ -21,6 +21,8 @@ export default function App() {
   const [sessionid, setSessionid ] = useState("");
   const [User, setUser] = useState<Account>();
   const [selectedStore, setSelectedStore] = useState<Store>();
+  const [refreshing, setRefreshing] = useState(false);
+
 
 
 
@@ -55,14 +57,25 @@ export default function App() {
       await SplashScreen.hideAsync();
     }
   }, [appIsReady]);
+  
 
   useEffect(() => {
+    if (!refreshing) return;
     AsyncStorage.getItem("sessionid").then((result) => {
       if (result && result != "")
       {
         setSessionid(result);
         checkAccount();
 
+      }
+    })
+  }, [refreshing])
+
+  useEffect(() => {
+    AsyncStorage.getItem("sessionid").then((result) => {
+      if (result && result != "")
+      {
+        setSessionid(result);
       }
     })
   }, [])
@@ -96,13 +109,14 @@ export default function App() {
     }
   }
 
+
   return (
     <SafeAreaView onLayout={() => {onLayoutRootView()}}  style={styles.container}>
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false, fullScreenGestureEnabled: true }}>
 
           {sessionid === "" && <Stack.Screen  name='ViewLogin' children={() => <ViewLogin setSessionid={setSessionid}/>}/>}
-          {sessionid !== "" && <Stack.Screen name='ViewApp' children={() => <ViewApp setSelectedStore={setSelectedStore} sessionid={sessionid} user={User} setSessionid={setSessionid} />}/>}
+          {sessionid !== "" && <Stack.Screen name='ViewApp' children={() => <ViewApp CheckAccount={checkAccount} refreshing={refreshing} setRefreshing={setRefreshing} setSelectedStore={setSelectedStore} sessionid={sessionid} user={User} setSessionid={setSessionid} />}/>}
           {sessionid !== "" && selectedStore && <Stack.Screen name='ViewStore' children={() => <ViewStore Store={selectedStore} sessionid={sessionid} setSessionid={setSessionid} user={User}/>}/>}
         </Stack.Navigator>
       </NavigationContainer>

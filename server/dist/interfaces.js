@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LocationType = exports.OrderStatus = exports.StoreCategory = exports.AccountType = exports.Pages = void 0;
+exports.StorePermissions = exports.LocationType = exports.OrderStatus = exports.StoreCategory = exports.AccountType = exports.Pages = void 0;
 var Pages;
 (function (Pages) {
     Pages["Stores"] = "Stores";
@@ -34,3 +34,16 @@ var LocationType;
     LocationType["point"] = "point";
     LocationType["address"] = "address";
 })(LocationType = exports.LocationType || (exports.LocationType = {}));
+exports.StorePermissions = {
+    _id: [5],
+    logo: [2, 4, 5],
+    name: [5, 4],
+    products: [2, 4, 5],
+    authorizedUsers: [4, 5],
+    location: [4, 5],
+    deliveryDistance: [4, 5],
+    openHoursObject: [2, 4, 5],
+    category: [4, 5],
+    minOrder: [2, 4, 5],
+    active: [2, 4, 5]
+};
