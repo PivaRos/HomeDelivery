@@ -41,7 +41,7 @@ exports.StorePermissions = {
     products: [2, 4, 5],
     authorizedUsers: [4, 5],
     location: [4, 5],
-    deliveryDistance: [4, 5],
+    deliveryDistance: [2, 4, 5],
     openHoursObject: [2, 4, 5],
     category: [4, 5],
     minOrder: [2, 4, 5],

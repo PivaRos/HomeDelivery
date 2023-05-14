@@ -2,7 +2,7 @@ import express, { type Request, type Response } from 'express'
 import type mongodb from 'mongodb'
 import { ObjectId } from 'mongodb'
 import { isSeller } from '../middleware'
-import { type Account, type Order, type Store, OrderStatus, StorePermissions, changeStoreBody, StoreChangeAble } from '../interfaces'
+import { type Account, type Order, type Store, OrderStatus, StorePermissions, IStorePermissions, changeStoreBody } from '../interfaces'
 
 const Router = (MongoObject: {
   databases: {
@@ -24,17 +24,65 @@ const Router = (MongoObject: {
 
   
 
-  SellerRouter.put('/store', (req:Request, res:Response) => {
-    const Keys = Object.keys(StorePermissions);
-    const body = req.body as changeStoreBody;
-    body.fieldsToChange.map((field, index) => {
-      if (!Keys.includes(field)) return 
-      if (StorePermissions[field])
-      
+  SellerRouter.put('/store', async (req:Request, res:Response) => {
+    try{
+      const Keys = Object.keys(StorePermissions);
+      const body = req.body as changeStoreBody;
 
+      const Stores:Store[] = await MongoObject.collections.Stores.find(
+        {
+          authorizedUsers:{$all:[res.locals.account._id.toString()]}
+        }).toArray();
+
+        let Store:Store| undefined;
+        Stores.map((store) => {
+          if (store._id.toString() === body.store_id)
+          {
+            Store = store;
+          }
+        })
+        if (!Store) throw new Error("no store found")
+        await body.fieldsToChange.map(async (field, index) => {
+        if (!Keys.includes(field)){
+          // allow requester to know that this is not changable field
+          return
+        }
+        if (!StorePermissions[field as keyof IStorePermissions].includes(2)) return
+        if (field === "products")
+        {
+            //need to go over set Product
+            // need to go over add Product
+        }
+        else{
+
+          interface Iobj {
+            [key: string]: any;
+          }
+
+          let obj:Iobj = {} 
+          obj[field] = body.newValues[index];
+
+          await MongoObject.collections.Stores.updateOne(
+          {_id:new ObjectId(Store?._id)},
+          {
+            $set:obj
+          }
+          )
+      }})
+      return res.json({
+        err:false,
+        msg:"ok"
+      })
       
-    })
-    
+    }catch(e:any){
+      console.log(e.message);
+       res.status(500)
+       const json  = {
+        err:true,
+        msg:"unable to complete action"
+       }
+       res.json(json);
+    }
      
   })
 
@@ -44,31 +92,13 @@ const Router = (MongoObject: {
 
   SellerRouter.get('/stores', async (req:Request, res:Response) => {
       try{
-      const Stores:Store[] = await MongoObject.collections.Stores.find({authorizedUsers:{$all:[res.locals.account._id.toString()]}}).toArray();
-      return res.json({Stores});
-      }catch{
+        const Stores:Store[] = await MongoObject.collections.Stores.find({authorizedUsers:{$all:[res.locals.account._id.toString()]}}).toArray();
+        return res.json({Stores});
+      }catch(e){
+        console.log(e);
         return res.sendStatus(500);
       }
     })
-
-
-    // not done ..
-  SellerRouter.put("/store", async (req:Request, res:Response) => {
-    res.locals.ChangeFields = [];
-   const availableToChange = Object.keys(StoreChangeAble);
-
-    const NewValues = req.body.newvalues;
-    const Store_id = req.body.store_id;
-    const Stores:Store[] = await MongoObject.collections.Stores.find({authorizedUsers:{$all:[res.locals.account._id.toString()]}}).toArray();
-
-    Stores.map(store => {
-      if (store._id.toString() === Store_id)
-      {
-        res.locals.store = store;
-      }
-    })
-
-  })
 
   // get all orders no metter what status
   SellerRouter.get('/orders', async (req: Request, res: Response): Promise<void> => {
@@ -106,17 +136,11 @@ const Router = (MongoObject: {
   SellerRouter.post('/order/accept', async (req: Request, res: Response) => {
     try {
       const order_id: string = req.body.Orderid
-      const Stores:Store[] = await MongoObject.collections.Stores.find({authorizedUsers:{$all:[res.locals.account._id.toString()]}}).toArray();
-      Stores.map((v) =>{
-        if (v._id.toString() === req.body.order_id)
-        {
-          res.locals.store = v;
-        }
-      })
-       const order = await MongoObject.collections.Orders.findOne({
+      const store: Store = await MongoObject.collections.Stores.findOne({ authorizedUsers: { $elemMatch: res.locals.account._id } }) as Store
+      const order = await MongoObject.collections.Orders.findOne({
         $and: [
           { _id: new ObjectId(order_id) },
-          { store_id:  res.locals.store._id }
+          { store_id: store._id }
         ]
       }) as Order
       if (order === null) throw new Error('null order')

@@ -82,48 +82,44 @@ export interface Store extends WithId<Document> {
   active:boolean
 }
 
-export const StorePermissions = {
+export const StorePermissions:IStorePermissions = {
   _id:[5],
   logo:[2,4,5],
   name:[5,4],
   products: [2,4,5],
   authorizedUsers: [4,5],
   location: [4,5],
-  deliveryDistance:[4,5],
+  deliveryDistance:[2,4,5],
   openHoursObject: [2,4,5],
   category: [4,5],
   minOrder:[2,4,5],
   active:[2,4,5]
 }
 
+export interface IStorePermissions  {
+  _id:AccountType[],
+  logo:AccountType[],
+  name:AccountType[],
+  products: AccountType[],
+  authorizedUsers: AccountType[],
+  location: AccountType[],
+  deliveryDistance:AccountType[],
+  openHoursObject: AccountType[],
+  category: AccountType[],
+  minOrder:AccountType[],
+  active:AccountType[]
+}
+
 
 export interface changeStoreBody  {
-  fieldsToChange:string[];
+  store_id:string;
+  fieldsToChange:string[]; // by the same index as newValues;
   addProducts?:Product[];
-  setProducts?:{index:number, product:Product}[]
-  newValues:Array<any>;
+  setProducts?:{index:number, product:Product}[];
+  newValues:Array<any>; // by the same index as newValues;
 
 }
 
-export const StoreChangeAble = {
-  _id: {admin:true, seller:false, support:false} as ChangePremonitions,
-  logo: {admin:true, seller:true, support:true} as ChangePremonitions,
-  name: {admin:true, seller:false, support:true} as ChangePremonitions,
-  products: {admin:true, seller:true, support:true} as ChangePremonitions,
-  authorizedUsers: {admin:true, seller:false, support:true} as ChangePremonitions,
-  location: {admin:true, seller:true, support:true} as ChangePremonitions,
-  deliveryDistance: {admin:true, seller:true, support:true} as ChangePremonitions,
-  openHoursObject: {admin:true, seller:true, support:true} as ChangePremonitions,
-  category: {admin:true, seller:false, support:true} as ChangePremonitions,
-  minOrder:{admin:true, seller:true, support:true} as ChangePremonitions
-}
-
-export interface ChangePremonitions
-{
-  admin:boolean,
-  support:boolean,
-  seller:boolean
-}
 
 export interface OpenHoursObject {
   openFrom: number
