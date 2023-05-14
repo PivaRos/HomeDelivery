@@ -50,8 +50,36 @@ const Router = (MongoObject: {
         if (!StorePermissions[field as keyof IStorePermissions].includes(2)) return
         if (field === "products")
         {
-            //need to go over set Product
-            // need to go over add Product
+            if (body.setProducts)
+            {
+              body.setProducts.map(async setObject => {
+                if (Store)
+                {
+                  Store.products[setObject.index] = setObject.product;
+                  await MongoObject.collections.Stores.updateOne(
+                    {_id:Store?._id},
+                    {
+                      $set:{
+                        products:Store?.products
+                      }
+                    })
+                }
+              })
+            }
+            if (body.addProducts)
+            {
+              body.addProducts.map((products) => {
+              Store?.products.push(products);
+              })
+              await MongoObject.collections.Stores.updateOne(
+                {_id:Store?._id},
+                {
+                  $set:{
+                    products:Store?.products
+                  }
+                })
+
+            }
         }
         else{
 

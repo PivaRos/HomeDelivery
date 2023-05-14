@@ -42,8 +42,28 @@ const Router = (MongoObject) => {
                 if (!interfaces_1.StorePermissions[field].includes(2))
                     return;
                 if (field === "products") {
-                    //need to go over set Product
-                    // need to go over add Product
+                    if (body.setProducts) {
+                        body.setProducts.map((setObject) => __awaiter(void 0, void 0, void 0, function* () {
+                            if (Store) {
+                                Store.products[setObject.index] = setObject.product;
+                                yield MongoObject.collections.Stores.updateOne({ _id: Store === null || Store === void 0 ? void 0 : Store._id }, {
+                                    $set: {
+                                        products: Store === null || Store === void 0 ? void 0 : Store.products
+                                    }
+                                });
+                            }
+                        }));
+                    }
+                    if (body.addProducts) {
+                        body.addProducts.map((products) => {
+                            Store === null || Store === void 0 ? void 0 : Store.products.push(products);
+                        });
+                        yield MongoObject.collections.Stores.updateOne({ _id: Store === null || Store === void 0 ? void 0 : Store._id }, {
+                            $set: {
+                                products: Store === null || Store === void 0 ? void 0 : Store.products
+                            }
+                        });
+                    }
                 }
                 else {
                     let obj = {};
