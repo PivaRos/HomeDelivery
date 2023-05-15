@@ -132,15 +132,14 @@ export const ViewStore = (props: Props) => {
         else
         {
         }
-
+        let newarrayOfProducts = JSON.parse(JSON.stringify(arrayOfProducts));
         props.Store.products.map((product) => {
-            const index = arrayOfProducts.indexOf(product.category);
+            const index = newarrayOfProducts.indexOf(product.category);
             if (index === -1) {
-                arrayOfProducts.push(product.category);
+                newarrayOfProducts.push(product.category);
             }
         })
-        let varia= arrayOfProducts;
-        setArrayOfProducts(varia);
+        setArrayOfProducts(newarrayOfProducts);
         //just to let react know
 
     }, [])
@@ -234,7 +233,7 @@ export const ViewStore = (props: Props) => {
                 <View style={styles.imageText}><Text  style={{padding:2}} >Delivery: {PriceString(DeliveryFee(DistanceKm), "ILS")}</Text></View>
             </View>
             </Animated.View>
-            <ScrollView ref={(ref:ScrollView) => {ScrollViewRef.current = ref}} snapToOffsets={[0, 150]} scrollEventThrottle={16} onScroll={(event) => {
+            <ScrollView ref={(ref:ScrollView) => {ScrollViewRef.current = ref}} snapToOffsets={[0, 150]} snapToEnd={false} scrollEventThrottle={16} onScroll={(event) => {
                scrollOffsetY.setValue(event.nativeEvent.contentOffset.y);
             }} stickyHeaderHiddenOnScroll={true} style={{marginBottom:60}}>
                 <View style={styles.Conteintor}>
@@ -259,7 +258,7 @@ export const ViewStore = (props: Props) => {
                 key={index} 
                 title={categoryname} 
                 thelocation={props.thelocation}  
-                displayProducts={displayProducts} 
+                displayProducts={localproducts} 
                 setSelectedProduct={props.setSelectedProduct} />})}
                 </ScrollView>
             </View>

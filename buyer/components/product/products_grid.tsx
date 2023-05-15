@@ -14,7 +14,6 @@ interface Props {
 const ProductsGrid = (props:Props) => {
 
     useEffect(() => {
-        console.log("displayproducts Changed ");
     }, [JSON.stringify(props.displayProducts)])
 
     const GetContent = () => {
@@ -38,6 +37,7 @@ const styles = StyleSheet.create({
     title:{
         paddingLeft:10,
         fontWeight:'bold',
+        fontSize:18
     }
 })
 
