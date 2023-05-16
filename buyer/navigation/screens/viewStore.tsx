@@ -140,7 +140,6 @@ export const ViewStore = (props: Props) => {
             }
         })
         setArrayOfProducts(newarrayOfProducts);
-        //just to let react know
 
     }, [])
 

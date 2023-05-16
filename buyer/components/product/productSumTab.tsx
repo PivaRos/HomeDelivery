@@ -6,7 +6,7 @@ import { uri } from '../../envVars';
 import { StackNavigationProp } from '@react-navigation/stack';
 import getSymbolFromCurrency from 'currency-symbol-map'
 import { getExpoPushTokenAsync } from 'expo-notifications';
-import { PriceString, getTotalUnits, getUnits } from '../../functions';
+import { PriceString, getTotalUnits } from '../../functions';
 
 
 interface Props {
@@ -111,9 +111,18 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         width: '100%',
         marginTop: 5,
-        height: 130,
+        height: 120,
         backgroundColor: "white",
         alignItems: 'center',
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 1,
+        },
+        shadowOpacity: 0.22,
+        shadowRadius: 2.22,
+
+        elevation: 3,
     },
     image: {
         height: 80,

@@ -16,6 +16,7 @@ export interface availableStores {
 
 export type RootStackParamList = {
     ViewStore: { id: number } | undefined;
+    ViewCheckout:{id:number} | undefined
     ViewOrder: { id: number } | undefined;
     ViewProduct: { id: number } | undefined
     tabs: { id: number } | undefined;
