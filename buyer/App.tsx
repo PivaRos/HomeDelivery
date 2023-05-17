@@ -79,7 +79,7 @@ export default function App() {
               {!selectedStore && <Stack.Screen name='ViewStore' children={() => <View><Text>asasd</Text></View>} />}
               {(selectedProduct && selectedStore && savedOrder) && <Stack.Screen name='ViewProduct' children={() => <ViewProduct setSavedOrder={setSavedOrder} Store={selectedStore} savedOrder={savedOrder} setSelectedProduct={setSelectedProduct} selectedProduct={selectedProduct} thelocation={thelocation} />} />}
               {savedOrder && <Stack.Screen name='ViewOrder' children={() => <ViewOrder Order={savedOrder} />} />}
-              {savedOrder && <Stack.Screen name='ViewCheckout' children={() => <ViewCheckout selectedStore={selectedStore} setOrder={setSavedOrder} order={savedOrder}/>}/>}
+              {savedOrder && <Stack.Screen name='ViewCheckout' children={() => <ViewCheckout fullCoords={fullCoords} setFullCoords={setFullCoords} selectedStore={selectedStore} setOrder={setSavedOrder} order={savedOrder}/>}/>}
               {!selectedProduct && <Stack.Screen name='ViewProduct' children={() => <View>
                 <Text>asdasd</Text></View>} />}
             </Stack.Navigator>
