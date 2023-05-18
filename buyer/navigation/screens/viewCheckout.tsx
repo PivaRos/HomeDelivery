@@ -1,9 +1,10 @@
 import { View, Text, Pressable, StyleSheet, ScrollView } from "react-native";
-import { Order, RootStackParamList, Store } from "../../interfaces";
+import { LocationType, Order, RootStackParamList, Store } from "../../interfaces";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
 import * as Location from 'expo-location';
 import MapView, { Marker } from 'react-native-maps';
+import { getDistance } from "../../functions";
 
 interface CheckoutPops {
     order:Order;
@@ -28,19 +29,21 @@ export const ViewCheckout = ({order, setOrder, selectedStore, fullCoords, setFul
             <Text style={{textAlign:'center', width:"100%", fontSize:16, position:'absolute'}}>{selectedStore?.name}</Text>
         </View>
         <View style={{backgroundColor:"white"}}>
-       {fullCoords && <MapView style={{height:250, width:'100%',         
+       {fullCoords && selectedStore?.location.coordinates && <MapView initialCamera={{ heading:0, altitude:getDistance(selectedStore.location, {coordinates:[fullCoords.latitude, fullCoords.longitude], type:LocationType.point})*1000*3, pitch:1, center:{latitude:(fullCoords.latitude + selectedStore?.location.coordinates[0])/2, longitude:(fullCoords.longitude+selectedStore?.location.coordinates[1])/2}}} style={{height:250, width:'100%',         
             shadowColor: '#000',
             shadowOffset: {width: 1, height: 3},
             shadowOpacity: 0.2,
             backgroundColor:"white"}}
-        initialRegion={{latitude:fullCoords.latitude, longitude:fullCoords.longitude, latitudeDelta: 0.0922, longitudeDelta: 0.0421,}}
         >
        { selectedStore?.location.coordinates && <Marker
         coordinate={{latitude:selectedStore.location.coordinates[0], longitude:selectedStore.location.coordinates[1]}}
         title={selectedStore?.name}
         >
-            <View style={{backgroundColor:'white'}}>
+            <View style={{backgroundColor:'white', height:20, width:20, borderRadius:50, justifyContent:'center', flexDirection:'row'}}>
                 {/* this is Store Marker */}
+                <Text style={{fontWeight:'bold'}}>
+                    {selectedStore.avgDelivery &&  selectedStore.avgDelivery || "0"}
+                </Text>
             </View>
         </Marker> }
          <Marker

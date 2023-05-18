@@ -116,7 +116,7 @@ export interface Store extends WithId<Document> {
     category: store_category,
     optionProducts: optionProduct[],
     minOrder?:PriceObject
-
+    avgDelivery:number//min
 }
 
 export interface optionProduct {
