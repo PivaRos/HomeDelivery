@@ -58,6 +58,14 @@ export const ViewCheckout = ({order, setOrder, selectedStore, fullCoords, setFul
             </View>
         </Marker> 
             </MapView>}
+        <View style={{backgroundColor:"white"}}> {/* this is address section */}
+            
+        </View>
+        <View style={{backgroundColor:"white"}}> {/* this is payment section */}
+            
+        </View>
+
+
         </View>
     </ScrollView>);
 }
