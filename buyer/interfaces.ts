@@ -100,24 +100,34 @@ export enum LocationType {
 export interface LocationObject {
     type: LocationType
     coordinates?: number[]
-    address?: string
+    address?: Address
+}
+
+export interface Address {
+    city:string
+    street:string
+    houseNumber:number
+    apartmentNumber:number
+    deliveryNotes:string
+
 }
 
 
 export interface Store extends WithId<Document> {
-    _id: ObjectId,
-    logo: string,
-    name: string,
-    products: Product[],
-    authorizedUsers: string[],
-    location: LocationObject,
-    deliveryDistance: number,
-    openHoursObject: openHoursObject,
-    category: store_category,
-    optionProducts: optionProduct[],
+    _id: ObjectId
+    logo: string
+    name: string
+    products: Product[]
+    authorizedUsers: string[]
+    location: LocationObject
+    deliveryDistance: number
+    openHoursObject: openHoursObject
+    category: store_category
+    optionProducts: optionProduct[]
     minOrder?:PriceObject
     avgDelivery:number//min
 }
+
 
 export interface optionProduct {
     _id: ObjectId,

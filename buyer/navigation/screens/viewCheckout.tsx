@@ -35,7 +35,7 @@ export const ViewCheckout = ({order, setOrder, selectedStore, fullCoords, setFul
             shadowOpacity: 0.2,
             backgroundColor:"white"}}
         >
-       { selectedStore?.location.coordinates && <Marker
+       { (selectedStore?.location.coordinates !== undefined) && <Marker
         coordinate={{latitude:selectedStore.location.coordinates[0], longitude:selectedStore.location.coordinates[1]}}
         title={selectedStore?.name}
         >
@@ -52,16 +52,16 @@ export const ViewCheckout = ({order, setOrder, selectedStore, fullCoords, setFul
         >
             
             <View style={{backgroundColor:'lightgreen', height:20, width:20, borderRadius:100, borderColor:'white', borderWidth:2.3}}>
-                {/* this is Buyer Marker */}
+              
                 
 
             </View>
         </Marker> 
             </MapView>}
-        <View style={{backgroundColor:"white"}}> {/* this is address section */}
+        <View style={{backgroundColor:"white"}}> 
             
         </View>
-        <View style={{backgroundColor:"white"}}> {/* this is payment section */}
+        <View style={{backgroundColor:"white"}}> 
             
         </View>
 
