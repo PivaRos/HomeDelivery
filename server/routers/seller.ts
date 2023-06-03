@@ -28,61 +28,61 @@ const Router = (MongoObject: {
     try{
       const Keys = Object.keys(StorePermissions);
       const body = req.body as changeStoreBody;
+    
+      let data = {successfulChanges:new Array<string>()};
+      data
 
-      const Stores:Store[] = await MongoObject.collections.Stores.find(
-        {
-          authorizedUsers:{$all:[res.locals.account._id.toString()]}
-        }).toArray();
-
-        let Store:Store| undefined;
-        Stores.map((store) => {
+      const Stores:Store[] = await MongoObject.collections.Stores.find({
+        authorizedUsers:{$all:[res.locals.account._id.toString()]}
+      }).toArray();
+      let Store:Store| undefined;
+      Stores.map((store) => {
           if (store._id.toString() === body.store_id)
           {
             Store = store;
           }
-        })
-        if (!Store) throw new Error("no store found")
-        await body.fieldsToChange.map(async (field, index) => {
-        if (!Keys.includes(field)){
-          // allow requester to know that this is not changable field
-          return
-        }
+      })
+
+      if (!Store) throw new Error("no store found")
+
+      await body.fieldsToChange.map(async (field, index) => {
+        if (!Keys.includes(field)) return //need to add -> allow requester to know that this is not changable field
         if (!StorePermissions[field as keyof IStorePermissions].includes(2)) return
         if (field === "products")
         {
-            if (body.setProducts)
-            {
-              body.setProducts.map(async setObject => {
-                if (Store)
-                {
-                  Store.products[setObject.index] = setObject.product;
-                  await MongoObject.collections.Stores.updateOne(
-                    {_id:Store?._id},
-                    {
-                      $set:{
-                        products:Store?.products
-                      }
-                    })
+          if (body.setProducts)
+          {
+            body.setProducts.map(async setObject => {
+              if (Store)
+              {
+                Store.products[setObject.index] = setObject.product;
+                await MongoObject.collections.Stores.updateOne(
+                  {_id:Store?._id},
+                  {
+                    $set:{
+                      products:Store?.products
+                    }
+                  })
+              }
+            })
+          }
+          if (body.addProducts)
+          {
+            body.addProducts.map((products) => {
+            Store?.products.push(products);
+            })
+            await MongoObject.collections.Stores.updateOne(
+              {_id:Store?._id},
+              {
+                $set:{
+                  products:Store?.products
                 }
               })
-            }
-            if (body.addProducts)
-            {
-              body.addProducts.map((products) => {
-              Store?.products.push(products);
-              })
-              await MongoObject.collections.Stores.updateOne(
-                {_id:Store?._id},
-                {
-                  $set:{
-                    products:Store?.products
-                  }
-                })
 
-            }
+          }
         }
         else{
-
+          // if field other then products being changed
           interface Iobj {
             [key: string]: any;
           }
@@ -96,11 +96,14 @@ const Router = (MongoObject: {
             $set:obj
           }
           )
-      }})
-      return res.json({
-        err:false,
-        msg:"ok"
+        }
+          data.successfulChanges.push(field);
       })
+        return res.json({
+          err:false,
+          data:data,
+          msg:"ok"
+        })
       
     }catch(e:any){
       console.log(e.message);

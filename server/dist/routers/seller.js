@@ -23,6 +23,8 @@ const Router = (MongoObject) => {
         try {
             const Keys = Object.keys(interfaces_1.StorePermissions);
             const body = req.body;
+            let data = { successfulChanges: new Array() };
+            data;
             const Stores = yield MongoObject.collections.Stores.find({
                 authorizedUsers: { $all: [res.locals.account._id.toString()] }
             }).toArray();
@@ -35,10 +37,8 @@ const Router = (MongoObject) => {
             if (!Store)
                 throw new Error("no store found");
             yield body.fieldsToChange.map((field, index) => __awaiter(void 0, void 0, void 0, function* () {
-                if (!Keys.includes(field)) {
-                    // allow requester to know that this is not changable field
-                    return;
-                }
+                if (!Keys.includes(field))
+                    return; //need to add -> allow requester to know that this is not changable field
                 if (!interfaces_1.StorePermissions[field].includes(2))
                     return;
                 if (field === "products") {
@@ -72,9 +72,11 @@ const Router = (MongoObject) => {
                         $set: obj
                     });
                 }
+                data.successfulChanges.push(field);
             }));
             return res.json({
                 err: false,
+                data: data,
                 msg: "ok"
             });
         }

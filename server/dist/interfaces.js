@@ -35,15 +35,15 @@ var LocationType;
     LocationType["address"] = "address";
 })(LocationType = exports.LocationType || (exports.LocationType = {}));
 exports.StorePermissions = {
-    _id: [5],
-    logo: [2, 4, 5],
-    name: [5, 4],
-    products: [2, 4, 5],
-    authorizedUsers: [4, 5],
-    location: [4, 5],
-    deliveryDistance: [2, 4, 5],
-    openHoursObject: [2, 4, 5],
-    category: [4, 5],
-    minOrder: [2, 4, 5],
-    active: [2, 4, 5]
+    _id: [AccountType.Admin],
+    logo: [AccountType.Seller, AccountType.Support, AccountType.Admin],
+    name: [AccountType.Admin, AccountType.Support],
+    products: [AccountType.Seller, AccountType.Support, AccountType.Admin],
+    authorizedUsers: [AccountType.Support, AccountType.Admin],
+    location: [AccountType.Support, AccountType.Admin],
+    deliveryDistance: [AccountType.Seller, AccountType.Support, AccountType.Admin],
+    openHoursObject: [AccountType.Seller, AccountType.Support, AccountType.Admin],
+    category: [AccountType.Support, AccountType.Admin],
+    minOrder: [AccountType.Seller, AccountType.Support, AccountType.Admin],
+    active: [AccountType.Seller, AccountType.Support, AccountType.Admin]
 };
