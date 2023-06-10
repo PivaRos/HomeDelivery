@@ -1,11 +1,10 @@
 import { StyleSheet, Text, View, StatusBar, Platform, SafeAreaView, ActivityIndicator, Button, ScrollView, RefreshControl } from 'react-native';
 import { useCallback, useEffect, useState } from 'react'
-import { availableStores, Order, Product, StorageData, Store } from './interfaces';
+import { Address, availableStores, Order, Product, StorageData, Store } from './interfaces';
 import { NavigationContainer } from '@react-navigation/native';
 import { AddressHanddler } from './components/addressHanddler';
 import Tabs from './navigation/tabs';
 import * as Location from 'expo-location';
-import { LocationObject } from './interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 import { userActions } from './network_services/user';
@@ -23,8 +22,8 @@ import { ViewCheckout } from './navigation/screens/viewCheckout';
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
-  const [thelocation, setLocation] = useState<LocationObject | null | undefined>();
-  const [fullCoords, setFullCoords] = useState<Location.LocationObjectCoords>()
+  const [deliveryLoction, setDeliveryLoction] = useState<Location.LocationObject>();
+  const [currentLocation, setCurrentLocation] = useState<Location.LocationObject>()
   const [errorMsg, setErrorMsg] = useState("");
   const [sessionid, setSessionid] = useState<null | undefined | string>();
   const [loading, setLoading] = useState(false);
@@ -34,8 +33,12 @@ export default function App() {
   const [refreshing, setRefreshing] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product>();
   const [savedOrder, setSavedOrder] = useState<Order | null | undefined>();
+  const [address, setAddress] = useState<Location.LocationGeocodedAddress>();
 
   const Stack = createNativeStackNavigator();
+
+
+
 
 
   const [fontsLoaded] = useFonts({
@@ -59,27 +62,46 @@ export default function App() {
   }, [selectedProduct])
 
 
+
   useEffect(() => {
 
   }, [JSON.stringify(savedOrder)])
 
+
+  const ReverseGeocodeing = async () => {
+    try {
+      if (currentLocation) {
+        //const adresscheck =  await Location.geocodeAsync("ברודצקי 43 תל אביב");
+        //console.log(adresscheck);
+        const { latitude, longitude } = currentLocation.coords
+        let response = await Location.reverseGeocodeAsync({
+          latitude,
+          longitude
+        });
+        setAddress(response[0]);
+      }
+    }
+    catch {
+    }
+  }
+
   const getContent = () => {
     if (loading) return <ActivityIndicator size="small" style={{ opacity: 1, marginTop: '100%' }} />;
-    if (!thelocation) return <SafeAreaView><Text style={{ fontWeight: "bold", textAlign: 'center' }}>Please Allow HomeDelivery To Use Location In Order To Continue Using The App</Text><Button onPress={PressLocation} title='Allow Access' /></SafeAreaView>
+    if (!deliveryLoction) return <SafeAreaView><Text style={{ fontWeight: "bold", textAlign: 'center' }}>Please Allow HomeDelivery To Use Location In Order To Continue Using The App</Text><Button onPress={PressLocation} title='Allow Access' /></SafeAreaView>
     return (
       <SafeAreaView style={styles.container}>
         <ScrollView contentContainerStyle={styles.container} refreshControl={<RefreshControl colors={['#2874ed']} title='Refresh' refreshing={refreshing} onRefresh={onRefresh} />}>
           <View style={{ height: 30, backgroundColor: 'lightgreen' }}>
-            {!refreshing && <AddressHanddler fullcoords={fullCoords} />}
+            {!refreshing && <AddressHanddler deliveryLoction={deliveryLoction} currentLocation={currentLocation} setAddress={setAddress} setDeliveryLoction={setDeliveryLoction} address={address} />}
           </View>
           <NavigationContainer>
             <Stack.Navigator screenOptions={{ headerShown: false, fullScreenGestureEnabled: true }}>
-              <Stack.Screen name='tabs' children={() => <Tabs savedOrder={savedOrder} setSavedOrder={setSavedOrder} homeMadeStores={homeMadeStores} setHomeMadeStores={setHomeMadeStores} refreshing={refreshing} setSelectedStore={setSelectedStore} foodStores={foodStores} setFoodStores={setFoodStores} location={thelocation} />} />
-              {selectedStore && <Stack.Screen name='ViewStore' children={() => <ViewStore savedOrder={savedOrder} setSavedOrder={setSavedOrder} setSelectedProduct={setSelectedProduct} thelocation={thelocation} Store={selectedStore} />} />}
+              <Stack.Screen name='tabs' children={() => <Tabs savedOrder={savedOrder} setSavedOrder={setSavedOrder} homeMadeStores={homeMadeStores} setHomeMadeStores={setHomeMadeStores} refreshing={refreshing} setSelectedStore={setSelectedStore} foodStores={foodStores} setFoodStores={setFoodStores} location={deliveryLoction} />} />
+              {selectedStore && <Stack.Screen name='ViewStore' children={() => <ViewStore savedOrder={savedOrder} setSavedOrder={setSavedOrder} setSelectedProduct={setSelectedProduct} deliveryLocation={deliveryLoction} Store={selectedStore} />} />}
               {!selectedStore && <Stack.Screen name='ViewStore' children={() => <View><Text>asasd</Text></View>} />}
-              {(selectedProduct && selectedStore && savedOrder) && <Stack.Screen name='ViewProduct' children={() => <ViewProduct setSavedOrder={setSavedOrder} Store={selectedStore} savedOrder={savedOrder} setSelectedProduct={setSelectedProduct} selectedProduct={selectedProduct} thelocation={thelocation} />} />}
+              {(selectedProduct && selectedStore && savedOrder) && <Stack.Screen name='ViewProduct' children={() => <ViewProduct deliveryLocation={deliveryLoction} setSavedOrder={setSavedOrder} Store={selectedStore} savedOrder={savedOrder} setSelectedProduct={setSelectedProduct} selectedProduct={selectedProduct} />} />}
               {savedOrder && <Stack.Screen name='ViewOrder' children={() => <ViewOrder Order={savedOrder} />} />}
-              {savedOrder && <Stack.Screen name='ViewCheckout' children={() => <ViewCheckout fullCoords={fullCoords} setFullCoords={setFullCoords} selectedStore={selectedStore} setOrder={setSavedOrder} order={savedOrder}/>}/>}
+              {savedOrder && <Stack.Screen name='ViewCheckout' children={() => <ViewCheckout deliveryLocation={deliveryLoction} setDeliveryLocation={setDeliveryLoction} selectedStore={selectedStore} setOrder={setSavedOrder} order={savedOrder} />} />}
               {!selectedProduct && <Stack.Screen name='ViewProduct' children={() => <View>
                 <Text>asdasd</Text></View>} />}
             </Stack.Navigator>
@@ -94,10 +116,11 @@ export default function App() {
     (async () => {
       const result = await CheckLocation()
       if (result) {
-        setLocation(result.thelocation);
-        setFullCoords(result.fullcoords);
+        setDeliveryLoction(result);
+        setCurrentLocation(result);
+        console.log(result);
       }
-
+      await ReverseGeocodeing();
       await UpdateData();
     })();
   }, [refreshing])
@@ -113,7 +136,8 @@ export default function App() {
   const PressLocation = async () => {
     const result = await CheckLocation()
     if (result) {
-      setLocation(result.thelocation);
+      setDeliveryLoction(result);
+      setCurrentLocation(result);
     }
 
   }
@@ -142,10 +166,9 @@ export default function App() {
       setLoading(true);
       const result = await CheckLocation()
       if (result) {
-        setLocation(result.thelocation);
-        setFullCoords(result.fullcoords);
+        setDeliveryLoction(result);
+        setCurrentLocation(result);
       }
-
       await UpdateData();
       setLoading(false);
     } catch (e) {
@@ -157,6 +180,10 @@ export default function App() {
   useEffect(() => {
     firstloadCheck();
   }, []);
+
+  useEffect(() => {
+    ReverseGeocodeing();
+  }, [deliveryLoction])
 
   return (
     getContent()

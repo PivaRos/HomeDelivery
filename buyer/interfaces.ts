@@ -1,4 +1,5 @@
 import { ObjectId, Timestamp, WithId, Document } from "mongodb"
+import * as Location from 'expo-location';
 
 
 export enum Pages {
@@ -16,7 +17,7 @@ export interface availableStores {
 
 export type RootStackParamList = {
     ViewStore: { id: number } | undefined;
-    ViewCheckout:{id:number} | undefined
+    ViewCheckout: { id: number } | undefined
     ViewOrder: { id: number } | undefined;
     ViewProduct: { id: number } | undefined
     tabs: { id: number } | undefined;
@@ -53,7 +54,7 @@ export enum order_status {
 }
 
 export interface Product {
-    _id:ObjectId,
+    _id: ObjectId,
     available: boolean,
     name: string,
     price: PriceObject,
@@ -62,17 +63,17 @@ export interface Product {
     images: string[],
     category: string,
     options: Option[] | null | undefined,
-    units?:number,
+    units?: number,
 }
 
 export interface Option {
-    _id:ObjectId,
+    _id: ObjectId,
     optionProducts: ObjectId[],
-    selectedOptionProducts?:{
-        selected:boolean,
-        units:number;
+    selectedOptionProducts?: {
+        selected: boolean,
+        units: number;
     }[],
-    mustPicks:number,
+    mustPicks: number,
     maxPicks: number,
     additionalAllowed: boolean,
     additionalMax: number,
@@ -83,32 +84,22 @@ export interface Option {
 }
 
 
-export interface selectedOption{
+export interface selectedOption {
     selectedOptionProducts: ObjectId[],
-    _id:ObjectId
+    _id: ObjectId
 }
 
 export interface PriceObject {
     price: number,
     currency: string
 }
-export enum LocationType {
-    point = "point",
-    address = "address"
-}
-
-export interface LocationObject {
-    type: LocationType
-    coordinates?: number[]
-    address?: Address
-}
 
 export interface Address {
-    city:string
-    street:string
-    houseNumber:number
-    apartmentNumber:number
-    deliveryNotes:string
+    city: string
+    street: string
+    houseNumber: number
+    apartmentNumber: number
+    deliveryNotes: string
 
 }
 
@@ -119,13 +110,13 @@ export interface Store extends WithId<Document> {
     name: string
     products: Product[]
     authorizedUsers: string[]
-    location: LocationObject
+    location: Location.LocationObject
     deliveryDistance: number
     openHoursObject: openHoursObject
     category: store_category
     optionProducts: optionProduct[]
-    minOrder?:PriceObject
-    avgDelivery:number//min
+    minOrder?: PriceObject
+    avgDelivery: number//min
 }
 
 
@@ -151,7 +142,7 @@ export interface Account {
     phoneNumber: string,
     _id?: ObjectId,
     sessionid: string,
-    location: LocationObject,
+    location: Location.LocationObject,
     deliveryDistance?: number
 }
 
@@ -167,7 +158,7 @@ export interface Order {
     date: dateObject,
     selecedProdcuts: Product[],
     totalPrice: PriceObject,
-    location: LocationObject,
+    location: Location.LocationObject,
     city: string | undefined | null,
     street: string | undefined | null,
     homenumber: string | undefined | null,

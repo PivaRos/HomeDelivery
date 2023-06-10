@@ -1,5 +1,5 @@
 import { View, Text, Pressable, StyleSheet, ScrollView } from "react-native";
-import { LocationType, Order, RootStackParamList, Store } from "../../interfaces";
+import { Order, RootStackParamList, Store } from "../../interfaces";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
 import * as Location from 'expo-location';
@@ -7,63 +7,65 @@ import MapView, { Marker } from 'react-native-maps';
 import { getDistance } from "../../functions";
 
 interface CheckoutPops {
-    order:Order;
-    setOrder:React.Dispatch<React.SetStateAction<Order | null | undefined>>
-    selectedStore:Store| undefined
-    setFullCoords:React.Dispatch<React.SetStateAction<Location.LocationObjectCoords | undefined>>
-    fullCoords:Location.LocationObjectCoords | undefined
+    order: Order;
+    setOrder: React.Dispatch<React.SetStateAction<Order | null | undefined>>
+    selectedStore: Store | undefined
+    setDeliveryLocation: React.Dispatch<React.SetStateAction<Location.LocationObject | undefined>>
+    deliveryLocation: Location.LocationObject | undefined
 }
 
 
-export const ViewCheckout = ({order, setOrder, selectedStore, fullCoords, setFullCoords}:CheckoutPops) => {
+export const ViewCheckout = ({ order, setOrder, selectedStore, deliveryLocation, setDeliveryLocation }: CheckoutPops) => {
 
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const BackPress = () => {
-        navigation.navigate("ViewOrder", {id:4})
+        navigation.navigate("ViewOrder", { id: 4 })
     }
 
 
     return (<ScrollView>
-        <View style={{backgroundColor:'white', width:'100%', height:50, justifyContent:'center'}}>
-        <Pressable style={styles.backButton} onPress={BackPress}><Text style={styles.backButtonText}>Back</Text></Pressable>
-            <Text style={{textAlign:'center', width:"100%", fontSize:16, position:'absolute'}}>{selectedStore?.name}</Text>
+        <View style={{ backgroundColor: 'white', width: '100%', height: 50, justifyContent: 'center' }}>
+            <Pressable style={styles.backButton} onPress={BackPress}><Text style={styles.backButtonText}>Back</Text></Pressable>
+            <Text style={{ textAlign: 'center', width: "100%", fontSize: 16, position: 'absolute' }}>{selectedStore?.name}</Text>
         </View>
-        <View style={{backgroundColor:"white"}}>
-       {fullCoords && selectedStore?.location.coordinates && <MapView initialCamera={{ heading:0, altitude:getDistance(selectedStore.location, {coordinates:[fullCoords.latitude, fullCoords.longitude], type:LocationType.point})*1000*3, pitch:1, center:{latitude:(fullCoords.latitude + selectedStore?.location.coordinates[0])/2, longitude:(fullCoords.longitude+selectedStore?.location.coordinates[1])/2}}} style={{height:250, width:'100%',         
-            shadowColor: '#000',
-            shadowOffset: {width: 1, height: 3},
-            shadowOpacity: 0.2,
-            backgroundColor:"white"}}
-        >
-       { (selectedStore?.location.coordinates !== undefined) && <Marker
-        coordinate={{latitude:selectedStore.location.coordinates[0], longitude:selectedStore.location.coordinates[1]}}
-        title={selectedStore?.name}
-        >
-            <View style={{backgroundColor:'white', height:20, width:20, borderRadius:50, justifyContent:'center', flexDirection:'row'}}>
-                {/* this is Store Marker */}
-                <Text style={{fontWeight:'bold'}}>
-                    {selectedStore.avgDelivery &&  selectedStore.avgDelivery || "0"}
-                </Text>
-            </View>
-        </Marker> }
-         <Marker
-        coordinate={{latitude:fullCoords.latitude, longitude:fullCoords.longitude}}
-        title={selectedStore?.name}
-        >
-            
-            <View style={{backgroundColor:'lightgreen', height:20, width:20, borderRadius:100, borderColor:'white', borderWidth:2.3}}>
-              
-                
+        <View style={{ backgroundColor: "white" }}>
+            {deliveryLocation && selectedStore?.location && <MapView initialCamera={{ heading: 0, altitude: getDistance(selectedStore.location, deliveryLocation) * 1000 * 3, pitch: 1, center: { latitude: (deliveryLocation.coords.latitude + selectedStore.location.coords.latitude) / 2, longitude: (deliveryLocation.coords.longitude + selectedStore.location.coords.longitude) / 2 } }} style={{
+                height: 250, width: '100%',
+                shadowColor: '#000',
+                shadowOffset: { width: 1, height: 3 },
+                shadowOpacity: 0.2,
+                backgroundColor: "white"
+            }}
+            >
+                {(selectedStore?.location !== undefined) && <Marker
+                    coordinate={selectedStore.location.coords}
+                    title={selectedStore?.name}
+                >
+                    <View style={{ backgroundColor: 'white', height: 20, width: 20, borderRadius: 50, justifyContent: 'center', flexDirection: 'row' }}>
+                        {/* this is Store Marker */}
+                        <Text style={{ fontWeight: 'bold' }}>
+                            {selectedStore.avgDelivery && selectedStore.avgDelivery || "0"}
+                        </Text>
+                    </View>
+                </Marker>}
+                <Marker
+                    coordinate={{ latitude: deliveryLocation.coords.latitude, longitude: deliveryLocation.coords.longitude }}
+                    title={selectedStore?.name}
+                >
+
+                    <View style={{ backgroundColor: 'lightgreen', height: 20, width: 20, borderRadius: 100, borderColor: 'white', borderWidth: 2.3 }}>
+
+
+
+                    </View>
+                </Marker>
+            </MapView>}
+            <View style={{ backgroundColor: "white" }}>
 
             </View>
-        </Marker> 
-            </MapView>}
-        <View style={{backgroundColor:"white"}}> 
-            
-        </View>
-        <View style={{backgroundColor:"white"}}> 
-            
-        </View>
+            <View style={{ backgroundColor: "white" }}>
+
+            </View>
 
 
         </View>
@@ -72,25 +74,25 @@ export const ViewCheckout = ({order, setOrder, selectedStore, fullCoords, setFul
 
 
 const styles = StyleSheet.create({
-    ViewOrderButton:{
-        flexDirection:'row',
-        height:50,
-        width:'90%',
-        padding:10,
-        backgroundColor:"lightgreen",
-        textAlign:'center',
-        bottom:8,
-        borderRadius:10,
-        position:'absolute',   
+    ViewOrderButton: {
+        flexDirection: 'row',
+        height: 50,
+        width: '90%',
+        padding: 10,
+        backgroundColor: "lightgreen",
+        textAlign: 'center',
+        bottom: 8,
+        borderRadius: 10,
+        position: 'absolute',
         shadowColor: "#000",
-    shadowOffset: {
-        width: 0,
-        height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
 
-    elevation: 5,
+        elevation: 5,
     },
     backButton: {
         zIndex: 3,
@@ -107,7 +109,7 @@ const styles = StyleSheet.create({
         display: 'flex',
     },
     detailsText: {
-        marginTop:6,
+        marginTop: 6,
         marginRight: 5,
     },
     backButtonText: {
@@ -140,11 +142,11 @@ const styles = StyleSheet.create({
         borderBottomRightRadius: 10,
         borderBottomLeftRadius: 10,
         width: '100%'
-    }, 
-    imageText:{
-        padding:5,
-        backgroundColor:'lightgreen',
-        borderRadius:10,
-        marginRight:15
+    },
+    imageText: {
+        padding: 5,
+        backgroundColor: 'lightgreen',
+        borderRadius: 10,
+        marginRight: 15
     }
 })

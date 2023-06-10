@@ -40,7 +40,7 @@ exports.StorePermissions = {
     name: [AccountType.Admin, AccountType.Support],
     products: [AccountType.Seller, AccountType.Support, AccountType.Admin],
     authorizedUsers: [AccountType.Support, AccountType.Admin],
-    location: [AccountType.Support, AccountType.Admin],
+    location: [AccountType.Support, AccountType.Admin, AccountType.Seller],
     deliveryDistance: [AccountType.Seller, AccountType.Support, AccountType.Admin],
     openHoursObject: [AccountType.Seller, AccountType.Support, AccountType.Admin],
     category: [AccountType.Support, AccountType.Admin],

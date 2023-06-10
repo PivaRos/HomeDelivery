@@ -1,159 +1,148 @@
 
 import * as Location from 'expo-location';
-import { LocationObject, LocationType, Order, PriceObject, Product, StorageData, Store, optionProduct } from './interfaces';
+import { Order, PriceObject, Product, StorageData, Store, optionProduct } from './interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 import { ObjectId } from 'mongodb';
 import getSymbolFromCurrency from 'currency-symbol-map';
+import { LocationObject } from 'expo-location';
 
 
 export const registerForPushNotificationsAsync = async () => {
-    let token;
-    try{
+  let token;
+  try {
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
-  
+
     if (existingStatus !== 'granted') {
-        const { status } = await Notifications.requestPermissionsAsync();
-        finalStatus = status;
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
     }
     if (finalStatus !== 'granted') {
-        console.log("final is not granted");
-        return;
+      console.log("final is not granted");
+      return;
     }
     token = (await Notifications.getExpoPushTokenAsync()).data;
     console.log(token);
-  
+
     return token;
-    }catch (e){
-      console.log("his is error");
-      console.log(e);
-      return token;
-    }
+  } catch (e) {
+    console.log("his is error");
+    console.log(e);
+    return token;
   }
+}
 
 
-  export const GetOptionProduct = (Store:Store, OptionProdcutId:ObjectId) => {
-    for (let i =0;i < Store.optionProducts.length;i++)
-    {
-      if (Store.optionProducts[i]._id === OptionProdcutId)
-      {
-        return Store.optionProducts[i];
-      }
+export const GetOptionProduct = (Store: Store, OptionProdcutId: ObjectId) => {
+  for (let i = 0; i < Store.optionProducts.length; i++) {
+    if (Store.optionProducts[i]._id === OptionProdcutId) {
+      return Store.optionProducts[i];
     }
-    return <optionProduct>{}
   }
-  
- export const CheckLocation = async () => {
-    try{
-      
-      let  result  = await Location.requestForegroundPermissionsAsync();
-      if (result.status !== 'granted') {
-        return;
-      }
-      let location = await Location.getCurrentPositionAsync();
-      const thereturn = {
-       thelocation: <LocationObject>{
-          type:LocationType.point,
-          coordinates:[location.coords.latitude, location.coords.longitude]
-        },
-        fullcoords:<Location.LocationObjectCoords>location.coords
-      }
-      return(thereturn);
-    }
-    catch{
+  return <optionProduct>{}
+}
+
+export const CheckLocation = async () => {
+  try {
+
+    let result = await Location.requestForegroundPermissionsAsync();
+    if (result.status !== 'granted') {
       return;
     }
+    let location = await Location.getCurrentPositionAsync();
+    return (location);
   }
-
-  
-    
-  export const toDateTime = (secs:number) => {
-    var t = new Date(1970, 0, 1); // Epoch
-    t.setSeconds(secs);
-    return t;
-}
-
-
-export const getDistance = (Location1:LocationObject, Location2:LocationObject ) => {
-  if (Location1.coordinates && Location2.coordinates)
-  {
-  const dy = (+Location1.coordinates[0]) - (+Location2.coordinates[0]);
-  const dx = (+Location1.coordinates[1]) - (+Location2.coordinates[1]);
-  const distance = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 110.574; //im km
-  return distance;
-  }
-  else{
-      return 0;
+  catch {
+    return;
   }
 }
 
-export const DeliveryFee = (distanceKm:number) => {
+
+
+export const toDateTime = (secs: number) => {
+  var t = new Date(1970, 0, 1); // Epoch
+  t.setSeconds(secs);
+  return t;
+}
+
+
+export const getDistance = (Location1: LocationObject, Location2: LocationObject) => {
+  try {
+    const dy = (+Location1.coords.latitude) - (+Location2.coords.latitude);
+    const dx = (+Location1.coords.longitude) - (+Location2.coords.longitude);
+    const distance = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 110.574; //im km
+    return distance;
+  }
+  catch {
+    return -1;
+  }
+
+}
+
+export const DeliveryFee = (distanceKm: number) => {
   // in ILS;
   let price = 8000;
-  if (distanceKm > 1)
-  {
-    price += ((distanceKm-1)/0.5)*2000 
+  if (distanceKm > 1) {
+    price += ((distanceKm - 1) / 0.5) * 2000
   }
   return price
 
 }
 
-export const PriceString = (price:number, currency:string):string => {
-    //price string
-    let symbol = "";
-    const thesymb = getSymbolFromCurrency(currency);
-    if (thesymb) {
-        symbol = thesymb;
-    }
-    const sherit = price % 1000;
-    if (!sherit) return (symbol + (price / 1000).toString() + "." + sherit.toString());
-    return  symbol + Math.round((price / 1000)).toString()
+export const PriceString = (price: number, currency: string): string => {
+  //price string
+  let symbol = "";
+  const thesymb = getSymbolFromCurrency(currency);
+  if (thesymb) {
+    symbol = thesymb;
+  }
+  const sherit = price % 1000;
+  if (!sherit) return (symbol + (price / 1000).toString() + "." + sherit.toString());
+  return symbol + Math.round((price / 1000)).toString()
 }
 
 export const getTotalUnits = (ArrayToSum: number[]) => {
   let TotalUnits = 0;
   ArrayToSum.forEach(units => {
-      if (units) {
-          TotalUnits += units;
-      }
+    if (units) {
+      TotalUnits += units;
+    }
   });
   return TotalUnits;
 }
 
 
-export const setOrderSelectedProductByIndex = (order:Order, product:Product, index:number):Order => {
-    let newOrder:Order = JSON.parse(JSON.stringify(order));
-    newOrder.selecedProdcuts =  order.selecedProdcuts.map((p, theIndex) => {
-      if (index !== theIndex)
-      {
-          return p;
-      }
-      else
-      {
-        return product;
-      }
-    })
-    return newOrder;
+export const setOrderSelectedProductByIndex = (order: Order, product: Product, index: number): Order => {
+  let newOrder: Order = JSON.parse(JSON.stringify(order));
+  newOrder.selecedProdcuts = order.selecedProdcuts.map((p, theIndex) => {
+    if (index !== theIndex) {
+      return p;
+    }
+    else {
+      return product;
+    }
+  })
+  return newOrder;
 }
 
-export const getPricePerUnit = (Product:Product) => {
+export const getPricePerUnit = (Product: Product) => {
   let pricePerUnit = +Product.price.price;
   if (Product.options) {
 
-      for (let i = 0; i < Product.options?.length; i++) {
-          if (Product.options[i].additionalAllowed) {
-              let option = Product.options[i];
-              let maxPicks = +Product.options[i].maxPicks;
-              let OptionTotalPicks = +getTotalUnits(option.selectedOptionProducts?.map((v) => {
-                  return v.units
-              }) || []);
-              if (OptionTotalPicks - maxPicks > 0) {
+    for (let i = 0; i < Product.options?.length; i++) {
+      if (Product.options[i].additionalAllowed) {
+        let option = Product.options[i];
+        let maxPicks = +Product.options[i].maxPicks;
+        let OptionTotalPicks = +getTotalUnits(option.selectedOptionProducts?.map((v) => {
+          return v.units
+        }) || []);
+        if (OptionTotalPicks - maxPicks > 0) {
 
-                  pricePerUnit += (OptionTotalPicks - maxPicks) * option.additionalPricePerUnit.price;
-              }
-          }
+          pricePerUnit += (OptionTotalPicks - maxPicks) * option.additionalPricePerUnit.price;
+        }
       }
+    }
   }
   return pricePerUnit;
 }

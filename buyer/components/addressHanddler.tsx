@@ -1,64 +1,28 @@
-import React, {useEffect, useState} from 'react';
-import {View, TextInput, Text, StyleSheet } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, TextInput, Text, StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { availableStores, LocationObject, Pages } from '../interfaces';
+import { availableStores, Pages, Address } from '../interfaces';
 import * as Location from 'expo-location';
 import { LocationGeocodedAddress } from 'expo-location';
 
-interface Props{
-    fullcoords:Location.LocationObjectCoords | undefined;
+interface Props {
+    address: LocationGeocodedAddress | undefined;
+    deliveryLoction: Location.LocationObject | undefined;
+    currentLocation: Location.LocationObject | undefined;
+    setDeliveryLoction: React.Dispatch<React.SetStateAction<Location.LocationObject | undefined>>
+    setAddress: React.Dispatch<React.SetStateAction<Location.LocationGeocodedAddress | undefined>>
 }
 
-export const AddressHanddler = (props:Props) => {
-    const [address, setAddress] = useState<LocationGeocodedAddress[]>();
+export const AddressHanddler = ({ address, currentLocation, deliveryLoction, setDeliveryLoction, setAddress }: Props) => {
+    const [usingCurrent, setUsingCurrent] = useState(false);
 
-
-    const ReverseGeocodeing = async () => {
-        try{
-
-            if (props.fullcoords)
-            {
-                //const adresscheck =  await Location.geocodeAsync("ברודצקי 43 תל אביב");
-                //console.log(adresscheck);
-                const {latitude, longitude} = props.fullcoords
-                let response = await Location.reverseGeocodeAsync({
-                    latitude,
-                    longitude
-                });
-                setAddress(response);
-            }
-        }
-        catch{
-
-        }
-    }
-
-
-       const getdisplayAddress = () => {
-        if (!address) return "";
-        if (address[0].streetNumber?.split("–")[0])
-        {
-            return address[0].street + " " + address[0].streetNumber?.toString().split("–")[0] + ", " + address[0].city
-        }
-        else
-        {
-            return address[0].street + " " + address[0].streetNumber + ", " + address[0].city
-        }
-        
-    }
-
-        useEffect(() => {
-            (async () => {
-            await ReverseGeocodeing();
-            })();
-
-        },[])
 
     return (
         <View style={styles.view}>
             <View style={styles.anotherView}>
 
-                <Text>{getdisplayAddress()}</Text>
+                {address && <Text>{address.street + " " + address.streetNumber + " " + address.city}</Text>}
+                {usingCurrent && <Text style={{ fontWeight: 'bold' }}> (current)</Text>}
             </View>
         </View>
     );
@@ -66,15 +30,15 @@ export const AddressHanddler = (props:Props) => {
 
 
 const styles = StyleSheet.create({
-    view:{
-        height:30,
-        width:'100%',
+    view: {
+        height: 30,
+        width: '100%',
     },
-     anotherView:{
-        position:'absolute',
-        left:5,
-        bottom:6,
-        display:'flex',
-        flexDirection:'row',
-     }
+    anotherView: {
+        position: 'absolute',
+        left: 5,
+        bottom: 6,
+        display: 'flex',
+        flexDirection: 'row',
+    }
 })

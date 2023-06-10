@@ -1,17 +1,18 @@
 import React, { useState, useEffect, useRef, createRef } from "react";
 import { View, Text, Pressable, StyleSheet, ScrollView, Image, Animated } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { LocationObject, Order, Product, RootStackParamList, Store } from "../../interfaces";
+import { Order, Product, RootStackParamList, Store } from "../../interfaces";
 import { uri } from "../../envVars";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { ProductOptionsList } from "../../components/product/options/options_grid";
 import { PriceString, getTotalUnits, setOrderSelectedProductByIndex } from "../../functions";
 import { userActions } from "../../network_services/user";
+import { LocationObject } from "expo-location";
 
 
 interface Props {
     selectedProduct: Product;
-    thelocation: LocationObject;
+    deliveryLocation: LocationObject;
     setSelectedProduct: React.Dispatch<React.SetStateAction<Product | undefined>>;
     savedOrder: Order;
     setSavedOrder: React.Dispatch<React.SetStateAction<Order | undefined | null>>;
@@ -34,13 +35,13 @@ export const ViewProduct = (props: Props) => {
     const [dataSourceCords, setDataSourceCords] = useState([] as number[]);
 
     const scrollAnimationValue = useRef(new Animated.Value(0)).current;
-    
+
     let scrollViewRef = useRef<ScrollView | null>(null);
     const itemsRef = useRef<unknown[]>([]);
     // you can access the elements with itemsRef.current[n]
     useEffect(() => {
         if (!Product.options) return;
-       itemsRef.current = itemsRef.current.slice(0, Product.options.length);
+        itemsRef.current = itemsRef.current.slice(0, Product.options.length);
     }, [Product.options]);
 
 
@@ -123,24 +124,21 @@ export const ViewProduct = (props: Props) => {
 
 
 
-    const canSave = ():boolean => {
+    const canSave = (): boolean => {
         let cantAdd = false;
-        let ProblemIndexes:number[] = [];
+        let ProblemIndexes: number[] = [];
         Product.options?.map((option, index) => {
-            if (option.selectedOptionProducts)
-            {
+            if (option.selectedOptionProducts) {
                 let totalUnitsOfOption = getTotalUnits(option.selectedOptionProducts.map(p => {
                     return p.units;
                 }))
-                if (option.mustPicks > totalUnitsOfOption)
-                {
+                if (option.mustPicks > totalUnitsOfOption) {
                     cantAdd = true;
                     let ref = itemsRef.current[index] as {
                         Shake: () => void;
                     }
-                    if (scrollViewRef.current)
-                    {
-                        scrollViewRef.current.scrollTo({animated:true, y:dataSourceCords[index]});
+                    if (scrollViewRef.current) {
+                        scrollViewRef.current.scrollTo({ animated: true, y: dataSourceCords[index] });
                     }
                     ref.Shake()
 
@@ -149,8 +147,7 @@ export const ViewProduct = (props: Props) => {
                 }
             }
         })
-        if (cantAdd)
-        {
+        if (cantAdd) {
             return false;
         }
         return true;
@@ -263,12 +260,12 @@ export const ViewProduct = (props: Props) => {
         if (canSave()) {
             if (selectedProductIndex === -1) {
                 //the Product is not in selectedProduct list and we need to add to the list for the first time
-                    //if the product is selected for the first time 
-                    props.setSavedOrder(o => {
-                        let order: Order = JSON.parse(JSON.stringify(o));
-                        order.selecedProdcuts.push(Product);
-                        return order;
-                    })
+                //if the product is selected for the first time 
+                props.setSavedOrder(o => {
+                    let order: Order = JSON.parse(JSON.stringify(o));
+                    order.selecedProdcuts.push(Product);
+                    return order;
+                })
             }
             else {
                 props.setSavedOrder(o => {
@@ -287,39 +284,39 @@ export const ViewProduct = (props: Props) => {
 
         <View style={{ backgroundColor: 'white', height: '100%' }}>
             <Pressable style={styles.backButton} onPress={() => (navigation.navigate("ViewStore", { id: 2 }))}><Text style={styles.backButtonText}>Back</Text></Pressable>
-                <ScrollView 
+            <ScrollView
                 ref={(ref) => scrollViewRef.current = ref}
                 scrollEventThrottle={16}
-                pagingEnabled={true} 
-                style={[styles.restView, {marginBottom:60}]}>
-                    <Image style={styles.imageStyle} source={
-                        {
-                            uri: imageUri + Product?.mainimage,
-                            cache: "force-cache"
-                        }} />
-                    <View style={styles.productInfo}>
-                        <View style={{ alignItems: 'center' }}>
-                            <Text style={styles.productName}>{Product.name}</Text>
-                            <Text style={styles.productPrice}>{productPrice}</Text>
-                            <Text style={styles.productDesc}>{Product.info}</Text>
-                        </View>
+                pagingEnabled={true}
+                style={[styles.restView, { marginBottom: 60 }]}>
+                <Image style={styles.imageStyle} source={
+                    {
+                        uri: imageUri + Product?.mainimage,
+                        cache: "force-cache"
+                    }} />
+                <View style={styles.productInfo}>
+                    <View style={{ alignItems: 'center' }}>
+                        <Text style={styles.productName}>{Product.name}</Text>
+                        <Text style={styles.productPrice}>{productPrice}</Text>
+                        <Text style={styles.productDesc}>{Product.info}</Text>
                     </View>
-                    <View style={{ marginTop:200}}>
-                        {Product.options?.map((option, index) => {
-                            return (<ProductOptionsList 
-                                positionsArray={dataSourceCords}
-                                setPositionsArray={setDataSourceCords}
-                                ref={el => itemsRef.current[index] = el} 
-                                checkIfNeedUpdate={checkIfNeedUpdate} 
-                                price={price} setPrice={setPrice} 
-                                optionIndex={index} key={index} 
-                                selectedProduct={Product} 
-                                setSelectedProduct={setProduct} 
-                                option={option} 
-                                store={props.Store} />)
-                        })}
-                    </View>
-                    </ScrollView>
+                </View>
+                <View style={{ marginTop: 200 }}>
+                    {Product.options?.map((option, index) => {
+                        return (<ProductOptionsList
+                            positionsArray={dataSourceCords}
+                            setPositionsArray={setDataSourceCords}
+                            ref={el => itemsRef.current[index] = el}
+                            checkIfNeedUpdate={checkIfNeedUpdate}
+                            price={price} setPrice={setPrice}
+                            optionIndex={index} key={index}
+                            selectedProduct={Product}
+                            setSelectedProduct={setProduct}
+                            option={option}
+                            store={props.Store} />)
+                    })}
+                </View>
+            </ScrollView>
             <View style={styles.PressableUnits}>
                 <Pressable style={{ left: 5, position: 'absolute', zIndex: 3 }} onPress={changeUnitsUp}>
                     <Text style={styles.buttonText}>+</Text>
@@ -344,7 +341,7 @@ export const ViewProduct = (props: Props) => {
 
 const styles = StyleSheet.create({
     restView: {
-        height:'100%'
+        height: '100%'
     },
     productName: {
         fontSize: 24,
@@ -362,7 +359,7 @@ const styles = StyleSheet.create({
         padding: 5,
     },
     productInfo: {
-        height:120,
+        height: 120,
         justifyContent: 'center',
         display: 'flex',
         flexDirection: 'row',
@@ -424,7 +421,7 @@ const styles = StyleSheet.create({
         top: 0,
     },
     backButton: {
-        position:'absolute',
+        position: 'absolute',
         zIndex: 3,
         borderTopRightRadius: 40,
         borderBottomRightRadius: 40,
@@ -452,8 +449,8 @@ const styles = StyleSheet.create({
         top: 0,
         position: 'absolute',
         width: '100%',
-        transform:[
-            {scale:1}
+        transform: [
+            { scale: 1 }
         ],
         height: 200,
     }

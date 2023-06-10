@@ -78,45 +78,45 @@ export interface Store extends WithId<Document> {
   deliveryDistance: number
   openHoursObject: OpenHoursObject
   category: StoreCategory
-  minOrder?:PriceObject
-  active:boolean
+  minOrder?: PriceObject
+  active: boolean
 }
 
-export const StorePermissions:IStorePermissions = {
-  _id:[AccountType.Admin],
-  logo:[AccountType.Seller,AccountType.Support,AccountType.Admin],
-  name:[AccountType.Admin,AccountType.Support],
-  products: [AccountType.Seller,AccountType.Support,AccountType.Admin],
-  authorizedUsers: [AccountType.Support,AccountType.Admin],
-  location: [AccountType.Support,AccountType.Admin],
-  deliveryDistance:[AccountType.Seller,AccountType.Support,AccountType.Admin],
-  openHoursObject: [AccountType.Seller,AccountType.Support,AccountType.Admin],
-  category: [AccountType.Support,AccountType.Admin],
-  minOrder:[AccountType.Seller,AccountType.Support,AccountType.Admin],
-  active:[AccountType.Seller,AccountType.Support,AccountType.Admin]
+export const StorePermissions: IStorePermissions = {
+  _id: [AccountType.Admin],
+  logo: [AccountType.Seller, AccountType.Support, AccountType.Admin],
+  name: [AccountType.Admin, AccountType.Support],
+  products: [AccountType.Seller, AccountType.Support, AccountType.Admin],
+  authorizedUsers: [AccountType.Support, AccountType.Admin],
+  location: [AccountType.Support, AccountType.Admin, AccountType.Seller],
+  deliveryDistance: [AccountType.Seller, AccountType.Support, AccountType.Admin],
+  openHoursObject: [AccountType.Seller, AccountType.Support, AccountType.Admin],
+  category: [AccountType.Support, AccountType.Admin],
+  minOrder: [AccountType.Seller, AccountType.Support, AccountType.Admin],
+  active: [AccountType.Seller, AccountType.Support, AccountType.Admin]
 }
 
-export interface IStorePermissions  {
-  _id:AccountType[],
-  logo:AccountType[],
-  name:AccountType[],
+export interface IStorePermissions {
+  _id: AccountType[],
+  logo: AccountType[],
+  name: AccountType[],
   products: AccountType[],
   authorizedUsers: AccountType[],
   location: AccountType[],
-  deliveryDistance:AccountType[],
+  deliveryDistance: AccountType[],
   openHoursObject: AccountType[],
   category: AccountType[],
-  minOrder:AccountType[],
-  active:AccountType[]
+  minOrder: AccountType[],
+  active: AccountType[]
 }
 
 
-export interface changeStoreBody  {
-  store_id:string;
-  fieldsToChange:string[]; // by the same index as newValues;
-  addProducts?:Product[];
-  setProducts?:{index:number, product:Product}[];
-  newValues:Array<any>; // by the same index as newValues;
+export interface changeStoreBody {
+  store_id: string;
+  fieldsToChange: string[]; // by the same index as newValues;
+  addProducts?: Product[];
+  setProducts?: { index: number, product: Product }[];
+  newValues: Array<any>; // by the same index as newValues;
 
 }
 
