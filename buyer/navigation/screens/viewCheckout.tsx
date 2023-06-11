@@ -5,6 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import * as Location from 'expo-location';
 import MapView, { Marker } from 'react-native-maps';
 import { getDistance } from "../../functions";
+import { useEffect } from "react";
 
 interface CheckoutPops {
     order: Order;
@@ -12,15 +13,20 @@ interface CheckoutPops {
     selectedStore: Store | undefined
     setDeliveryLocation: React.Dispatch<React.SetStateAction<Location.LocationObject | undefined>>
     deliveryLocation: Location.LocationObject | undefined
+    setHideAddressHanddler: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 
-export const ViewCheckout = ({ order, setOrder, selectedStore, deliveryLocation, setDeliveryLocation }: CheckoutPops) => {
+export const ViewCheckout = ({ order, setOrder, selectedStore, deliveryLocation, setDeliveryLocation, setHideAddressHanddler }: CheckoutPops) => {
 
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const BackPress = () => {
         navigation.navigate("ViewOrder", { id: 4 })
     }
+
+    useEffect(() => {
+        setHideAddressHanddler(true);
+    }, [])
 
 
     return (<ScrollView>

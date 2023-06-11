@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ReactNative, { StyleSheet, View, Text, Image, Dimensions, TouchableWithoutFeedback, Animated, Easing, ScrollView } from 'react-native';
-import { LocationObject, Order, Product, RootStackParamList, selectedOption } from '../../interfaces';
+import { Order, Product, RootStackParamList, selectedOption } from '../../interfaces';
 import { useNavigation } from '@react-navigation/native';
 import { uri } from '../../envVars';
 import { StackNavigationProp } from '@react-navigation/stack';

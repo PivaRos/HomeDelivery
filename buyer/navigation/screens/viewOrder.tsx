@@ -1,12 +1,14 @@
-import { View, Text, ScrollView, Pressable , StyleSheet} from "react-native";
+import { View, Text, ScrollView, Pressable, StyleSheet } from "react-native";
 import { Order, RootStackParamList } from "../../interfaces";
 import ProductSumTab from "../../components/product/productSumTab";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
+import { useEffect } from "react";
 
 
 
 interface props {
+    setHideAddressHanddler: React.Dispatch<React.SetStateAction<boolean>>;
     Order: Order;
 }
 
@@ -14,61 +16,65 @@ export const ViewOrder = (props: props) => {
 
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const BackPress = () => {
-        navigation.navigate("ViewStore", {id:2})
+        navigation.navigate("ViewStore", { id: 2 })
     }
+    useEffect(() => {
+        props.setHideAddressHanddler(true);
+    }, [])
 
-    return (<View style={{height:"100%", width:'100%', backgroundColor:"white"}}>
-        <View style={{backgroundColor:'white', width:'100%', height:50, justifyContent:'center'}}>
-        <Pressable style={styles.backButton} onPress={BackPress}><Text style={styles.backButtonText}>Back</Text></Pressable>
-            <Text 
-            style={{textAlign:'center', width:'100%', position:'absolute', fontSize:18, fontWeight:'bold'}} >My Order
+
+    return (<View style={{ height: "100%", width: '100%', backgroundColor: "white" }}>
+        <View style={{ backgroundColor: 'white', width: '100%', height: 50, justifyContent: 'center' }}>
+            <Pressable style={styles.backButton} onPress={BackPress}><Text style={styles.backButtonText}>Back</Text></Pressable>
+            <Text
+                style={{ textAlign: 'center', width: '100%', position: 'absolute', fontSize: 18, fontWeight: 'bold' }} >My Order
             </Text>
         </View>
         <ScrollView>
-        {props.Order.selecedProdcuts.map((Product, index) => {
-            return <ProductSumTab Product={Product} key={index} />
-        })}
+            {props.Order.selecedProdcuts.map((Product, index) => {
+                return <ProductSumTab Product={Product} key={index} />
+            })}
         </ScrollView>
-        <View style={{justifyContent:'center', flexDirection:'row', width:"100%"}}>
-        <Pressable onPress={() => navigation.navigate("ViewCheckout", {id:5})} style={
-            {
-                justifyContent:'center',
-                width:"85%",
-                backgroundColor:"lightgreen",
-                position:'absolute',
-                height:50,
-                bottom:0,
-                borderRadius:10
+        <View style={{ justifyContent: 'center', flexDirection: 'row', width: "100%" }}>
+            <Pressable onPress={() => navigation.navigate("ViewCheckout", { id: 5 })} style={
+                {
+                    justifyContent: 'center',
+                    width: "85%",
+                    backgroundColor: "lightgreen",
+                    position: 'absolute',
+                    height: 50,
+                    bottom: 0,
+                    borderRadius: 10
 
-            }
+                }
             }>
-                <Text style={{padding:10, justifyContent:'center', textAlign:'center', fontSize:20}}>Start Delivery</Text>
+                <Text style={{ padding: 10, justifyContent: 'center', textAlign: 'center', fontSize: 20 }}>Start Delivery</Text>
             </Pressable>
-            </View>
+        </View>
     </View>);
 }
 
 
 const styles = StyleSheet.create({
-    ViewOrderButton:{
-        flexDirection:'row',
-        height:50,
-        width:'90%',
-        padding:10,
-        backgroundColor:"lightgreen",
-        textAlign:'center',
-        bottom:8,
-        borderRadius:10,
-        position:'absolute',   
+    ViewOrderButton: {
+        flexDirection: 'row',
+        height: 50,
+        width: '90%',
+        padding: 10,
+        backgroundColor: "lightgreen",
+        textAlign: 'center',
+        bottom: 8,
+        borderRadius: 10,
+        position: 'absolute',
         shadowColor: "#000",
-    shadowOffset: {
-        width: 0,
-        height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
 
-    elevation: 5,
+        elevation: 5,
     },
     backButton: {
         zIndex: 3,
@@ -85,7 +91,7 @@ const styles = StyleSheet.create({
         display: 'flex',
     },
     detailsText: {
-        marginTop:6,
+        marginTop: 6,
         marginRight: 5,
     },
     backButtonText: {
@@ -118,11 +124,11 @@ const styles = StyleSheet.create({
         borderBottomRightRadius: 10,
         borderBottomLeftRadius: 10,
         width: '100%'
-    }, 
-    imageText:{
-        padding:5,
-        backgroundColor:'lightgreen',
-        borderRadius:10,
-        marginRight:15
+    },
+    imageText: {
+        padding: 5,
+        backgroundColor: 'lightgreen',
+        borderRadius: 10,
+        marginRight: 15
     }
 })
