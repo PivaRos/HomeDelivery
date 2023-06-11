@@ -26,6 +26,10 @@ export const ViewCheckout = ({ order, setOrder, selectedStore, deliveryLocation,
 
     useEffect(() => {
         setHideAddressHanddler(true);
+
+        return (() => {
+            setHideAddressHanddler(false);
+        });
     }, [])
 
 

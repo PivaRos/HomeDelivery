@@ -19,7 +19,7 @@ export const ViewOrder = (props: props) => {
         navigation.navigate("ViewStore", { id: 2 })
     }
     useEffect(() => {
-        props.setHideAddressHanddler(true);
+        props.setHideAddressHanddler(false);
     }, [])
 
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, TextInput, Text, StyleSheet, Pressable } from 'react-native';
+import { View, TextInput, Text, StyleSheet, Pressable, Animated } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { availableStores, Pages, Address } from '../interfaces';
 import * as Location from 'expo-location';
@@ -17,16 +17,31 @@ export const AddressHanddler = ({ address, currentLocation, deliveryLoction, set
     const [usingCurrent, setUsingCurrent] = useState(currentLocation === deliveryLoction);
     const [listOpened, setListOpened] = useState(false);
 
-
+    const animatedToggle = new Animated.Value(0);
 
     const AddressPressed = () => {
         setListOpened(value => {
+            if (value === false)
+            {
+                animatedToggle.setValue(1)
+            }
+            else
+            {
+                animatedToggle.setValue(0);
+            }
             return !value
         })
     }
 
+    const heightIntepulation = animatedToggle.interpolate({
+        inputRange:[0,1],
+        outputRange:[30, 150]
+    })
+
+    
+
     return (
-        <View style={{ minHeight: 30, backgroundColor: 'lightgreen' }}>
+        <Animated.View style={[{height: 30, backgroundColor: 'lightgreen' }, {height:heightIntepulation}]}>
             <Pressable onPress={AddressPressed} style={styles.view}>
                 <View style={styles.anotherView}>
 
@@ -45,7 +60,7 @@ export const AddressHanddler = ({ address, currentLocation, deliveryLoction, set
                     <Text> asd</Text>
                 </View>}
             </Pressable>
-        </View>
+        </Animated.View>
     );
 }
 
@@ -61,5 +76,10 @@ const styles = StyleSheet.create({
         bottom: 6,
         display: 'flex',
         flexDirection: 'row',
+    },
+    openedView:{
+        height:200,
+        width:"100%"
     }
+    
 })
