@@ -159,10 +159,7 @@ export interface Order {
     selecedProdcuts: Product[],
     totalPrice: PriceObject,
     location: Location.LocationObject,
-    city: string | undefined | null,
-    street: string | undefined | null,
-    homenumber: string | undefined | null,
-    zipcode: string | undefined | null,
+    address:Location.LocationGeocodedAddress
     delivery?: ObjectId,
     status: order_status
 }
@@ -182,13 +179,6 @@ export interface dataObject {
 }
 
 
-
-export interface productOrder {
-    productId: ObjectId,
-    details: {
-
-    }
-}
 
 export interface PaymentLog {
     accepted: boolean,

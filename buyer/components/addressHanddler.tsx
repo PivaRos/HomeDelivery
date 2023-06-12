@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { View, TextInput, Text, StyleSheet, Pressable, Animated } from 'react-native';
+import { View, TextInput, Text, StyleSheet, Pressable, Animated, NativeSyntheticEvent, TextInputChangeEventData } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { availableStores, Pages, Address } from '../interfaces';
 import * as Location from 'expo-location';
 import { LocationGeocodedAddress } from 'expo-location';
+import { GovAddressUri } from '../envVars';
 
 interface Props {
     address: LocationGeocodedAddress | undefined;
@@ -16,6 +17,9 @@ interface Props {
 export const AddressHanddler = ({ address, currentLocation, deliveryLoction, setDeliveryLoction, setAddress }: Props) => {
     const [usingCurrent, setUsingCurrent] = useState(currentLocation === deliveryLoction);
     const [listOpened, setListOpened] = useState(false);
+    const [query, setQuery ] = useState("");
+
+    const [dataArr, setDataArr] = useState(Array<{}>());
 
     const animatedToggle = new Animated.Value(0);
 
@@ -38,6 +42,17 @@ export const AddressHanddler = ({ address, currentLocation, deliveryLoction, set
         outputRange:[30, 150]
     })
 
+
+    const EventChanged  = (newtext:string) => {
+        setQuery(newtext);
+
+        //trigger timer 
+        fetch(GovAddressUri+query).then(res => {
+            res.json().then((data) => {
+                setDataArr(data.result.records);
+            })
+        })
+    }
     
 
     return (
@@ -57,7 +72,14 @@ export const AddressHanddler = ({ address, currentLocation, deliveryLoction, set
 
 
                 }}>
-                    <Text> asd</Text>
+                    <View style={{width:'100%', justifyContent:'center', flexDirection:'row'}}>
+                    <TextInput onChangeText={newtext => EventChanged(newtext)} style={{fontSize:18, padding:10}} placeholder='חפש כתובות'/>
+                    {dataArr.map((res, index) => {
+                        return (<View key={index} >
+                            <Text>{ res.שם_רחוב +" "+  query.replace(/^\D+/g, '')+" " + res.שם_ישוב  }</Text>
+                        </View>)
+                    })}
+                    </View>
                 </View>}
             </Pressable>
         </Animated.View>
