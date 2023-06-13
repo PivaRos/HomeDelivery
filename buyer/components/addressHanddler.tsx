@@ -23,6 +23,10 @@ export const AddressHanddler = ({ address, currentLocation, deliveryLoction, set
 
     const animatedToggle = new Animated.Value(0);
 
+    useEffect(() => {
+        setUsingCurrent(currentLocation === deliveryLoction);
+    }, [address])
+
     const AddressPressed = () => {
         setListOpened(value => {
             if (value === false)
@@ -53,6 +57,22 @@ export const AddressHanddler = ({ address, currentLocation, deliveryLoction, set
             })
         })
     }
+
+    const addressPressed = (address:{}) => {
+        setAddress({
+            city:address.שם_ישוב,
+            country:"Israel",
+            district:"",
+            isoCountryCode:'IL',
+            postalCode:null,
+            street:address.שם_רחוב,
+            streetNumber:query.replace(/^\D+/g, ''),
+            name:"",
+            region:null,
+            subregion:null,
+            timezone:null
+        })
+    }
     
 
     return (
@@ -72,12 +92,12 @@ export const AddressHanddler = ({ address, currentLocation, deliveryLoction, set
 
 
                 }}>
-                    <View style={{width:'100%', justifyContent:'center', flexDirection:'row'}}>
+                    <View style={{width:'100%', justifyContent:'center', flexDirection:'column'}}>
                     <TextInput onChangeText={newtext => EventChanged(newtext)} style={{fontSize:18, padding:10}} placeholder='חפש כתובות'/>
                     {dataArr.map((res, index) => {
-                        return (<View key={index} >
+                        return (<Pressable onPress={() => addressPressed(res)} style={{justifyContent:"center", flexDirection:'column'}} key={index} >
                             <Text>{ res.שם_רחוב +" "+  query.replace(/^\D+/g, '')+" " + res.שם_ישוב  }</Text>
-                        </View>)
+                        </Pressable>)
                     })}
                     </View>
                 </View>}

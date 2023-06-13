@@ -62,7 +62,39 @@ export default function App() {
     }
   }, [selectedProduct])
 
+  const CheckLastAddress = async () => {
+    const address = await AsyncStorage.getItem("address") 
+    if (address) setAddress(JSON.parse(address));
+  }
 
+  useEffect(() => {
+    try{
+    AsyncStorage.setItem("address", JSON.stringify(address));
+    }catch{
+      
+    }
+    (async () => {
+      try{
+      const date = new Date();
+      const location = (await Location.geocodeAsync(address?.street + " "+ address?.streetNumber+ " "+ address?.city))[0];
+    setDeliveryLoction({
+      coords:{
+        accuracy:location.accuracy  || null,
+        altitude:location.altitude || null,
+        altitudeAccuracy: null,
+        latitude:location.latitude,
+        longitude:location.longitude,
+        speed:null, 
+        heading:null, 
+      },
+      timestamp:date.getDate()
+    })
+  }
+  catch{
+
+  }
+    })()
+  }, [address])
 
   useEffect(() => {
 
@@ -177,6 +209,11 @@ export default function App() {
 
   useEffect(() => {
     firstloadCheck();
+    AsyncStorage.getItem("address").then(address => {
+      if (address)  setAddress(JSON.parse(address));
+    }).catch(() => {
+
+    })
   }, []);
 
   useEffect(() => {
