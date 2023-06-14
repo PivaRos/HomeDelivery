@@ -17,6 +17,9 @@ interface Props {
     setSelectedProduct: React.Dispatch<React.SetStateAction<Product | undefined>>;
     savedOrder: Order | null | undefined;
     setSavedOrder: React.Dispatch<React.SetStateAction<Order | undefined | null>>;
+    Address:Location.LocationGeocodedAddress | undefined,
+    setHideAddressHanddler: React.Dispatch<React.SetStateAction<boolean>>
+    
 }
 
 enum Extarpolate {
@@ -92,6 +95,15 @@ export const ViewStore = (props: Props) => {
         extrapolateRight: Extarpolate.clamp
     })
 
+    useEffect(() => {
+        props.setHideAddressHanddler(true);
+
+        return (() => {
+            props.setHideAddressHanddler(false);
+        });
+    }, [])
+
+
 
     useEffect(() => {
         const OpenDate = toDateTime(props.Store.openHoursObject.openFrom).toLocaleTimeString().split(":");
@@ -105,26 +117,24 @@ export const ViewStore = (props: Props) => {
 
 
 
-        if (!props.savedOrder || JSON.stringify(props.savedOrder.seller) !== JSON.stringify(props.Store._id)) {
+        if ((!props.savedOrder || JSON.stringify(props.savedOrder.seller) !== JSON.stringify(props.Store._id) ) && props.Address) {
             //Create new order
+
             let neworder: Order = {
                 buyer: undefined,
-                city: undefined,
                 date: {
                     date: new Date(),
                     timestamp: Math.floor(Date.now() / 1000)
                 },
-                homenumber: undefined,
                 location: props.deliveryLocation,
                 selecedProdcuts: [],
                 seller: props.Store._id,
                 status: 1,
-                street: undefined,
                 totalPrice: {
                     price: 0,
                     currency: "ILS"
                 },
-                zipcode: undefined
+                address:props.Address
             }
 
             props.setSavedOrder(neworder);

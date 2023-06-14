@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, TextInput, Text, StyleSheet, Pressable, Animated, NativeSyntheticEvent, TextInputChangeEventData } from 'react-native';
+import { View, TextInput, Text, StyleSheet, Pressable, Animated, NativeSyntheticEvent, TextInputChangeEventData, ScrollView } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { availableStores, Pages, Address } from '../interfaces';
 import * as Location from 'expo-location';
@@ -19,7 +19,7 @@ export const AddressHanddler = ({ address, currentLocation, deliveryLoction, set
     const [listOpened, setListOpened] = useState(false);
     const [query, setQuery ] = useState("");
 
-    const [dataArr, setDataArr] = useState(Array<{}>());
+    const [dataArr, setDataArr] = useState(Array<any>());
 
     const animatedToggle = new Animated.Value(0);
 
@@ -41,6 +41,8 @@ export const AddressHanddler = ({ address, currentLocation, deliveryLoction, set
         })
     }
 
+
+
     const heightIntepulation = animatedToggle.interpolate({
         inputRange:[0,1],
         outputRange:[30, 150]
@@ -58,7 +60,7 @@ export const AddressHanddler = ({ address, currentLocation, deliveryLoction, set
         })
     }
 
-    const addressPressed = (address:{}) => {
+    const addressChoosen = (address:any) => {
         setAddress({
             city:address.שם_ישוב,
             country:"Israel",
@@ -72,6 +74,7 @@ export const AddressHanddler = ({ address, currentLocation, deliveryLoction, set
             subregion:null,
             timezone:null
         })
+        AddressPressed();
     }
     
 
@@ -93,12 +96,15 @@ export const AddressHanddler = ({ address, currentLocation, deliveryLoction, set
 
                 }}>
                     <View style={{width:'100%', justifyContent:'center', flexDirection:'column'}}>
+                    
                     <TextInput onChangeText={newtext => EventChanged(newtext)} style={{fontSize:18, padding:10}} placeholder='חפש כתובות'/>
+                    <ScrollView keyboardShouldPersistTaps="never">
                     {dataArr.map((res, index) => {
-                        return (<Pressable onPress={() => addressPressed(res)} style={{justifyContent:"center", flexDirection:'column'}} key={index} >
+                        return (<Pressable onPress={() => addressChoosen(res)} style={{justifyContent:"center", flexDirection:'column'}} key={index} >
                             <Text>{ res.שם_רחוב +" "+  query.replace(/^\D+/g, '')+" " + res.שם_ישוב  }</Text>
                         </Pressable>)
                     })}
+                    </ScrollView>
                     </View>
                 </View>}
             </Pressable>

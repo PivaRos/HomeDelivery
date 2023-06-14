@@ -1,15 +1,17 @@
 import * as React from 'react';
 import {View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { availableStores, LocationObject, Order, Pages, Store } from '../interfaces';
+import { availableStores, Order, Pages, Store } from '../interfaces';
 import HomeMadeStores from './screens/homeMadeStoresScreen';
 import Navicon from '../components/navicon';
 import FoodStores from './screens/foodStoresScreen';
 import Account from './screens/accountScreen';
 import OrdersScreen from './screens/ordersScreen';
+import * as Location from 'expo-location';
+
 
 interface Props {
-  location:LocationObject;
+  deliveryLocation:Location.LocationObject;
   foodStores:availableStores | null | undefined;
   setFoodStores:React.Dispatch<React.SetStateAction<availableStores | null | undefined>>;
   setHomeMadeStores:React.Dispatch<React.SetStateAction<availableStores | null | undefined>>;
@@ -58,10 +60,10 @@ const Tab = createBottomTabNavigator();
           tabBarShowLabel:true,
           tabBarLabelStyle:{marginTop:2}
         })}>
-          <Tab.Screen options={{title:"Food", tabBarActiveTintColor:"black"}} name='Stores' children={() =>  <FoodStores setSavedOrder={props.setSavedOrder} refreshing={props.refreshing} savedOrder={props.savedOrder} setSelectedStore={props.setSelectedStore} setFoodStores={props.setFoodStores} foodStores={props.foodStores} location={props.location} />} />
-          <Tab.Screen options={{title:"HomeMade", tabBarActiveTintColor:"black"}} name='Home' children={() => <HomeMadeStores savedOrder={props.savedOrder} setSavedOrder={props.setSavedOrder} refreshing={props.refreshing} setSelectedStore={props.setSelectedStore} setHomeMadeStores={props.setHomeMadeStores} homeMadeStores={props.homeMadeStores} location={props.location} />}  />
-          <Tab.Screen options={{title:"MyOrders", tabBarActiveTintColor:"black"}} name='Orders' children={() => <OrdersScreen Stores={props.foodStores} location={props.location} />} />
-          <Tab.Screen options={{title:"Account", tabBarActiveTintColor:"black"}} name='Account' children={() => <Account Stores={props.foodStores} location={props.location} />} />
+          <Tab.Screen options={{title:"Food", tabBarActiveTintColor:"black"}} name='Stores' children={() =>  <FoodStores setSavedOrder={props.setSavedOrder} refreshing={props.refreshing} savedOrder={props.savedOrder} setSelectedStore={props.setSelectedStore} setFoodStores={props.setFoodStores} foodStores={props.foodStores} deliveryLocation={props.deliveryLocation} />} />
+          <Tab.Screen options={{title:"HomeMade", tabBarActiveTintColor:"black"}} name='Home' children={() => <HomeMadeStores savedOrder={props.savedOrder} setSavedOrder={props.setSavedOrder} refreshing={props.refreshing} setSelectedStore={props.setSelectedStore} setHomeMadeStores={props.setHomeMadeStores} homeMadeStores={props.homeMadeStores} deliveryLocation={props.deliveryLocation} />}  />
+          <Tab.Screen options={{title:"MyOrders", tabBarActiveTintColor:"black"}} name='Orders' children={() => <OrdersScreen Stores={props.foodStores} deliveryLocation={props.deliveryLocation} />} />
+          <Tab.Screen options={{title:"Account", tabBarActiveTintColor:"black"}} name='Account' children={() => <Account Stores={props.foodStores} deliveryLocation={props.deliveryLocation} />} />
         </Tab.Navigator>);
 
 }

@@ -62,16 +62,11 @@ export default function App() {
     }
   }, [selectedProduct])
 
-  const CheckLastAddress = async () => {
-    const address = await AsyncStorage.getItem("address") 
-    if (address) setAddress(JSON.parse(address));
-  }
-
   useEffect(() => {
     try{
-    AsyncStorage.setItem("address", JSON.stringify(address));
+      if (address) AsyncStorage.setItem("address", JSON.stringify(address));
     }catch{
-      
+
     }
     (async () => {
       try{
@@ -101,7 +96,7 @@ export default function App() {
   }, [JSON.stringify(savedOrder)])
 
 
-  const ReverseGeocodeing = async () => {
+  const setAddressCurrent = async () => {
     try {
       if (currentLocation) {
         //const adresscheck =  await Location.geocodeAsync("ברודצקי 43 תל אביב");
@@ -127,12 +122,12 @@ export default function App() {
           {!refreshing && (!hideAddressHanddler && <AddressHanddler deliveryLoction={deliveryLoction} currentLocation={currentLocation} setAddress={setAddress} setDeliveryLoction={setDeliveryLoction} address={address} />)}
           <NavigationContainer>
             <Stack.Navigator screenOptions={{ headerShown: false, fullScreenGestureEnabled: true }}>
-              <Stack.Screen name='tabs' children={() => <Tabs savedOrder={savedOrder} setSavedOrder={setSavedOrder} homeMadeStores={homeMadeStores} setHomeMadeStores={setHomeMadeStores} refreshing={refreshing} setSelectedStore={setSelectedStore} foodStores={foodStores} setFoodStores={setFoodStores} location={deliveryLoction} />} />
-              {selectedStore && <Stack.Screen name='ViewStore' children={() => <ViewStore savedOrder={savedOrder} setSavedOrder={setSavedOrder} setSelectedProduct={setSelectedProduct} deliveryLocation={deliveryLoction} Store={selectedStore} />} />}
+              <Stack.Screen name='tabs' children={() => <Tabs savedOrder={savedOrder} setSavedOrder={setSavedOrder} homeMadeStores={homeMadeStores} setHomeMadeStores={setHomeMadeStores} refreshing={refreshing} setSelectedStore={setSelectedStore} foodStores={foodStores} setFoodStores={setFoodStores} deliveryLocation={deliveryLoction} />} />
+              {selectedStore && <Stack.Screen name='ViewStore' children={() => <ViewStore Address={address} setHideAddressHanddler={setHideAddressHanddler} savedOrder={savedOrder} setSavedOrder={setSavedOrder} setSelectedProduct={setSelectedProduct} deliveryLocation={deliveryLoction} Store={selectedStore} />} />}
               {!selectedStore && <Stack.Screen name='ViewStore' children={() => <View><Text>asasd</Text></View>} />}
               {(selectedProduct && selectedStore && savedOrder) && <Stack.Screen name='ViewProduct' children={() => <ViewProduct deliveryLocation={deliveryLoction} setSavedOrder={setSavedOrder} Store={selectedStore} savedOrder={savedOrder} setSelectedProduct={setSelectedProduct} selectedProduct={selectedProduct} />} />}
               {savedOrder && <Stack.Screen name='ViewOrder' children={() => <ViewOrder setHideAddressHanddler={setHideAddressHanddler} Order={savedOrder} />} />}
-              {savedOrder && <Stack.Screen name='ViewCheckout' children={() => <ViewCheckout setHideAddressHanddler={setHideAddressHanddler} deliveryLocation={deliveryLoction} setDeliveryLocation={setDeliveryLoction} selectedStore={selectedStore} setOrder={setSavedOrder} order={savedOrder} />} />}
+              {savedOrder && <Stack.Screen name='ViewCheckout' children={() => <ViewCheckout deliveryLocation={deliveryLoction} setDeliveryLocation={setDeliveryLoction} selectedStore={selectedStore} setOrder={setSavedOrder} order={savedOrder} />} />}
               {!selectedProduct && <Stack.Screen name='ViewProduct' children={() => <View>
                 <Text>asdasd</Text></View>} />}
             </Stack.Navigator>
@@ -144,15 +139,7 @@ export default function App() {
   }
 
   useEffect(() => {
-    (async () => {
-      const result = await CheckLocation()
-      if (result) {
-        setDeliveryLoction(result);
-        setCurrentLocation(result);
-      }
-      await ReverseGeocodeing();
-      await UpdateData();
-    })();
+    firstloadCheck();
   }, [refreshing])
 
 
@@ -166,7 +153,6 @@ export default function App() {
   const PressLocation = async () => {
     const result = await CheckLocation()
     if (result) {
-      setDeliveryLoction(result);
       setCurrentLocation(result);
     }
 
@@ -184,8 +170,10 @@ export default function App() {
   const UpdateData = async () => {
     try {
       const sessionid = await AsyncStorage.getItem("@sessionid");
+      const address = await AsyncStorage.getItem("address")
       setSessionid(sessionid);
-
+      if (address) setAddress(JSON.parse(address));
+     address && console.log(JSON.parse(address));
     } catch {
 
     }
@@ -196,28 +184,23 @@ export default function App() {
       setLoading(true);
       const result = await CheckLocation()
       if (result) {
-        setDeliveryLoction(result);
         setCurrentLocation(result);
       }
+      const address = await AsyncStorage.getItem("address");
+      if (!address) setAddressCurrent();
+      else setAddress(JSON.parse(address));
       await UpdateData();
       setLoading(false);
-    } catch (e) {
-      console.log(e)
-    }
+    } catch{}
   }
 
 
   useEffect(() => {
     firstloadCheck();
-    AsyncStorage.getItem("address").then(address => {
-      if (address)  setAddress(JSON.parse(address));
-    }).catch(() => {
-
-    })
   }, []);
 
   useEffect(() => {
-    ReverseGeocodeing();
+
   }, [deliveryLoction])
 
   return (

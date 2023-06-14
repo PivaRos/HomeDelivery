@@ -1,12 +1,13 @@
 import { StyleSheet, Text, View, ScrollView, RefreshControl  } from 'react-native';
 import React, {useEffect, useState} from 'react'
-import { availableStores, LocationObject, Order, Pages, Store, store_category } from '../../interfaces';
+import { availableStores, Order, Pages, Store, store_category } from '../../interfaces';
 import { storeActions } from '../../network_services/stores';
 import StoresGrid from '../../components/store/stores_grid';
+import * as Location from 'expo-location';
 
 
 interface Props {
-    location:LocationObject;
+    deliveryLocation:Location.LocationObject;
     foodStores:availableStores | null | undefined;
     setFoodStores:React.Dispatch<React.SetStateAction<availableStores | null | undefined>>;
     setSelectedStore:React.Dispatch<React.SetStateAction<Store | undefined>>;
@@ -19,18 +20,18 @@ const FoodStores = (props:Props) => {
     const [loading, setLoading] = useState(true);
 
     const load = async () => {
-        props.setFoodStores(await storeActions.GetStores(props.location, store_category.food));
+        props.setFoodStores(await storeActions.GetStores(props.deliveryLocation, store_category.food));
     }
 
 
     useEffect(() => {
-        
+        setLoading(true);
         load();
         if (props.foodStores)
         {
             setLoading(false);
         }
-    }, [])
+    }, [props.deliveryLocation])
 
     useEffect(() => {
         if (props.refreshing)
@@ -50,8 +51,8 @@ const FoodStores = (props:Props) => {
         return ( <View style={style.view}>
             <Text style={style.title}>Enjoy The Best Food .</Text>
             <ScrollView>
-             <StoresGrid savedOrder={props.savedOrder}  setSavedOrder={props.setSavedOrder} thelocation={props.location} setSelectedStore={props.setSelectedStore}  title='New On HomeDelivery' displayStores={props.foodStores?.Open} />
-             <StoresGrid savedOrder={props.savedOrder} setSavedOrder={props.setSavedOrder} thelocation={props.location} setSelectedStore={props.setSelectedStore}  title='Closed Stores' displayStores={props.foodStores?.Closed} />
+             <StoresGrid savedOrder={props.savedOrder}  setSavedOrder={props.setSavedOrder} thelocation={props.deliveryLocation} setSelectedStore={props.setSelectedStore}  title='New On HomeDelivery' displayStores={props.foodStores?.Open} />
+             <StoresGrid savedOrder={props.savedOrder} setSavedOrder={props.setSavedOrder} thelocation={props.deliveryLocation} setSelectedStore={props.setSelectedStore}  title='Closed Stores' displayStores={props.foodStores?.Closed} />
              
             
             </ScrollView>

@@ -13,25 +13,15 @@ interface CheckoutPops {
     selectedStore: Store | undefined
     setDeliveryLocation: React.Dispatch<React.SetStateAction<Location.LocationObject | undefined>>
     deliveryLocation: Location.LocationObject | undefined
-    setHideAddressHanddler: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 
-export const ViewCheckout = ({ order, setOrder, selectedStore, deliveryLocation, setDeliveryLocation, setHideAddressHanddler }: CheckoutPops) => {
+export const ViewCheckout = ({ order, setOrder, selectedStore, deliveryLocation, setDeliveryLocation }: CheckoutPops) => {
 
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const BackPress = () => {
         navigation.navigate("ViewOrder", { id: 4 })
     }
-
-    useEffect(() => {
-        setHideAddressHanddler(true);
-
-        return (() => {
-            setHideAddressHanddler(false);
-        });
-    }, [])
-
 
     return (<ScrollView>
         <View style={{ backgroundColor: 'white', width: '100%', height: 50, justifyContent: 'center' }}>
