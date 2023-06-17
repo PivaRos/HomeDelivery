@@ -12,9 +12,10 @@ interface Props {
     currentLocation: Location.LocationObject | undefined;
     setDeliveryLoction: React.Dispatch<React.SetStateAction<Location.LocationObject | undefined>>
     setAddress: React.Dispatch<React.SetStateAction<Location.LocationGeocodedAddress | undefined>>
+    setLoading:React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const AddressHanddler = ({ address, currentLocation, deliveryLoction, setDeliveryLoction, setAddress }: Props) => {
+export const AddressHanddler = ({ address, currentLocation, deliveryLoction, setDeliveryLoction, setAddress, setLoading }: Props) => {
     const [usingCurrent, setUsingCurrent] = useState(currentLocation === deliveryLoction);
     const [listOpened, setListOpened] = useState(false);
     const [query, setQuery ] = useState("");
@@ -51,7 +52,6 @@ export const AddressHanddler = ({ address, currentLocation, deliveryLoction, set
 
     const EventChanged  = (newtext:string) => {
         setQuery(newtext);
-
         //trigger timer 
         fetch(GovAddressUri+query).then(res => {
             res.json().then((data) => {
@@ -61,6 +61,7 @@ export const AddressHanddler = ({ address, currentLocation, deliveryLoction, set
     }
 
     const addressChoosen = (address:any) => {
+        setLoading(true);
         setAddress({
             city:address.שם_ישוב,
             country:"Israel",
@@ -75,6 +76,8 @@ export const AddressHanddler = ({ address, currentLocation, deliveryLoction, set
             timezone:null
         })
         AddressPressed();
+        setLoading(false);
+
     }
     
 
@@ -101,7 +104,7 @@ export const AddressHanddler = ({ address, currentLocation, deliveryLoction, set
                     <ScrollView keyboardShouldPersistTaps="never">
                     {dataArr.map((res, index) => {
                         return (<Pressable onPress={() => addressChoosen(res)} style={{justifyContent:"center", flexDirection:'column'}} key={index} >
-                            <Text>{ res.שם_רחוב +" "+  query.replace(/^\D+/g, '')+" " + res.שם_ישוב  }</Text>
+                            <Text style={{padding:5, textAlign:'center'}}>{ res.שם_רחוב +" "+  query.replace(/^\D+/g, '')+" " + res.שם_ישוב  }</Text>
                         </Pressable>)
                     })}
                     </ScrollView>

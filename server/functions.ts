@@ -1,17 +1,15 @@
 import { type LocationObject, type OpenHoursObject } from './interfaces';
 import moment from 'moment';
+import * as Location from 'expo-location';
+
 
 // returns distance (km)
-export const getDistance = (Location1: LocationObject, Location2: LocationObject): number => {
+export const getDistance = (Location1: Location.LocationObject, Location2: Location.LocationObject): number => {
   const longAndLatToKm = 110.574;
-  if ((Location1.coordinates != null) && (Location2.coordinates != null)) {
-    const dy = (+Location1.coordinates[0]) - (+Location2.coordinates[0]);
-    const dx = (+Location1.coordinates[1]) - (+Location2.coordinates[1]);
+    const dy = (+Location1.coords.latitude) - (+Location2.coords.latitude);
+    const dx = (+Location1.coords.longitude) - (+Location2.coords.longitude);
     // im km
     return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * longAndLatToKm;
-  } else {
-    return 0;
-  }
 }
 
 export const getSeconds = (addDay:boolean) => {

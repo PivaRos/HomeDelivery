@@ -33,6 +33,11 @@ export enum account_type {
 
 }
 
+
+export interface openHoursObject {
+    openFrom: number,
+    closedFrom: number
+}
 export enum store_category {
     food = 1,
     homeMade = 2
@@ -130,11 +135,6 @@ export interface optionProduct {
 
 
 
-export interface openHoursObject {
-    openFrom: number,
-    closedFrom: number
-}
-
 export interface Account {
     type: account_type,
     username: string,
@@ -147,7 +147,7 @@ export interface Account {
 }
 
 export interface product_option {
-
+    
 }
 
 
@@ -175,7 +175,7 @@ export interface dataObject {
     msg: string,
     data: any,
     nor?: number 	//number of tries
-
+    
 }
 
 

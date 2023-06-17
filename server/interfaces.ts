@@ -1,4 +1,6 @@
 import { type ObjectId, type WithId, type Document } from 'mongodb';
+import * as Location from 'expo-location';
+
 
 export enum Pages {
   Stores = 'Stores',
@@ -74,12 +76,33 @@ export interface Store extends WithId<Document> {
   name: string
   products: Product[]
   authorizedUsers: string[]
-  location: LocationObject
+  location: Location.LocationObject
   deliveryDistance: number
-  openHoursObject: OpenHoursObject
-  category: StoreCategory
+  openHoursObject: openHoursObject
+  category: store_category
+  optionProducts: optionProduct[]
   minOrder?: PriceObject
-  active: boolean
+  avgDelivery: number//min
+
+}
+
+
+export interface optionProduct {
+  _id: ObjectId,
+  image: string,
+  name: string,
+  category: string,
+  ownPrice: PriceObject
+}
+
+
+export interface openHoursObject {
+  openFrom: number,
+  closedFrom: number
+}
+export enum store_category {
+  food = 1,
+  homeMade = 2
 }
 
 export const StorePermissions: IStorePermissions = {
@@ -144,7 +167,7 @@ export interface Order {
   date: DateObject
   products: ProductOrder[]
   totalPrice: number
-  location: LocationObject
+  location: Location.LocationObject
   city: string
   street: string
   homenumber: string

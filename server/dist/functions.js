@@ -8,15 +8,10 @@ const moment_1 = __importDefault(require("moment"));
 // returns distance (km)
 const getDistance = (Location1, Location2) => {
     const longAndLatToKm = 110.574;
-    if ((Location1.coordinates != null) && (Location2.coordinates != null)) {
-        const dy = (+Location1.coordinates[0]) - (+Location2.coordinates[0]);
-        const dx = (+Location1.coordinates[1]) - (+Location2.coordinates[1]);
-        // im km
-        return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * longAndLatToKm;
-    }
-    else {
-        return 0;
-    }
+    const dy = (+Location1.coords.latitude) - (+Location2.coords.latitude);
+    const dx = (+Location1.coords.longitude) - (+Location2.coords.longitude);
+    // im km
+    return Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * longAndLatToKm;
 };
 exports.getDistance = getDistance;
 const getSeconds = (addDay) => {

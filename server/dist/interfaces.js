@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StorePermissions = exports.LocationType = exports.OrderStatus = exports.StoreCategory = exports.AccountType = exports.Pages = void 0;
+exports.StorePermissions = exports.store_category = exports.LocationType = exports.OrderStatus = exports.StoreCategory = exports.AccountType = exports.Pages = void 0;
 var Pages;
 (function (Pages) {
     Pages["Stores"] = "Stores";
@@ -34,6 +34,11 @@ var LocationType;
     LocationType["point"] = "point";
     LocationType["address"] = "address";
 })(LocationType = exports.LocationType || (exports.LocationType = {}));
+var store_category;
+(function (store_category) {
+    store_category[store_category["food"] = 1] = "food";
+    store_category[store_category["homeMade"] = 2] = "homeMade";
+})(store_category = exports.store_category || (exports.store_category = {}));
 exports.StorePermissions = {
     _id: [AccountType.Admin],
     logo: [AccountType.Seller, AccountType.Support, AccountType.Admin],
