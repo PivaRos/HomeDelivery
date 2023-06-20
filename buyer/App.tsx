@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, StatusBar, Platform, SafeAreaView, ActivityIndicator, Button, ScrollView, RefreshControl } from 'react-native';
+import { StyleSheet, Text, View, StatusBar, Platform, SafeAreaView, ActivityIndicator, Button, ScrollView, RefreshControl, Dimensions, Pressable } from 'react-native';
 import { useCallback, useEffect, useState } from 'react'
 import { Address, availableStores, Order, Product, StorageData, Store } from './interfaces';
 import { NavigationContainer } from '@react-navigation/native';
@@ -35,12 +35,12 @@ export default function App() {
   const [savedOrder, setSavedOrder] = useState<Order | null | undefined>();
   const [address, setAddress] = useState<Location.LocationGeocodedAddress>();
   const [hideAddressHanddler, setHideAddressHanddler] = useState(false);
-
+  const [toggleOpenAddressList, setToggleOpenAddressList] = useState(false);
   const Stack = createNativeStackNavigator();
 
 
 
-
+  const windowHeight = Dimensions.get('window').height;
 
   const [fontsLoaded] = useFonts({
     'Inter-Black': require('./assets/fonts/Inter-Black.otf'),
@@ -119,7 +119,19 @@ export default function App() {
     return (
       <SafeAreaView style={styles.container}>
         <ScrollView contentContainerStyle={styles.container} refreshControl={<RefreshControl colors={['#2874ed']} title='Refresh' refreshing={refreshing} onRefresh={onRefresh} />}>
-          {!refreshing && (!hideAddressHanddler && <AddressHanddler setLoading={setLoading} deliveryLoction={deliveryLoction} currentLocation={currentLocation} setAddress={setAddress} setDeliveryLoction={setDeliveryLoction} address={address} />)}
+          {!refreshing && (!hideAddressHanddler && <AddressHanddler toggleOpenAddressList={toggleOpenAddressList} setToggleOpenAddressList={setToggleOpenAddressList} setLoading={setLoading} deliveryLoction={deliveryLoction} currentLocation={currentLocation} setAddress={setAddress} setDeliveryLoction={setDeliveryLoction} address={address} />)}
+          {toggleOpenAddressList && <Pressable 
+              onPress={() => setToggleOpenAddressList(false)}
+              style={{
+                backgroundColor:'black',
+                  height:windowHeight-230,
+                  width:'100%',
+                  opacity:0.5,
+                  bottom:0,
+                  position:'absolute',
+                  zIndex:100
+                }}>
+            </Pressable>}
           <NavigationContainer>
             <Stack.Navigator screenOptions={{ headerShown: false, fullScreenGestureEnabled: true }}>
               <Stack.Screen name='tabs' children={() => <Tabs savedOrder={savedOrder} setSavedOrder={setSavedOrder} homeMadeStores={homeMadeStores} setHomeMadeStores={setHomeMadeStores} refreshing={refreshing} setSelectedStore={setSelectedStore} foodStores={foodStores} setFoodStores={setFoodStores} deliveryLocation={deliveryLoction} />} />

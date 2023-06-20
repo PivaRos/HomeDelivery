@@ -13,11 +13,13 @@ interface Props {
     setDeliveryLoction: React.Dispatch<React.SetStateAction<Location.LocationObject | undefined>>
     setAddress: React.Dispatch<React.SetStateAction<Location.LocationGeocodedAddress | undefined>>
     setLoading:React.Dispatch<React.SetStateAction<boolean>>;
+    toggleOpenAddressList:boolean;
+    setToggleOpenAddressList:React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const AddressHanddler = ({ address, currentLocation, deliveryLoction, setDeliveryLoction, setAddress, setLoading }: Props) => {
+export const AddressHanddler = ({ address, currentLocation, deliveryLoction, setDeliveryLoction, setAddress, setLoading, toggleOpenAddressList, setToggleOpenAddressList }: Props) => {
     const [usingCurrent, setUsingCurrent] = useState(currentLocation === deliveryLoction);
-    const [listOpened, setListOpened] = useState(false);
+    const [listOpened, setListOpened] = useState(toggleOpenAddressList);
     const [query, setQuery ] = useState("");
 
     const [dataArr, setDataArr] = useState(Array<any>());
@@ -43,22 +45,55 @@ export const AddressHanddler = ({ address, currentLocation, deliveryLoction, set
     }
 
 
+    useEffect(() => {
+        setToggleOpenAddressList(listOpened);
+        if (listOpened)
+        {
+            setDataArr([]);
+        }
+    }, [listOpened])
+
+    useEffect(() => {
+        if (!toggleOpenAddressList)
+        {
+        setListOpened(false);
+        animatedToggle.setValue(0);
+        }
+        
+    }, [toggleOpenAddressList])
+
+
 
     const heightIntepulation = animatedToggle.interpolate({
         inputRange:[0,1],
         outputRange:[30, 150]
     })
 
+    const fillter = (query:string):string => {
+        var withNoDigits = query.replace(/[0-9]/g, '');
+        var result = withNoDigits.replace(/\s+/g, ' ').trim()
+        return result
+    }
 
-    const EventChanged  = (newtext:string) => {
-        setQuery(newtext);
-        //trigger timer 
+    const EventChanged  = async (newtext:string) => {
+        const fillteredQuery = fillter(query);
+        console.log(fillteredQuery);
         fetch(GovAddressUri+query).then(res => {
             res.json().then((data) => {
                 setDataArr(data.result.records);
             })
         })
     }
+    
+    useEffect(() => {
+
+        const timeout = setTimeout(() => {
+            EventChanged(query);
+        }, 300);
+        return () => { clearTimeout(timeout) }
+    }, [query])
+
+
 
     const addressChoosen = (address:any) => {
         setLoading(true);
@@ -86,7 +121,7 @@ export const AddressHanddler = ({ address, currentLocation, deliveryLoction, set
             <Pressable onPress={AddressPressed} style={styles.view}>
                 <View style={styles.anotherView}>
 
-                    {address && <Text>{address.street + " " + address.streetNumber + " " + address.city}</Text>}
+                    {address && <Text style={{textAlign:'center', width:'100%'}}>{address.street + " " + address.streetNumber + " " + address.city}</Text>}
                     {usingCurrent && <Text style={{ fontWeight: 'bold' }}> (current)</Text>}
                 </View>
                 {listOpened && <View style={{
@@ -100,12 +135,12 @@ export const AddressHanddler = ({ address, currentLocation, deliveryLoction, set
                 }}>
                     <View style={{width:'100%', justifyContent:'center', flexDirection:'column'}}>
                     
-                    <TextInput onChangeText={newtext => EventChanged(newtext)} style={{fontSize:18, padding:10}} placeholder='חפש כתובות'/>
-                    <ScrollView keyboardShouldPersistTaps="never">
+                    <TextInput onChangeText={newtext => setQuery(newtext)} style={{fontSize:18, padding:10}} placeholder='חפש כתובות'/>
+                    <ScrollView keyboardShouldPersistTaps="handled">
                     {dataArr.map((res, index) => {
-                        return (<Pressable onPress={() => addressChoosen(res)} style={{justifyContent:"center", flexDirection:'column'}} key={index} >
-                            <Text style={{padding:5, textAlign:'center'}}>{ res.שם_רחוב +" "+  query.replace(/^\D+/g, '')+" " + res.שם_ישוב  }</Text>
-                        </Pressable>)
+                        return (<View  key={index}  style={{justifyContent:"center", flexDirection:'row', width:'100%'}}><Pressable style={{width:'50%'}} onPress={() => addressChoosen(res)}>
+                        <Text style={{padding:5, textAlign:'center'}}>{ res.שם_רחוב +" "+  query.replace(/^\D+/g, '')+" " + res.שם_ישוב  }</Text>
+                        </Pressable></View>)
                     })}
                     </ScrollView>
                     </View>
@@ -122,6 +157,7 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     anotherView: {
+        width:'100%',
         position: 'absolute',
         left: 5,
         bottom: 6,
