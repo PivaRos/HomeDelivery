@@ -133,6 +133,25 @@ export interface optionProduct {
     ownPrice: PriceObject
 }
 
+export enum addressDetailsType{
+    Apartment = "apartment",
+    House = "house",
+    Office = "office",
+    Other = "other"
+}
+
+export interface savedAddress {
+    address:Location.LocationGeocodedAddress
+    addressDetailsType?:addressDetailsType,
+    addressDetails?:{
+        notes:string,
+        entrance?:string,
+        floor?:number,
+        apartment?:number,
+        buildingName?:string
+    }
+}
+
 
 
 export interface Account {
