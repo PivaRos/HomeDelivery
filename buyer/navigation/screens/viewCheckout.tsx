@@ -1,11 +1,12 @@
 import { View, Text, Pressable, StyleSheet, ScrollView } from "react-native";
-import { Order, RootStackParamList, Store } from "../../interfaces";
+import { Order, RootStackParamList, Store, savedAddress } from "../../interfaces";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
 import * as Location from 'expo-location';
 import MapView, { Marker } from 'react-native-maps';
 import { getDistance } from "../../functions";
 import { useEffect } from "react";
+import { AddressComponent } from "../../components/addressComponent";
 
 interface CheckoutPops {
     order: Order;
@@ -13,10 +14,11 @@ interface CheckoutPops {
     selectedStore: Store | undefined
     setDeliveryLocation: React.Dispatch<React.SetStateAction<Location.LocationObject | undefined>>
     deliveryLocation: Location.LocationObject | undefined
+    savedAddresses:savedAddress[];
 }
 
 
-export const ViewCheckout = ({ order, setOrder, selectedStore, deliveryLocation, setDeliveryLocation }: CheckoutPops) => {
+export const ViewCheckout = ({ order, setOrder, selectedStore, deliveryLocation, setDeliveryLocation, savedAddresses }: CheckoutPops) => {
 
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const BackPress = () => {
@@ -61,7 +63,7 @@ export const ViewCheckout = ({ order, setOrder, selectedStore, deliveryLocation,
                 </Marker>
             </MapView>}
             <View style={{ backgroundColor: "white" }}>
-
+                    <AddressComponent savedAddresses={savedAddresses} />
             </View>
             <View style={{ backgroundColor: "white" }}>
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, TextInput, Text, StyleSheet, Pressable, Animated, NativeSyntheticEvent, TextInputChangeEventData, ScrollView } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { availableStores, Pages, Address } from '../interfaces';
+import { availableStores, Pages } from '../interfaces';
 import * as Location from 'expo-location';
 import { LocationGeocodedAddress } from 'expo-location';
 import { GovAddressUri } from '../envVars';
@@ -17,7 +17,16 @@ interface Props {
     setToggleOpenAddressList:React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const AddressHanddler = ({ address, currentLocation, deliveryLoction, setDeliveryLoction, setAddress, setLoading, toggleOpenAddressList, setToggleOpenAddressList }: Props) => {
+export const AddressHanddler = ({ 
+        address,
+        currentLocation,
+        deliveryLoction, 
+        setDeliveryLoction, 
+        setAddress, 
+        setLoading, 
+        toggleOpenAddressList, 
+        setToggleOpenAddressList 
+    }: Props) => {
     const [usingCurrent, setUsingCurrent] = useState(currentLocation === deliveryLoction);
     const [listOpened, setListOpened] = useState(toggleOpenAddressList);
     const [query, setQuery ] = useState("");

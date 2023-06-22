@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, StatusBar, Platform, SafeAreaView, ActivityIndicator, Button, ScrollView, RefreshControl, Dimensions, Pressable } from 'react-native';
 import { useCallback, useEffect, useState } from 'react'
-import { Address, availableStores, Order, Product, StorageData, Store } from './interfaces';
+import { availableStores, Order, Product, savedAddress, StorageData, Store } from './interfaces';
 import { NavigationContainer } from '@react-navigation/native';
 import { AddressHanddler } from './components/addressHanddler';
 import Tabs from './navigation/tabs';
@@ -34,6 +34,7 @@ export default function App() {
   const [selectedProduct, setSelectedProduct] = useState<Product>();
   const [savedOrder, setSavedOrder] = useState<Order | null | undefined>();
   const [address, setAddress] = useState<Location.LocationGeocodedAddress>();
+  const [savedAddresses, setSavedAddresses] = useState<savedAddress[]>()
   const [hideAddressHanddler, setHideAddressHanddler] = useState(false);
   const [toggleOpenAddressList, setToggleOpenAddressList] = useState(false);
   const Stack = createNativeStackNavigator();
@@ -139,7 +140,7 @@ export default function App() {
               {!selectedStore && <Stack.Screen name='ViewStore' children={() => <View><Text>asasd</Text></View>} />}
               {(selectedProduct && selectedStore && savedOrder) && <Stack.Screen name='ViewProduct' children={() => <ViewProduct deliveryLocation={deliveryLoction} setSavedOrder={setSavedOrder} Store={selectedStore} savedOrder={savedOrder} setSelectedProduct={setSelectedProduct} selectedProduct={selectedProduct} />} />}
               {savedOrder && <Stack.Screen name='ViewOrder' children={() => <ViewOrder setHideAddressHanddler={setHideAddressHanddler} Order={savedOrder} />} />}
-              {savedOrder && <Stack.Screen name='ViewCheckout' children={() => <ViewCheckout deliveryLocation={deliveryLoction} setDeliveryLocation={setDeliveryLoction} selectedStore={selectedStore} setOrder={setSavedOrder} order={savedOrder} />} />}
+              {savedOrder && <Stack.Screen name='ViewCheckout' children={() => <ViewCheckout savedAddresses={} deliveryLocation={deliveryLoction} setDeliveryLocation={setDeliveryLoction} selectedStore={selectedStore} setOrder={setSavedOrder} order={savedOrder} />} />}
               {!selectedProduct && <Stack.Screen name='ViewProduct' children={() => <View>
                 <Text>asdasd</Text></View>} />}
             </Stack.Navigator>
@@ -199,9 +200,11 @@ export default function App() {
       if (result) {
         setCurrentLocation(result);
       }
+      const savedAddresses = await AsyncStorage.getItem('savedAddresses');
       const address = await AsyncStorage.getItem("address");
       if (!address) setAddressCurrent();
       else setAddress(JSON.parse(address));
+      if (savedAddresses) setSavedAddresses(JSON.parse(savedAddresses));
       await UpdateData();
       setLoading(false);
     } catch{}

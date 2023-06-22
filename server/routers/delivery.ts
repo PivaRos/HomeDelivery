@@ -18,7 +18,7 @@ const Router = (MongoObject: {
     ClosedApplications: mongodb.Collection<mongodb.BSON.Document>
   }
 }) => {
-  const DeliveryRouter = express.Router() // all http requests that are made with delivery
+  const DeliveryRouter = express.Router() // all http requests that are made with delivery personal
   DeliveryRouter.use(isDelivery)
 
   // recives sessionid and returns all open orders that are waiting delivery and within the range

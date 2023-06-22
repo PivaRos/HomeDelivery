@@ -2,23 +2,27 @@ import { View, Text } from "react-native";
 import AsyncStorage, { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import { useState } from "react";
 import { Address } from "react-native-maps";
+import { savedAddress } from "../interfaces";
 
 
 interface addressComponentProps {
-    AddressArray:Address[];
+    savedAddresses:savedAddress[];
 }
 
 
-export const AddressComponent = ({AddressArray}:addressComponentProps) => {
+export const AddressComponent = ({savedAddresses}:addressComponentProps) => {
 
-    const [addressList, SetAddressParty] = useState<Address[]>(AddressArray);
 
 
 
 
 
     return (
-        <View>
+        <View style={{
+            width:'100%',
+            height:100, 
+            backgroundColor:'lightgreen'
+            }}>
             <Text></Text>
         </View>
     );

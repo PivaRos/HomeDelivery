@@ -99,15 +99,6 @@ export interface PriceObject {
     currency: string
 }
 
-export interface Address {
-    city: string
-    street: string
-    houseNumber: number
-    apartmentNumber: number
-    deliveryNotes: string
-
-}
-
 
 export interface Store extends WithId<Document> {
     _id: ObjectId
@@ -150,6 +141,7 @@ export interface savedAddress {
         apartment?:number,
         buildingName?:string
     }
+    active:boolean;
 }
 
 
