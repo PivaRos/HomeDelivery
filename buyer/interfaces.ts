@@ -112,7 +112,7 @@ export interface Store extends WithId<Document> {
     category: store_category
     optionProducts: optionProduct[]
     minOrder?: PriceObject
-    avgDelivery: number//min
+    avgTimeToKm: number//min
 }
 
 

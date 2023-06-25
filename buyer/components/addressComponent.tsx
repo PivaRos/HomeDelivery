@@ -6,7 +6,7 @@ import { savedAddress } from "../interfaces";
 
 
 interface addressComponentProps {
-    savedAddresses:savedAddress[];
+    savedAddresses:savedAddress[] | undefined;
 }
 
 

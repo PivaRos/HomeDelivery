@@ -14,7 +14,7 @@ interface CheckoutPops {
     selectedStore: Store | undefined
     setDeliveryLocation: React.Dispatch<React.SetStateAction<Location.LocationObject | undefined>>
     deliveryLocation: Location.LocationObject | undefined
-    savedAddresses:savedAddress[];
+    savedAddresses:savedAddress[] |undefined;
 }
 
 
