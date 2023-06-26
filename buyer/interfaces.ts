@@ -134,14 +134,14 @@ export enum addressDetailsType{
 export interface savedAddress {
     address:Location.LocationGeocodedAddress
     addressDetailsType?:addressDetailsType,
-    addressDetails?:{
-        notes:string,
-        entrance?:string,
-        floor?:number,
-        apartment?:number,
-        buildingName?:string
-    }
-    active:boolean;
+    addressDetails?:addressDetails
+}
+export interface addressDetails {
+    notes:string,
+    entrance?:string,
+    floor?:number,
+    apartment?:number,
+    buildingName?:string
 }
 
 
@@ -170,9 +170,11 @@ export interface Order {
     selecedProdcuts: Product[],
     totalPrice: PriceObject,
     location: Location.LocationObject,
-    address:Location.LocationGeocodedAddress
+    address:Location.LocationGeocodedAddress,
+    addressDetails?:addressDetails,
     delivery?: ObjectId,
-    status: order_status
+    status: order_status,
+    distance:number
 }
 
 export interface dateObject {

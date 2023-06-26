@@ -134,7 +134,8 @@ export const ViewStore = (props: Props) => {
                     price: 0,
                     currency: "ILS"
                 },
-                address:props.Address
+                address:props.Address,
+                distance:DistanceKm
             }
 
             props.setSavedOrder(neworder);
@@ -237,7 +238,7 @@ export const ViewStore = (props: Props) => {
                     }}>
                         <View onLayout={(e) => {
                             shakeLayoutY = e.nativeEvent.layout.y;
-                        }} style={styles.imageText}><ShakeText TextComponent={Text} duration={200} ref={(ref: ShakeText) => (ShakeRef.current = ref)} style={{ padding: 2 }}>{props.Store.minOrder && "Min Order: " + PriceString(props.Store.minOrder?.price, props.Store.minOrder?.currency) || "Min Order: 0" + getSymbolFromCurrency("ILS")}</ShakeText></View>
+                        }} style={styles.imageText}><ShakeText  TextComponent={Text} duration={200} ref={(ref: ShakeText) => (ShakeRef.current = ref)} style={{ padding: 2 }}>{props.Store.minOrder && "Min Order: " + PriceString(props.Store.minOrder?.price, props.Store.minOrder?.currency) || "Min Order: 0" + getSymbolFromCurrency("ILS")}</ShakeText></View>
                         <View style={styles.imageText}><Text style={{ padding: 2 }} >Delivery: {PriceString(DeliveryFee(DistanceKm), "ILS")}</Text></View>
                     </View>
                 </Animated.View>

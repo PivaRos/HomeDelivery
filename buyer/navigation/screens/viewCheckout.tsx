@@ -46,7 +46,7 @@ export const ViewCheckout = ({ order, setOrder, selectedStore, deliveryLocation,
                     <View style={{ backgroundColor: 'white', height: 20, width: 20, borderRadius: 50, justifyContent: 'center', flexDirection: 'row' }}>
                         {/* this is Store Marker */}
                         <Text style={{ fontWeight: 'bold' }}>
-                            {selectedStore.avgDelivery && selectedStore.avgDelivery || "0"}
+                            {(selectedStore.avgDelivery && order.distance) && selectedStore.avgDelivery*order.distance || "0"}
                         </Text>
                     </View>
                 </Marker>}

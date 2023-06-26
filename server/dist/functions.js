@@ -16,7 +16,7 @@ const getDistance = (Location1, Location2) => {
 exports.getDistance = getDistance;
 const getSeconds = (addDay) => {
     if (addDay)
-        return (+(0, moment_1.default)() - +(0, moment_1.default)().startOf('day')) / 1000 + 86400;
+        return (+(0, moment_1.default)() - +(0, moment_1.default)().startOf('day')) / 1000 + 86400; // returns the current seconed from the start of the day plus one day
     return (+(0, moment_1.default)() - +(0, moment_1.default)().startOf('day')) / 1000;
 };
 exports.getSeconds = getSeconds;
@@ -37,6 +37,7 @@ const timeToSecondsFromStartOfDay = (time, isNextDay) => {
         return asd;
     }
     catch (_a) {
+        return -1;
     }
 };
 exports.timeToSecondsFromStartOfDay = timeToSecondsFromStartOfDay;

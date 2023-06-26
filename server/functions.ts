@@ -13,7 +13,7 @@ export const getDistance = (Location1: Location.LocationObject, Location2: Locat
 }
 
 export const getSeconds = (addDay:boolean) => {
-  if (addDay) return (+moment() - +moment().startOf('day')) / 1000 + 86400;
+  if (addDay) return (+moment() - +moment().startOf('day')) / 1000 + 86400; // returns the current seconed from the start of the day plus one day
   return (+moment() - +moment().startOf('day')) / 1000;
 }
 
@@ -23,7 +23,7 @@ export const isOpen = (openHoursObject:OpenHoursObject, hasCloseNextDay:boolean)
   return false;
 }
 
-export const timeToSecondsFromStartOfDay = (time:string, isNextDay:Boolean) => {
+export const timeToSecondsFromStartOfDay = (time:string, isNextDay:Boolean):number => {
   try{
   var timeAndDate = moment("2023031" + 'T' + time);
   var asd = ((+timeAndDate - +timeAndDate.startOf('day')) / 1000);
@@ -33,6 +33,6 @@ export const timeToSecondsFromStartOfDay = (time:string, isNextDay:Boolean) => {
   }
   return asd;
   }catch{
-
+    return -1;
   }
 }
