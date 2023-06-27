@@ -37,12 +37,16 @@ export const AddressHanddler = ({
         //check for savedAddresses
         checkSavedAddresses();
     }, [])
+    
 
     useEffect(() => {
         try{
-
-            AsyncStorage.setItem("savedAddresses", JSON.stringify(savedAddresses));
+            if(savedAddresses.length > 0)
+            {
+                AsyncStorage.setItem("savedAddresses", JSON.stringify(savedAddresses));
+            }
         }
+
         catch{
 
         }
@@ -89,6 +93,7 @@ export const AddressHanddler = ({
     useEffect(() => {
         if (!toggleOpenAddressList)
         {
+        checkSavedAddresses();
         setListOpened(false);
         animatedToggle.setValue(0);
         }
@@ -143,12 +148,18 @@ export const AddressHanddler = ({
             {
                 found = true;
                 index = index;
+                return;
             }
         })
+        console.log(found);
+        console.log(TempSavedAddresses.length);
         if (found)
         {
             TempSavedAddresses.splice(index, 1);
             
+        }
+        if (TempSavedAddresses.length >= 4){
+            TempSavedAddresses.splice(0,1);
         }
         TempSavedAddresses.push({
             address:address
@@ -191,7 +202,7 @@ export const AddressHanddler = ({
                     
                     <TextInput onChangeText={newtext => setQuery(newtext)} style={{fontSize:18, padding:10}} placeholder='חפש כתובות'/>
                     <ScrollView keyboardShouldPersistTaps="handled">
-                    {(query !== "") && dataArr.map((res, index) => {
+                    {(query != "") && dataArr.map((res, index) => {
                         res = AdpterToGeocodedAddress(res);
                         return (<View  key={index}  style={{justifyContent:"center", flexDirection:'row', width:'100%'}}><Pressable style={{width:'50%'}} onPress={() => addressChoosen(res)}>
                         <Text style={{padding:5, textAlign:'center'}}>{res.street + " " + res.streetNumber + " " + res.city}</Text>
