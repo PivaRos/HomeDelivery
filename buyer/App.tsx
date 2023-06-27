@@ -125,7 +125,7 @@ export default function App() {
               onPress={() => setToggleOpenAddressList(false)}
               style={{
                 backgroundColor:'black',
-                  height:windowHeight-230,
+                  height:windowHeight-330,
                   width:'100%',
                   opacity:0.5,
                   bottom:0,

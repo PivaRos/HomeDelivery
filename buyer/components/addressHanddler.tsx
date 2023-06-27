@@ -108,7 +108,7 @@ export const AddressHanddler = ({
 
     const heightIntepulation = animatedToggle.interpolate({
         inputRange:[0,1],
-        outputRange:[30, 150]
+        outputRange:[30, 250]
     })
 
     const fillter = (query:string):string => {
@@ -187,7 +187,7 @@ export const AddressHanddler = ({
                 <View style={styles.anotherView}>
 
                     {address && <Text style={{textAlign:'center', width:'100%'}}>{address.street + " " + address.streetNumber + " " + address.city}</Text>}
-                    {usingCurrent && <Text style={{ fontWeight: 'bold' }}> (current)</Text>}
+                    {usingCurrent && <Text style={{ fontWeight: 'bold' }}> (Current Location)</Text>}
                 </View>
                 {listOpened && <View style={{
                     height: 250,
@@ -200,19 +200,22 @@ export const AddressHanddler = ({
                 }}>
                     <View style={{width:'100%', justifyContent:'center', flexDirection:'column'}}>
                     
-                    <TextInput onChangeText={newtext => setQuery(newtext)} style={{fontSize:18, padding:10}} placeholder='חפש כתובות'/>
+                    <TextInput onChangeText={newtext => setQuery(newtext)} style={{fontSize:18, padding:10, direction:'rtl', width:"100%"}} placeholder='חפש כתובות'/>
                     <ScrollView keyboardShouldPersistTaps="handled">
-                    {(query != "") && dataArr.map((res, index) => {
+                    {(query !== "" && query !== undefined) && dataArr.map((res, index) => {
                         res = AdpterToGeocodedAddress(res);
-                        return (<View  key={index}  style={{justifyContent:"center", flexDirection:'row', width:'100%'}}><Pressable style={{width:'50%'}} onPress={() => addressChoosen(res)}>
-                        <Text style={{padding:5, textAlign:'center'}}>{res.street + " " + res.streetNumber + " " + res.city}</Text>
+                        return (<View  key={index}  style={styles.addressView}><Pressable style={{width:'50%'}} onPress={() => addressChoosen(res)}>
+                        <Text style={styles.addressText}>{res.street + " " + res.streetNumber + " " + res.city}</Text>
                         </Pressable></View>)
                     }) ||
                     savedAddresses && savedAddresses.map((address, index) => {
-                        return (<View key={index} style={{justifyContent:"center", flexDirection:'row', width:'100%'}}><Pressable style={{width:'50%'}} onPress={() => addressChoosen(address.address)}>
-                        <Text style={{padding:5, textAlign:'center'}}>{address.address.street + " " + address.address.streetNumber + " " + address.address.city}</Text>
-                        {(savedAddresses.length === (index +1)) && <Text style={{color:"green"}}>{"(נוכחי)"}</Text>}
-                        </Pressable></View>)
+                        return (
+                        <View key={index} style={styles.addressView}>
+                            <Pressable style={{width:'100%', flexDirection:'row', direction:'rtl'}} onPress={() => addressChoosen(address.address)}>
+                                <Text style={styles.addressText}>{address.address.street + " " + address.address.streetNumber + " " + address.address.city}</Text>
+                                {(savedAddresses.length === (index +1)) && <Text style={{color:"green", top:5}}>{"(נוכחי)"}</Text>}
+                            </Pressable>
+                        </View>)
 
     
                     })
@@ -241,8 +244,30 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     openedView:{
-        height:200,
+        height:300,
         width:"100%"
+    },
+    addressText:{
+        padding:3,
+        textAlign:'center',
+        fontSize:16,
+        width:"100%"
+    },
+    addressView:{
+        backgroundColor:'lightgreen',
+        justifyContent:"center",
+        width:'100%',
+        height:50,
+        padding:4,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 6,
+        },
+        shadowOpacity: 0.37,
+        shadowRadius: 7.49,
+        
+        elevation: 12,
     }
     
 })
