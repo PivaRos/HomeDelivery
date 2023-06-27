@@ -1,13 +1,15 @@
 import { ObjectId } from "mongodb";
 import { uri } from "../envVars";
-import { dataObject, dateObject, LocationObject, store_category } from "../interfaces";
+import { dataObject, dateObject, store_category } from "../interfaces";
+import * as Location from 'expo-location';
 
 let url = uri;
 
 
 
 export const storeActions =  {
-    GetStores : (async (location:LocationObject, store_category:store_category) => {
+    GetStores : (async (location:Location.LocationObject, store_category:store_category) => {
+      console.log(location);
     try{
       const response = await fetch(url+"publicbuyer/get/stores", {
         headers: {
