@@ -1,6 +1,6 @@
 
 import * as Location from 'expo-location';
-import { Order, PriceObject, Product, StorageData, Store, optionProduct } from './interfaces';
+import { Order, PriceObject, Product, StorageData, Store, govAddress, optionProduct } from './interfaces';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Notifications from 'expo-notifications';
 import { ObjectId } from 'mongodb';
@@ -146,3 +146,13 @@ export const getPricePerUnit = (Product: Product) => {
   }
   return pricePerUnit;
 }
+
+export const AdpterToGeocodedAddress = (GovAddress:govAddress, query:string) => {
+  return {
+      city:GovAddress.שם_ישוב,
+      country:'Israel',
+      isoCountryCode:"IL",
+      street:GovAddress.שם_רחוב,
+      streetNumber:query.replace(/^\D+/g, ''),
+  } as Location.LocationGeocodedAddress
+}// converts Gov return data to own Type

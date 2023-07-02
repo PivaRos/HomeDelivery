@@ -6,6 +6,7 @@ import { GovAddressUri } from '../envVars';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { savedAddress } from '../interfaces';
 import { addAddress } from '../addressesFunctions';
+import { AdpterToGeocodedAddress } from '../functions';
 
 interface Props {
     address: LocationGeocodedAddress | undefined;
@@ -123,7 +124,6 @@ export const AddressHanddler = ({
         fetch(GovAddressUri+fillteredQuery).then(res => {
             res.json().then((data) => {
                 setDataArr(data.result.records);
-                console.log(data.result.records);
             })
         })
     }
@@ -151,16 +151,7 @@ export const AddressHanddler = ({
 
     }
 
-    const AdpterToGeocodedAddress = (GovAddress:any) => {
-        return {
-            city:GovAddress.שם_ישוב,
-            country:'Israel',
-            isoCountryCode:"IL",
-            street:GovAddress.שם_רחוב,
-            streetNumber:query.replace(/^\D+/g, ''),
-        } as Location.LocationGeocodedAddress
-    }// converts Gov return data to own Type
-    
+
 
     return (
         <Animated.View style={[{height: 30, backgroundColor: 'lightgreen' }, {height:heightIntepulation}]}>
@@ -184,7 +175,7 @@ export const AddressHanddler = ({
                     <TextInput onChangeText={newtext => setQuery(newtext)} style={{fontSize:18, padding:10, direction:'rtl', width:"100%"}} placeholder='חפש כתובות'/>
                     <ScrollView keyboardShouldPersistTaps="handled">
                     {(query !== "" && query !== undefined) && dataArr.map((res, index) => {
-                        res = AdpterToGeocodedAddress(res);
+                        res = AdpterToGeocodedAddress(res, query);
                         return (<View  key={index}  style={styles.addressView}><Pressable style={{width:'50%'}} onPress={() => addressChoosen(res)}>
                         <Text style={styles.addressText}>{res.street + " " + res.streetNumber + " " + res.city}</Text>
                         </Pressable></View>)

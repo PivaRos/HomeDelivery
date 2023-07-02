@@ -144,6 +144,11 @@ export interface addressDetails {
     buildingName?:string
 }
 
+export interface govAddress {
+    שם_ישוב:string
+    שם_רחוב:string
+}
+
 
 
 export interface Account {
