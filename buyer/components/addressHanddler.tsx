@@ -5,6 +5,7 @@ import { LocationGeocodedAddress } from 'expo-location';
 import { GovAddressUri } from '../envVars';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { savedAddress } from '../interfaces';
+import { addAddress } from '../addressesFunctions';
 
 interface Props {
     address: LocationGeocodedAddress | undefined;
@@ -140,31 +141,11 @@ export const AddressHanddler = ({
     const addressChoosen = (address:Location.LocationGeocodedAddress) => {
         setLoading(true);
         setAddress(address);
-        let found  = false;
-        let index = -1;
-        const TempSavedAddresses = JSON.parse(JSON.stringify(savedAddresses)) as savedAddress[];
-        TempSavedAddresses.map((CheckAddress, index) => {
-            if (JSON.stringify(CheckAddress.address) === JSON.stringify(address))
-            {
-                found = true;
-                index = index;
-                return;
-            }
-        })
-        console.log(found);
-        console.log(TempSavedAddresses.length);
-        if (found)
-        {
-            TempSavedAddresses.splice(index, 1);
-            
-        }
-        if (TempSavedAddresses.length >= 4){
-            TempSavedAddresses.splice(0,1);
-        }
-        TempSavedAddresses.push({
-            address:address
-        })
-        setSavedAddresses(TempSavedAddresses);
+        //!!
+        setSavedAddresses(savedAddresses => {
+            return addAddress(savedAddresses, {address:address})
+        });
+        // !!
         AddressPressed();
         setLoading(false);
 

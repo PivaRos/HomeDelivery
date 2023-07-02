@@ -57,13 +57,13 @@ return (
              
             
             </ScrollView> 
-            || (<Text style={{textAlign:'center', fontSize:19, padding:20, width:'100%', position:'absolute'}} numberOfLines={3}>
+            || ( !loading && (<Text style={{textAlign:'center', fontSize:19, padding:20, width:'100%', position:'absolute'}} numberOfLines={3}>
                 Oops, Looks Like At This Moment{"\n"}
                 There Is No Stores Delivering{"\n"}
                 To Your Location{"\n"}
             </Text>
 
-            &&<View style={{justifyContent:'center',flexDirection:'row'}}><SvgXml style={{position:'absolute', top:200}} xml={sadSVG}/></View> )
+            &&<View style={{justifyContent:'center',flexDirection:'row'}}><SvgXml style={{position:'absolute', top:200}} xml={sadSVG}/></View> ))
             }
             </View>)
     

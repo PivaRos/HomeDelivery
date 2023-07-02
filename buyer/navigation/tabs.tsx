@@ -62,7 +62,7 @@ const Tab = createBottomTabNavigator();
         })}>
           <Tab.Screen options={{title:"Food", tabBarActiveTintColor:"black"}} name='Stores' children={() =>  <FoodStores setSavedOrder={props.setSavedOrder} refreshing={props.refreshing} savedOrder={props.savedOrder} setSelectedStore={props.setSelectedStore} setFoodStores={props.setFoodStores} foodStores={props.foodStores} deliveryLocation={props.deliveryLocation} />} />
           <Tab.Screen options={{title:"HomeMade", tabBarActiveTintColor:"black"}} name='Home' children={() => <HomeMadeStores savedOrder={props.savedOrder} setSavedOrder={props.setSavedOrder} refreshing={props.refreshing} setSelectedStore={props.setSelectedStore} setHomeMadeStores={props.setHomeMadeStores} homeMadeStores={props.homeMadeStores} deliveryLocation={props.deliveryLocation} />}  />
-          <Tab.Screen options={{title:"MyOrders", tabBarActiveTintColor:"black"}} name='Orders' children={() => <OrdersScreen Stores={props.foodStores} deliveryLocation={props.deliveryLocation} />} />
+          <Tab.Screen options={{title:"MyOrders", tabBarActiveTintColor:"black"}} name='Orders' children={() => <OrdersScreen deliveryLocation={props.deliveryLocation} />} />
           <Tab.Screen options={{title:"Account", tabBarActiveTintColor:"black"}} name='Account' children={() => <Account Stores={props.foodStores} deliveryLocation={props.deliveryLocation} />} />
         </Tab.Navigator>);
 
