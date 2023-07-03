@@ -83,6 +83,7 @@ useEffect(() => {
 
 
 
+
 return (
     <View>
         <Text style={[ styles.title,{left:0, width:"100%", fontSize:22, padding:2}]}>Request Delivery {"(:"}</Text>
@@ -119,12 +120,16 @@ return (
                 value={fromDestinationQuery}
                 onChangeText={(text:string) => setFromDestinationQuery(text)}
                 onFocus={() => setFromFocus(true)}
-                onBlur={() => setFromFocus(false)}
+                onBlur={() => setTimeout(() => setFromFocus(false), 50)}
                 />
                 {FromFocus && fromResults.length > 0 && fromDestinationQuery!== "" &&
-                    <View>
+                    <View style={{backgroundColor:'white', zIndex:10}}>
                         {fromResults.map((address, index) => {
-                            return (<Pressable style={{
+                            return (<Pressable onPressIn={() => {
+                                console.log(address);
+                                setFromDestination(address);
+                                setFromDestinationQuery(address.street + " " + address.streetNumber + " " + address.city)
+                            }} style={{
                                 width:"100%", 
                                 zIndex:11,
                                 padding:4
@@ -151,13 +156,17 @@ return (
                 value={toDestinationQuery}
                 onChangeText={(text:string) => setToDestinationQuery(text)}
                 onFocus={() => setToFocus(true)}
-                onBlur={() => setToFocus(false)}
+                onBlur={() => setTimeout(() => setToFocus(false), 50)}
                 />
 
                 {ToFocus && toResults.length > 0 && toDestinationQuery!== "" &&
-                    <View>
+                    <View style={{zIndex:10, backgroundColor:"white"}}>
                         {toResults.map((address, index) => {
-                            return (<Pressable style={{
+                            return (<Pressable onPressIn={() => {
+                                console.log(address);
+                                setToDestination(address);
+                                setToDestinationQuery(address.street + " " + address.streetNumber + " " + address.city);
+                            }} style={{
                                 width:"100%", 
                                 zIndex:11,
                                 padding:4
@@ -169,6 +178,11 @@ return (
                     </View>}
             </View>
         </View>
+        {(toDestination && fromDestination) && <Pressable onPress={() => {
+            console.log("pressed");
+        }} style={{width:'100%', padding:15}}>
+                        <Text style={{width:'100%', textAlign:'center'}}>Next</Text>
+        </Pressable>}
     </View>
 );
 }
