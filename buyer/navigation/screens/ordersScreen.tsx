@@ -24,6 +24,8 @@ const OrdersScreen = (props:Props) => {
 
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
+    const [distance , setDistance ] = useState(0);
+
     const [fromDestinationQuery, setFromDestinationQuery] = useState<string>("");
     const [toDestinationQuery, setToDestinationQuery] = useState<string>("");
 
@@ -145,6 +147,7 @@ useEffect(() => {
             },
             timestamp:Date.now()
         })
+        setDistance(distance);
 
         MapRef.current.fitToSuppliedMarkers(["toMarker", "fromMarker"], {animated:true})
 
@@ -316,7 +319,7 @@ return (
         {(toDestination && fromDestination) && <View style={{width:"100%", justifyContent:'center', flexDirection:'row', padding:10}}><Pressable disabled={!canStart()} onPress={() => {
             navigation.navigate("ViewDeliveryLoading", {id:6})
         }} style={{width:(fromLocation && toLocation) ? '90%' : "70%", padding:15, backgroundColor:'lightgreen', borderRadius:10, opacity:canStart() ? 1 : 0.7}}>
-                        <Text style={{width:'100%', textAlign:'center', fontSize:canStart() ? 20 : 18, }}>{canStart() ? "בקש משלוח" : "נא בחר את היעדים"}</Text>
+                        <Text style={{width:'100%', textAlign:'center', fontSize:canStart() ? 20 : 18, }}>{canStart() ? " בקש משלוח " : "נא בחר את היעדים"} {canStart() ?<Text style={{fontSize:16}}>{canStart() ? + Math.round(distance*10)/10 + ' ק"מ ': ""}</Text> : ""}</Text>
         </Pressable></View>}
         <View>
             <MapView
