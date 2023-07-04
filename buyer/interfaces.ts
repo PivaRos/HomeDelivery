@@ -21,6 +21,7 @@ export type RootStackParamList = {
     ViewOrder: { id: number } | undefined;
     ViewProduct: { id: number } | undefined
     tabs: { id: number } | undefined;
+    ViewDeliveryLoading:{ id: number } | undefined;
 };
 
 

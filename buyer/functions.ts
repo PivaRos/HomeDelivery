@@ -148,11 +148,17 @@ export const getPricePerUnit = (Product: Product) => {
 }
 
 export const AdpterToGeocodedAddress = (GovAddress:govAddress, query:string) => {
+  const number  = query.match(/\d+/);
+  let streetnm = null;
+  if (number)
+  {
+    streetnm = number[0];
+  }
   return {
       city:GovAddress.שם_ישוב,
       country:'Israel',
       isoCountryCode:"IL",
       street:GovAddress.שם_רחוב,
-      streetNumber:query.replace(/^\D+/g, ''),
+      streetNumber:streetnm? streetnm : "",
   } as Location.LocationGeocodedAddress
 }// converts Gov return data to own Type

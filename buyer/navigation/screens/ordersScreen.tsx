@@ -1,33 +1,89 @@
-import { Pressable, StyleSheet, Text, TextInput, View, NativeUIEvent  } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View, NativeUIEvent, ScrollView, Dimensions  } from 'react-native';
 import * as React from 'react'
-import { availableStores, govAddress, Pages } from '../../interfaces';
+import { availableStores, govAddress, Pages, RootStackParamList } from '../../interfaces';
 import * as Location from 'expo-location';
-import { StackRouter } from '@react-navigation/native';
+import { StackRouter, useNavigation } from '@react-navigation/native';
 import { Fumi, Akira } from 'react-native-textinput-effects';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { GovAddressUri } from '../../envVars';
-import { AdpterToGeocodedAddress } from '../../functions';
+import { AdpterToGeocodedAddress, getDistance } from '../../functions';
+import MapView, { MapMarker, Marker, Polyline } from 'react-native-maps';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 
 interface Props {
-    location:Location.LocationObject;
   }
 
 const OrdersScreen = (props:Props) => {
+
+    const windowWidth = Dimensions.get('window').width;
+    const windowHeight = Dimensions.get('window').height;
+
+    const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+
     const [fromDestinationQuery, setFromDestinationQuery] = useState<string>("");
     const [toDestinationQuery, setToDestinationQuery] = useState<string>("");
 
-    const [fromDestination, setFromDestination] = useState<Location.LocationGeocodedAddress>();
-    const [toDestination, setToDestination] = useState<Location.LocationGeocodedAddress>();
+    const [fromDestination, setFromDestination] = useState<Location.LocationGeocodedAddress>({
+        city:null,
+        country:null, 
+        district:null,
+        isoCountryCode:null, 
+        name:null,
+        postalCode:null,
+        region:null,
+        street:null, 
+        streetNumber:null,
+        subregion:null, 
+        timezone:null,
+    });
+    const [toDestination, setToDestination] = useState<Location.LocationGeocodedAddress>({
+        city:null,
+        country:null, 
+        district:null,
+        isoCountryCode:null, 
+        name:null,
+        postalCode:null,
+        region:null,
+        street:null, 
+        streetNumber:null,
+        subregion:null, 
+        timezone:null,
+    });
 
     const [FromFocus, setFromFocus] = useState<boolean>(false);
     const [ToFocus, setToFocus] = useState<boolean>(false);
 
     const [fromResults, setFromResults] = useState<Location.LocationGeocodedAddress[]>([])
     const [toResults, setToResults] = useState<Location.LocationGeocodedAddress[]>([])
+
+
+    const [fromLocation, setFromLocation] = useState<Location.LocationGeocodedLocation>();
+    const [toLocation, setToLocation] = useState<Location.LocationGeocodedLocation>();
+
+    const MapRef = useRef<MapView>();
+    const FromMarkerRef = useRef<MapMarker>()
+    const ToMarkerRef = useRef<MapMarker>()
+
+
+    //when user picks address from list
+    useEffect(() => {
+        (async() => {
+        if (fromDestination){
+            const PossibleFromLocations = await Location.geocodeAsync(fromDestination.street + " " + fromDestination.streetNumber + " " + fromDestination.city)
+            setFromLocation(PossibleFromLocations[0])
+            console.log(PossibleFromLocations[0])
+        }
+        if (toDestination){
+            const PossibleToLocations = await Location.geocodeAsync(toDestination.street + " " + toDestination.streetNumber + " " + toDestination.city)
+            setToLocation(PossibleToLocations[0])
+            console.log(PossibleToLocations[0])
+        }
+    })();
+    }, [fromDestination, toDestination])
 
 const SwitchDestinations = () => {
     if (fromDestinationQuery !== "" || toDestinationQuery !== "")
@@ -37,8 +93,71 @@ const SwitchDestinations = () => {
 
         setFromDestinationQuery(TToDestinationQuery);
         setToDestinationQuery(TFromDestinationQuery);
+
+        const TFromResults = fromResults
+        const TToResults = toResults
+
+        setToResults(TFromResults)
+        setFromResults(TToResults)
+
+        const TfromDestination = fromDestination
+        const TtoDestination = toDestination
+
+        setFromDestination(TtoDestination);
+        setToDestination(TfromDestination);
+
     }
 }
+
+
+useEffect(() => {
+    if (!MapRef.current || !fromLocation || !toLocation ) return
+        let LatMiddle = (+fromLocation.latitude+toLocation.latitude)/2
+        let lonMiddle = (+fromLocation.longitude+toLocation.longitude)/2
+        // MapRef.current.animateToRegion({
+        //     latitude:LatMiddle,
+        //     longitude:lonMiddle,
+        //     latitudeDelta:0,
+        //     longitudeDelta:0
+        // }, 2200)
+        const distance = getDistance({
+            coords:{
+                latitude:fromLocation.latitude, 
+                longitude:fromLocation.longitude,
+                accuracy:null,
+                altitude:0,
+                altitudeAccuracy:null,
+                heading:null,
+                speed:null
+            },
+            timestamp:Date.now()
+
+        }, 
+        {
+            coords:{
+                latitude:toLocation.latitude, 
+                longitude:toLocation.longitude,
+                accuracy:null,
+                altitude:0,
+                altitudeAccuracy:null,
+                heading:null,
+                speed:null
+            },
+            timestamp:Date.now()
+        })
+
+        MapRef.current.fitToSuppliedMarkers(["toMarker", "fromMarker"], {animated:true})
+
+        MapRef.current.animateCamera({
+            altitude:distance*2500,
+            center:{latitude:LatMiddle, longitude:lonMiddle},
+
+        }, {
+            duration:2200
+        })
+
+
+}, [fromLocation, toLocation])
 
 const fillter = (query:string):string => {
     var withNoDigits = query.replace(/[0-9]/g, '');
@@ -82,7 +201,15 @@ useEffect(() => {
 }, [toDestinationQuery]) // triggers the search after 300ms;
 
 
-
+const canStart = ():boolean => {
+    if (fromLocation && toLocation && (toDestinationQuery === toDestination.street + " " + toDestination.streetNumber + " " + toDestination.city) && (fromDestinationQuery === fromDestination.street + " " + fromDestination.streetNumber + " " + fromDestination.city))
+    {
+        return true;
+    }
+    else{
+        return false;
+    }
+}
 
 return (
     <View>
@@ -121,24 +248,32 @@ return (
                 onChangeText={(text:string) => setFromDestinationQuery(text)}
                 onFocus={() => setFromFocus(true)}
                 onBlur={() => setTimeout(() => setFromFocus(false), 50)}
+                
                 />
-                {FromFocus && fromResults.length > 0 && fromDestinationQuery!== "" &&
-                    <View style={{backgroundColor:'white', zIndex:10}}>
+                {(FromFocus || fromResults.length > 0) && fromDestinationQuery.length > 3 && (fromDestinationQuery !== fromDestination.street + " " + fromDestination.streetNumber + " " + fromDestination.city) && 
+                    <ScrollView
+                     style={{
+                        backgroundColor:'white', 
+                        zIndex:101
+                    }}
+                    keyboardShouldPersistTaps={'handled'}
+                    >
                         {fromResults.map((address, index) => {
-                            return (<Pressable onPressIn={() => {
-                                console.log(address);
+                            return (<Pressable onPress={() => {
                                 setFromDestination(address);
                                 setFromDestinationQuery(address.street + " " + address.streetNumber + " " + address.city)
                             }} style={{
                                 width:"100%", 
-                                zIndex:11,
-                                padding:4
+                                zIndex:101,
+                                padding:4,
+                                height:30,
+
                                 }} 
                                 key={index}>
                                 <Text style={{textAlign:'center'}}>{address.street + " " + address.streetNumber + " " + address.city}</Text>
                             </Pressable>)
                         })}
-                    </View>}
+                    </ScrollView>}
 
                 <Fumi
                 iconName='delivery-dining'
@@ -159,30 +294,88 @@ return (
                 onBlur={() => setTimeout(() => setToFocus(false), 50)}
                 />
 
-                {ToFocus && toResults.length > 0 && toDestinationQuery!== "" &&
-                    <View style={{zIndex:10, backgroundColor:"white"}}>
+                {(ToFocus || toResults.length > 0) && toDestinationQuery.length > 3 && ( toDestinationQuery !== toDestination.street + " " + toDestination.streetNumber + " " + toDestination.city) &&
+                    <ScrollView style={{zIndex:10, backgroundColor:"white"}}>
                         {toResults.map((address, index) => {
-                            return (<Pressable onPressIn={() => {
-                                console.log(address);
+                            return (<Pressable onPress={() => {
                                 setToDestination(address);
                                 setToDestinationQuery(address.street + " " + address.streetNumber + " " + address.city);
                             }} style={{
                                 width:"100%", 
-                                zIndex:11,
-                                padding:4
+                                zIndex:101,
+                                padding:4,
+                                height:30
                                 }} 
                                 key={index}>
                                 <Text style={{textAlign:'center'}}>{address.street + " " + address.streetNumber + " " + address.city}</Text>
                             </Pressable>)
                         })}
-                    </View>}
+                    </ScrollView>}
             </View>
         </View>
-        {(toDestination && fromDestination) && <Pressable onPress={() => {
-            console.log("pressed");
-        }} style={{width:'100%', padding:15}}>
-                        <Text style={{width:'100%', textAlign:'center'}}>Next</Text>
-        </Pressable>}
+        {(toDestination && fromDestination) && <View style={{width:"100%", justifyContent:'center', flexDirection:'row', padding:10}}><Pressable disabled={!canStart()} onPress={() => {
+            navigation.navigate("ViewDeliveryLoading", {id:6})
+        }} style={{width:(fromLocation && toLocation) ? '90%' : "70%", padding:15, backgroundColor:'lightgreen', borderRadius:10, opacity:canStart() ? 1 : 0.7}}>
+                        <Text style={{width:'100%', textAlign:'center', fontSize:canStart() ? 20 : 18, }}>{canStart() ? "בקש משלוח" : "נא בחר את היעדים"}</Text>
+        </Pressable></View>}
+        <View>
+            <MapView
+                style={{width:"100%", height:windowHeight-435}}
+                ref={(ref) => MapRef.current = ref || undefined}
+                initialCamera={{
+                    center:{latitude:32.0461, longitude:34.8516},
+                    altitude:30000,
+                    heading:1,
+                    pitch:1
+
+                }}
+            >
+            {fromLocation && <Marker ref={(ref) => FromMarkerRef.current = ref || undefined} coordinate={{
+                    latitude:fromLocation.latitude,
+                    longitude:fromLocation.longitude
+                }}
+                focusable
+                identifier={'fromMarker'}
+                >
+                <View style={{
+                    height:10,
+                    width:10,
+                    backgroundColor:'#00ff00',
+                    borderRadius:10
+                }}>
+
+                </View>
+                </Marker>}
+
+            {toLocation && <Marker ref={(ref) => ToMarkerRef.current = ref || undefined} coordinate={{
+                    latitude:toLocation.latitude,
+                    longitude:toLocation.longitude,
+                }}
+                focusable
+                identifier={'toMarker'}
+                >
+                <View style={{
+                    height:10,
+                    width:10,
+                    backgroundColor:'#00ff00',
+                    borderRadius:10
+                }}>
+
+                </View>
+                </Marker>}
+
+            { toLocation && fromLocation && <Polyline
+                coordinates={[
+                    {latitude: fromLocation.latitude, longitude: fromLocation.longitude}, // optional
+                    {latitude: toLocation.latitude, longitude: toLocation.longitude} // optional
+                ]}
+                strokeWidth={4}
+                strokeColor='white'
+            />
+
+            }
+            </MapView>
+        </View>
     </View>
 );
 }

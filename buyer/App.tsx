@@ -18,6 +18,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { ViewProduct } from './navigation/screens/viewProduct';
 import { ViewOrder } from './navigation/screens/viewOrder';
 import { ViewCheckout } from './navigation/screens/viewCheckout';
+import { ViewDeliveryLoading } from './navigation/screens/viewDeliveryLoading';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -143,6 +144,7 @@ export default function App() {
               {savedOrder && <Stack.Screen name='ViewCheckout' children={() => <ViewCheckout savedAddresses={savedAddresses} deliveryLocation={deliveryLoction} setDeliveryLocation={setDeliveryLoction} selectedStore={selectedStore} setOrder={setSavedOrder} order={savedOrder} />} />}
               {!selectedProduct && <Stack.Screen name='ViewProduct' children={() => <View>
                 <Text>asdasd</Text></View>} />}
+              <Stack.Screen name='ViewDeliveryLoading' children={() => <ViewDeliveryLoading/>}/>
             </Stack.Navigator>
           </NavigationContainer>
         </ScrollView>
