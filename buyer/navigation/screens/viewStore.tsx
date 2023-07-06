@@ -10,6 +10,11 @@ import getSymbolFromCurrency from "currency-symbol-map";
 import { SvgXml } from "react-native-svg";
 import ShakeText from "react-native-shake-text";
 import * as Location from 'expo-location';
+import Entypo from 'react-native-vector-icons/Entypo';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+
+
+
 
 interface Props {
     Store: Store;
@@ -249,8 +254,8 @@ export const ViewStore = (props: Props) => {
 
 
                         <Animated.View style={[styles.storeInfo, { opacity: opacityOff }]}>
-                            {DistanceKm > 1 && <View style={styles.detailsView}><Text style={styles.detailsText}><SvgXml style={{ height: 16, marginTop: -2 }} height={16} width={16} xml={timeSvg} /> {" " + OpenDateString + " - " + CloseDateString}</Text><Text style={styles.detailsText}><SvgXml style={{ height: 16, marginTop: -3, paddingRight: 10 }} height={16} width={16} xml={DistanceSvg} /> {" " + Math.round(getDistance(props.Store.location, props.deliveryLocation)) + " km"}</Text></View>}
-                            {DistanceKm < 1 && <View style={styles.detailsView}><Text style={styles.detailsText}><SvgXml style={{ height: 16 }} height={16} width={16} xml={timeSvg} />{OpenDateString + " - " + CloseDateString}</Text><Text style={styles.detailsText}><SvgXml style={{ height: 16, marginTop: -3, paddingRight: 10 }} height={16} width={16} xml={DistanceSvg} /> {" " + Math.round(getDistance(props.Store.location, props.deliveryLocation)) * 1000 + " m"}</Text></View>}
+                            {DistanceKm > 1 && <View style={styles.detailsView}><Text style={styles.detailsText}><Entypo color={"green"} size={20} name="back-in-time" /> {" " + OpenDateString + " - " + CloseDateString}</Text><Text style={styles.detailsText}><MaterialCommunityIcons color={"green"} name='map-marker-distance' size={20}/> {" " + Math.round(getDistance(props.Store.location, props.deliveryLocation)) + " km"}</Text></View>}
+                            {DistanceKm < 1 && <View style={styles.detailsView}><Text style={styles.detailsText}><Entypo color={"green"} size={20} name="back-in-time" />{OpenDateString + " - " + CloseDateString}</Text><Text style={styles.detailsText}><MaterialCommunityIcons color={"green"} name='map-marker-distance' size={20}/>  {" " + Math.round(getDistance(props.Store.location, props.deliveryLocation)) * 1000 + " m"}</Text></View>}
                         </Animated.View>
                     </View>
                     {arrayOfProducts.map((categoryname, index) => {
@@ -316,10 +321,12 @@ const styles = StyleSheet.create({
     },
     detailsView: {
         display: 'flex',
+        marginTop:4
     },
     detailsText: {
-        marginTop: 6,
+        fontSize:16,
         marginRight: 5,
+        padding:4,
     },
     backButtonText: {
         fontSize: 16,

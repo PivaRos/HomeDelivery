@@ -7,6 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { savedAddress } from '../interfaces';
 import { addAddress } from '../addressesFunctions';
 import { AdpterToGeocodedAddress } from '../functions';
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 interface Props {
     address: LocationGeocodedAddress | undefined;
@@ -174,18 +175,20 @@ export const AddressHanddler = ({
                     
                     <TextInput onChangeText={newtext => setQuery(newtext)} style={{fontSize:18, padding:10, direction:'rtl', width:"100%"}} placeholder='חפש כתובות'/>
                     <ScrollView keyboardShouldPersistTaps="handled">
-                    {(query !== "" && query !== undefined) && dataArr.map((res, index) => {
+                    {(query !== "" && query !== undefined && query.length > 3) && dataArr.map((res, index) => {
                         res = AdpterToGeocodedAddress(res, query);
-                        return (<View  key={index}  style={styles.addressView}><Pressable style={{width:'50%'}} onPress={() => addressChoosen(res)}>
-                        <Text style={styles.addressText}>{res.street + " " + res.streetNumber + " " + res.city}</Text>
-                        </Pressable></View>)
+                        return (<View  key={index}  style={styles.addressView}>
+                            <Pressable style={{width:'100%'}} onPress={() => addressChoosen(res)}>
+                                <Text style={styles.addressText}>{res.street + " " + res.streetNumber + " " + res.city}</Text>
+                            </Pressable>
+                        </View>)
                     }) ||
-                    savedAddresses && savedAddresses.map((address, index) => {
+                    (savedAddresses) && savedAddresses.map((address, index) => {
                         return (
                         <View key={index} style={styles.addressView}>
                             <Pressable style={{width:'100%', flexDirection:'row', direction:'rtl'}} onPress={() => addressChoosen(address.address)}>
-                                <Text style={styles.addressText}>{address.address.street + " " + address.address.streetNumber + " " + address.address.city}</Text>
-                                {(savedAddresses.length === (index +1)) && <Text style={{color:"green", top:5}}>{"(נוכחי)"}</Text>}
+                                <Text style={styles.addressText}>{address.address.street + " " + address.address.streetNumber + " " + address.address.city} <MaterialCommunityIcons size={16} color={"green"} name='history'/></Text>
+                                {(savedAddresses.length === (index +1)) && <Text style={{color:"green", top:5, right:0, position:'absolute'}}>{"(נוכחי)"}</Text>}
                             </Pressable>
                         </View>)
 
