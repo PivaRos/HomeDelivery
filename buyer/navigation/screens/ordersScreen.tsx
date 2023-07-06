@@ -14,10 +14,28 @@ import MapView, { MapMarker, Marker, Polyline } from 'react-native-maps';
 import { StackNavigationProp } from '@react-navigation/stack';
 
 
-interface Props {
-  }
 
-const OrdersScreen = (props:Props) => {
+interface Props {
+    fromDestination:Location.LocationGeocodedAddress,
+    toDestination:Location.LocationGeocodedAddress,
+    fromLocation:Location.LocationGeocodedLocation| undefined,
+    toLocation:Location.LocationGeocodedLocation | undefined,
+    setFromDestination:React.Dispatch<React.SetStateAction<Location.LocationGeocodedAddress>>,
+    setToDestination:React.Dispatch<React.SetStateAction<Location.LocationGeocodedAddress>>,
+    setFromLocation:React.Dispatch<React.SetStateAction<Location.LocationGeocodedLocation | undefined>>,
+    setToLocation:React.Dispatch<React.SetStateAction<Location.LocationGeocodedLocation | undefined>>
+}
+
+const OrdersScreen = ({
+    fromDestination,
+    toDestination,
+    fromLocation,
+    toLocation,
+    setFromDestination,
+    setToDestination,
+    setFromLocation,
+    setToLocation
+}:Props) => {
 
     const windowWidth = Dimensions.get('window').width;
     const windowHeight = Dimensions.get('window').height;
@@ -29,42 +47,12 @@ const OrdersScreen = (props:Props) => {
     const [fromDestinationQuery, setFromDestinationQuery] = useState<string>("");
     const [toDestinationQuery, setToDestinationQuery] = useState<string>("");
 
-    const [fromDestination, setFromDestination] = useState<Location.LocationGeocodedAddress>({
-        city:null,
-        country:null, 
-        district:null,
-        isoCountryCode:null, 
-        name:null,
-        postalCode:null,
-        region:null,
-        street:null, 
-        streetNumber:null,
-        subregion:null, 
-        timezone:null,
-    });
-    const [toDestination, setToDestination] = useState<Location.LocationGeocodedAddress>({
-        city:null,
-        country:null, 
-        district:null,
-        isoCountryCode:null, 
-        name:null,
-        postalCode:null,
-        region:null,
-        street:null, 
-        streetNumber:null,
-        subregion:null, 
-        timezone:null,
-    });
-
     const [FromFocus, setFromFocus] = useState<boolean>(false);
     const [ToFocus, setToFocus] = useState<boolean>(false);
 
     const [fromResults, setFromResults] = useState<Location.LocationGeocodedAddress[]>([])
     const [toResults, setToResults] = useState<Location.LocationGeocodedAddress[]>([])
 
-
-    const [fromLocation, setFromLocation] = useState<Location.LocationGeocodedLocation>();
-    const [toLocation, setToLocation] = useState<Location.LocationGeocodedLocation>();
 
     const MapRef = useRef<MapView>();
     const FromMarkerRef = useRef<MapMarker>()

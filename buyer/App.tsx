@@ -40,6 +40,37 @@ export default function App() {
   const [toggleOpenAddressList, setToggleOpenAddressList] = useState(false);
   const Stack = createNativeStackNavigator();
 
+  const [fromDestination, setFromDestination] = useState<Location.LocationGeocodedAddress>({
+    city:null,
+    country:null, 
+    district:null,
+    isoCountryCode:null, 
+    name:null,
+    postalCode:null,
+    region:null,
+    street:null, 
+    streetNumber:null,
+    subregion:null, 
+    timezone:null,
+});
+const [toDestination, setToDestination] = useState<Location.LocationGeocodedAddress>({
+    city:null,
+    country:null, 
+    district:null,
+    isoCountryCode:null, 
+    name:null,
+    postalCode:null,
+    region:null,
+    street:null, 
+    streetNumber:null,
+    subregion:null, 
+    timezone:null,
+});
+
+
+const [fromLocation, setFromLocation] = useState<Location.LocationGeocodedLocation>();
+const [toLocation, setToLocation] = useState<Location.LocationGeocodedLocation>();
+
 
 
   const windowHeight = Dimensions.get('window').height;
@@ -136,7 +167,7 @@ export default function App() {
             </Pressable>}
           <NavigationContainer>
             <Stack.Navigator screenOptions={{ headerShown: false, fullScreenGestureEnabled: true }}>
-              <Stack.Screen name='tabs' children={() => <Tabs savedOrder={savedOrder} setSavedOrder={setSavedOrder} homeMadeStores={homeMadeStores} setHomeMadeStores={setHomeMadeStores} refreshing={refreshing} setSelectedStore={setSelectedStore} foodStores={foodStores} setFoodStores={setFoodStores} deliveryLocation={deliveryLoction} />} />
+              <Stack.Screen name='tabs' children={() => <Tabs toLocation={toLocation} fromDestination={fromDestination} fromLocation={fromLocation} setFromDestination={setFromDestination} setFromLocation={setFromLocation} setToDestination={setToDestination} setToLocation={setToLocation} toDestination={toDestination } savedOrder={savedOrder} setSavedOrder={setSavedOrder} homeMadeStores={homeMadeStores} setHomeMadeStores={setHomeMadeStores} refreshing={refreshing} setSelectedStore={setSelectedStore} foodStores={foodStores} setFoodStores={setFoodStores} deliveryLocation={deliveryLoction} />} />
               {selectedStore && <Stack.Screen name='ViewStore' children={() => <ViewStore Address={address} setHideAddressHanddler={setHideAddressHanddler} savedOrder={savedOrder} setSavedOrder={setSavedOrder} setSelectedProduct={setSelectedProduct} deliveryLocation={deliveryLoction} Store={selectedStore} />} />}
               {!selectedStore && <Stack.Screen name='ViewStore' children={() => <View><Text>asasd</Text></View>} />}
               {(selectedProduct && selectedStore && savedOrder) && <Stack.Screen name='ViewProduct' children={() => <ViewProduct deliveryLocation={deliveryLoction} setSavedOrder={setSavedOrder} Store={selectedStore} savedOrder={savedOrder} setSelectedProduct={setSelectedProduct} selectedProduct={selectedProduct} />} />}
@@ -144,7 +175,7 @@ export default function App() {
               {savedOrder && <Stack.Screen name='ViewCheckout' children={() => <ViewCheckout savedAddresses={savedAddresses} deliveryLocation={deliveryLoction} setDeliveryLocation={setDeliveryLoction} selectedStore={selectedStore} setOrder={setSavedOrder} order={savedOrder} />} />}
               {!selectedProduct && <Stack.Screen name='ViewProduct' children={() => <View>
                 <Text>asdasd</Text></View>} />}
-              <Stack.Screen name='ViewDeliveryLoading' children={() => <ViewDeliveryLoading/>}/>
+              <Stack.Screen name='ViewDeliveryLoading' children={() => <ViewDeliveryLoading FromAddress={fromDestination} FromLocation={fromLocation} ToAddress={toDestination} ToLocation={toLocation}/>}/>
             </Stack.Navigator>
           </NavigationContainer>
         </ScrollView>
