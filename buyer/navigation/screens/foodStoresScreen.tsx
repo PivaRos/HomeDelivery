@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, RefreshControl  } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, RefreshControl, Dimensions  } from 'react-native';
 import React, {useEffect, useState} from 'react'
 import { availableStores, Order, Pages, Store, store_category } from '../../interfaces';
 import { storeActions } from '../../network_services/stores';
@@ -24,6 +24,8 @@ const FoodStores = (props:Props) => {
         props.setFoodStores(await storeActions.GetStores(props.deliveryLocation, store_category.food));
     }
 
+    const windowWidth = Dimensions.get('window').width;
+    const windowHeight = Dimensions.get('window').height;
 
     useEffect(() => {
         setLoading(true);
@@ -50,20 +52,20 @@ const FoodStores = (props:Props) => {
 
 return (
     <View style={style.view}>
-          {props.foodStores?.Open[0] &&  <Text style={style.title}>Enjoy The Best Food .</Text>}
-           { props.foodStores?.Open[0] && <ScrollView>
+          {(props.foodStores && ((JSON.stringify(props.foodStores.Open)  !== JSON.stringify([])) || JSON.stringify(props.foodStores.Closed) !== JSON.stringify([]))) &&  <Text style={style.title}>Enjoy The Best Food .</Text>}
+           { (props.foodStores && ((JSON.stringify(props.foodStores.Open)  !== JSON.stringify([])) || JSON.stringify(props.foodStores.Closed) !== JSON.stringify([])))  ? <ScrollView>
              <StoresGrid savedOrder={props.savedOrder}  setSavedOrder={props.setSavedOrder} thelocation={props.deliveryLocation} setSelectedStore={props.setSelectedStore}  title='New On HomeDelivery' displayStores={props.foodStores?.Open} />
              <StoresGrid savedOrder={props.savedOrder} setSavedOrder={props.setSavedOrder} thelocation={props.deliveryLocation} setSelectedStore={props.setSelectedStore}  title='Closed Stores' displayStores={props.foodStores?.Closed} />
              
             
             </ScrollView> 
-            || ( !loading && (<Text style={{textAlign:'center', fontSize:19, padding:20, width:'100%', position:'absolute'}} numberOfLines={3}>
+            : ( !loading && (<Text style={[{textAlign:'center', fontSize:19, padding:20, width:windowWidth,}, style.titleError]}>
                 Oops, Looks Like At This Moment{"\n"}
                 There Is No Stores Delivering{"\n"}
-                To Your Location{"\n"}
+                To Your Location {"\n"}
+            <View style={{width:windowWidth, justifyContent:'center', flexDirection:'row', padding:0, margin:0}}><SvgXml style={{ height:120, width:120, marginTop:60}} xml={sadSVG}/></View>
             </Text>
-
-            &&<View style={{justifyContent:'center',flexDirection:'row'}}><SvgXml style={{position:'absolute', top:200}} xml={sadSVG}/></View> ))
+))
             }
             </View>)
     
@@ -73,7 +75,9 @@ const style = StyleSheet.create({
     view:{
         width:'100%',
         height:'100%',
-        
+        justifyContent:"center",
+        margin:0, padding:0,
+        flexDirection:'row'
     },
 
     title:{
@@ -81,7 +85,18 @@ const style = StyleSheet.create({
         marginLeft:10,
         marginTop:10,
         fontFamily:'AmericanTypewriter',
-        fontWeight:'bold'
+        color:'grey',
+        fontWeight:'bold',
+        position:'absolute'
+    }
+    ,
+    titleError:{
+        fontSize:22 ,
+        marginLeft:10,
+        marginTop:10,
+        fontFamily:'AmericanTypewriter',
+        color:'green',
+        position:'absolute'
         
     }
 })
