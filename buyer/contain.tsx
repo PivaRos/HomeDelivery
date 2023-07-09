@@ -25,7 +25,6 @@ SplashScreen.preventAutoHideAsync();
 export default function Container() {
   const [deliveryLoction, setDeliveryLoction] = useState<Location.LocationObject>();
   const [currentLocation, setCurrentLocation] = useState<Location.LocationObject>()
-  const [errorMsg, setErrorMsg] = useState("");
   const [sessionid, setSessionid] = useState<null | undefined | string>();
   const [loading, setLoading] = useState(false);
   const [homeMadeStores, setHomeMadeStores] = useState<availableStores | null | undefined>();
