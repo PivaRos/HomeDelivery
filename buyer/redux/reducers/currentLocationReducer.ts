@@ -1,5 +1,5 @@
 
-export const deliveryLocationReducer = (state = null, action:any) => {
+export const currentLocationReducer = (state = null, action:any) => {
     switch (action.type){
         case 'setCurrentLocation':
             return action.payload;
