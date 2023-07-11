@@ -8,19 +8,69 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.isSupport = exports.isAdmin = exports.isDelivery = exports.isSeller = exports.isBuyer = exports.InputValidator = exports.checkValidation = exports.processPayment = void 0;
 const _1 = require(".");
+const request_1 = __importDefault(require("request"));
 const processPayment = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    // make api call to privider of services
-    // get responce of 200
-    res.locals.PaymentLog = {
-        accepted: true,
-        timestamp: new Date().getTime(),
-        priceCharged: 0 // the price
-    };
-    // and then call next()
-    next();
+    try {
+        // make api call to privider of services
+        const CreditCard_Number = res.locals.CreditCard_Number;
+        const CreditCard_ExpirationMonth = res.locals.CreditCard_ExpirationMonth;
+        const CreditCard_ExpirationYear = res.locals.CreditCard_ExpirationYear;
+        const CreditCard_CVV = res.locals.CreditCard_CVV;
+        const CreditCard_CitizenID = res.locals.CreditCard_CitizenID;
+        const UnitPrice = res.locals.UnitPrice;
+        const ProviderUri = "https://api.sumit.co.il/billing/payments/charge/";
+        const ProviderSecret = process.env.SumitProvierSecretKey;
+        const CompanyID = process.env.CompanyID;
+        const data = {
+            Credentials: {
+                APIKey: ProviderSecret,
+                CompanyID: CompanyID
+            },
+            Customer: {
+                Name: 'לקוח כללי'
+            },
+            Items: {
+                Quantity: 1,
+                UnitPrice: UnitPrice,
+                Currency: "NIS",
+            },
+            PaymentMethod: {
+                CreditCard_Number,
+                CreditCard_ExpirationMonth,
+                CreditCard_ExpirationYear,
+                CreditCard_CVV,
+                CreditCard_CitizenID,
+                Type: 'CreditCard'
+            }
+        };
+        (0, request_1.default)({
+            uri: ProviderUri,
+            body: JSON.stringify(data),
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+        // get responce of 200
+        res.locals.PaymentLog = {
+            accepted: true,
+            timestamp: new Date().getTime(),
+            priceCharged: 0 // the price
+        };
+        // and then call next()
+        next();
+    }
+    catch (e) {
+        console.log(e);
+        res.locals.err = e;
+        next();
+    }
 });
 exports.processPayment = processPayment;
 // checks authorization headers

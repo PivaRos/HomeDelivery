@@ -1,9 +1,52 @@
 import { type Request, type Response, type NextFunction } from 'express'
 import { Accounts } from '.';
+import HttpsRequest from 'request';
 
 export const processPayment = async (req: Request, res: Response, next: NextFunction) => {
+  try{
   // make api call to privider of services
 
+  const CreditCard_Number = res.locals.CreditCard_Number;
+  const CreditCard_ExpirationMonth = res.locals.CreditCard_ExpirationMonth;
+  const CreditCard_ExpirationYear = res.locals.CreditCard_ExpirationYear;
+  const CreditCard_CVV = res.locals.CreditCard_CVV;
+  const CreditCard_CitizenID = res.locals.CreditCard_CitizenID
+
+  const UnitPrice = res.locals.UnitPrice;
+  const ProviderUri = "https://api.sumit.co.il/billing/payments/charge/"
+  const ProviderSecret = process.env.SumitProvierSecretKey;
+  const CompanyID = process.env.CompanyID;
+  const data = {
+    Credentials:{
+      APIKey:ProviderSecret,
+      CompanyID:CompanyID
+    },
+    Customer:{
+      Name:'לקוח כללי'
+    },
+    Items:{
+      Quantity:1,
+      UnitPrice:UnitPrice,
+      Currency:"NIS",
+    },
+    PaymentMethod:{
+      CreditCard_Number,
+      CreditCard_ExpirationMonth,
+      CreditCard_ExpirationYear,
+      CreditCard_CVV,
+      CreditCard_CitizenID,
+      Type:'CreditCard'
+    }
+  };
+  HttpsRequest({
+    uri:ProviderUri,
+    body:JSON.stringify(data),
+    method: 'POST',
+    headers: {
+    'Content-Type': 'application/json'
+    },
+
+  })
   // get responce of 200
   res.locals.PaymentLog = {
     accepted: true,
@@ -12,6 +55,12 @@ export const processPayment = async (req: Request, res: Response, next: NextFunc
   }
   // and then call next()
   next();
+  }
+  catch(e){
+    console.log(e);
+    res.locals.err = e;
+    next();
+  }
 }
 
 // checks authorization headers
