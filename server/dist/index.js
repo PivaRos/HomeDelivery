@@ -18,7 +18,7 @@ const data_1 = __importDefault(require("./routers/data"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
-const mongostring = process.env.MongoCluster || '';
+const mongostring = process.env.MongoCluster || process.env.LocalMongoCluster || "mongodb://localhost:27017";
 const client = new mongodb_1.MongoClient(mongostring);
 const data = client.db('data');
 const log = client.db('log');

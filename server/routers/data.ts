@@ -11,6 +11,7 @@ import mongoose from 'mongoose'
 import path from 'path'
 import crypto from 'crypto'
 
+
 const Router = (MongoObject: {
   client: mongodb.MongoClient
   databases: {
@@ -28,9 +29,10 @@ const Router = (MongoObject: {
   }
 }) => {
   const DataRouter = express.Router()
-  dotenv.config()
+  dotenv.config();
 
-  const conn = mongoose.createConnection(process.env.data || '', {
+  console.log(process.env.localData)
+  const conn = mongoose.createConnection("mongodb+srv://localhost/uploads?retryWrites=true&w=majority", {
 
   })
 
@@ -42,7 +44,7 @@ const Router = (MongoObject: {
 
   gfs = Grid(MongoObject.databases.uploads, MongoObject.client)
   gfs.collection('uploads')
-  console.log('connected')
+  console.log('GridFS connected')
 
   const storage = new GridFsStorage({
     url: process.env.data,

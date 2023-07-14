@@ -16,7 +16,7 @@ import DataRouter from './routers/data'
 dotenv.config()
 const app: Express = express()
 app.use(express.json())
-const mongostring = process.env.MongoCluster || ''
+const mongostring = process.env.MongoCluster || process.env.LocalMongoCluster || "mongodb://localhost:27017"
 const client = new MongoClient(mongostring)
 const data = client.db('data')
 const log = client.db('log')
