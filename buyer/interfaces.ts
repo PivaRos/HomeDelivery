@@ -72,6 +72,8 @@ export interface Product {
     units?: number,
 }
 
+export type LocationObject = Location.LocationObject;
+
 export interface Option {
     _id: ObjectId,
     optionProducts: ObjectId[],
