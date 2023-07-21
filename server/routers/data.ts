@@ -32,7 +32,7 @@ const Router = (MongoObject: {
   dotenv.config();
 
   console.log(process.env.localData)
-  const conn = mongoose.createConnection("mongodb+srv://localhost/uploads?retryWrites=true&w=majority", {
+  const conn = mongoose.createConnection(process.env.data || process.env.localData ||"", {
 
   })
 

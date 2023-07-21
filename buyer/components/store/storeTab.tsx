@@ -4,21 +4,27 @@ import { LocationObject, Order, RootStackParamList, Store } from '../../interfac
 import { useNavigation } from '@react-navigation/native';
 import {uri} from '../../envVars';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { useDispatch, useSelector } from 'react-redux';
+import { SelectedStoreAction } from '../../redux/actions/SelectedStoreAction';
 interface Props {
     Store:Store;
-    setSelectedStore:React.Dispatch<React.SetStateAction<Store | undefined>>
-    thelocation:LocationObject;
-    setSavedOrder:React.Dispatch<React.SetStateAction<Order | undefined | null>>;
-    savedOrder:Order| undefined| null;
 }
 
 
 const StoreTab = (props:Props) => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+    const Dispatch = useDispatch();
 
-    const StorePressed = () => {
-        props.setSelectedStore(props.Store);
+    const selectedStore = useSelector((state:any) => state.selectedStore);
+    const StorePressed = async () => {
+        console.log("heere")
+        try{
+        await Dispatch(SelectedStoreAction(props.Store));
+        console.log(selectedStore);
         navigation.navigate("ViewStore", {id:2});
+        }catch(e){
+            console.log(e);
+        }
 
     }   
     let scaleValue = new Animated.Value(0); // declare an animated value

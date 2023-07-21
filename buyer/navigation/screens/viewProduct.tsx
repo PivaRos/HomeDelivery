@@ -8,15 +8,11 @@ import { ProductOptionsList } from "../../components/product/options/options_gri
 import { PriceString, getTotalUnits, setOrderSelectedProductByIndex } from "../../functions";
 import { userActions } from "../../network_services/user";
 import { LocationObject } from "expo-location";
+import { useDispatch, useSelector } from "react-redux";
+import { SavedOrderAction } from "../../redux/actions/SavedOrderAction";
 
 
 interface Props {
-    selectedProduct: Product;
-    deliveryLocation: LocationObject;
-    setSelectedProduct: React.Dispatch<React.SetStateAction<Product | undefined>>;
-    savedOrder: Order;
-    setSavedOrder: React.Dispatch<React.SetStateAction<Order | undefined | null>>;
-    Store: Store;
     indexinSelectedProduct?: number;
 }
 
@@ -25,10 +21,15 @@ const imageUri = uri + "data/file/";
 
 export const ViewProduct = (props: Props) => {
 
+    const Dispatch = useDispatch();
+    const savedOrder = useSelector((state:any) => state.savedOrder) as Order;
+    const selectedProduct = useSelector((state:any) => state.selecedProdcut) as Product;
+    const selectedStore = useSelector((state:any) => state.selectedStore) as Store;
+
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const [productPrice, setProductPrice] = useState("");
     const [justChanged, setJustChanged] = useState(false);
-    const [Product, setProduct] = useState<Product>(JSON.parse(JSON.stringify(props.selectedProduct)));
+    const [Product, setProduct] = useState<Product>(JSON.parse(JSON.stringify(selectedProduct)));
     const [price, setPrice] = useState(Product.price.price);
     const [selectedProductIndex, setSelectedProductIndex] = useState(-1);
 
@@ -66,9 +67,9 @@ export const ViewProduct = (props: Props) => {
         //if the Product is in selectedProducts list then we update the selectedProductIndex
         let found = false;
         let tempindex = -1;
-        props.savedOrder.selecedProdcuts.map((p, index) => {
+        savedOrder.selecedProdcuts.map((p, index) => {
             let pClone: Product = JSON.parse(JSON.stringify(p));
-            let currentProductClone: Product = JSON.parse(JSON.stringify(props.selectedProduct));
+            let currentProductClone: Product = JSON.parse(JSON.stringify(selectedProduct));
             if (JSON.stringify(pClone) === JSON.stringify(currentProductClone)) {
                 tempindex = index;
                 found = true;
@@ -112,8 +113,8 @@ export const ViewProduct = (props: Props) => {
     }, [Product.units, JSON.stringify(Product)])
 
     const checkIfNeedUpdate = () => {
-        let same = JSON.stringify(props.selectedProduct) === JSON.stringify(Product)
-        if (props.selectedProduct.units && !same) {
+        let same = JSON.stringify(selectedProduct) === JSON.stringify(Product)
+        if (selectedProduct.units && !same) {
 
             setJustChanged(true);
         }
@@ -161,7 +162,7 @@ export const ViewProduct = (props: Props) => {
             let foundInOrder = false;
             let theindex = -1;
             //check if the prodcut exists in the current order
-            props.savedOrder.selecedProdcuts.map((p, index) => {
+            savedOrder.selecedProdcuts.map((p, index) => {
                 let pClone = JSON.parse(JSON.stringify(p)); pClone.units = 0;
                 let currentProductClone = JSON.parse(JSON.stringify(Product)); currentProductClone.units = 0;
                 if (JSON.stringify(pClone) === JSON.stringify(currentProductClone)) {
@@ -177,11 +178,9 @@ export const ViewProduct = (props: Props) => {
                         return p;
                     })
                 }
-                await props.setSavedOrder(o => {
-                    let order: Order = JSON.parse(JSON.stringify(o));
-                    order.selecedProdcuts.push(Product);
-                    return order;
-                })
+                let order: Order = JSON.parse(JSON.stringify(savedOrder));
+                order.selecedProdcuts.push(Product);
+                Dispatch(SavedOrderAction(order))
             }
             else {
                 if (Product.units == 0) {
@@ -190,16 +189,14 @@ export const ViewProduct = (props: Props) => {
                         return p;
                     })
                 }
-                let currentProduct: Product = JSON.parse(JSON.stringify(props.savedOrder.selecedProdcuts[theindex]));
+                let currentProduct: Product = JSON.parse(JSON.stringify(savedOrder.selecedProdcuts[theindex]));
                 if (currentProduct.units === undefined || Product.units === undefined) return;
                 let cpu = currentProduct.units;
                 currentProduct.units = (cpu + Product.units);
 
-                await props.setSavedOrder(o => {
-                    let order: Order = JSON.parse(JSON.stringify(o));
-                    let neworder = setOrderSelectedProductByIndex(order, currentProduct, theindex);
-                    return neworder;
-                })
+                let order: Order = JSON.parse(JSON.stringify(savedOrder));
+                let neworder = setOrderSelectedProductByIndex(order, currentProduct, theindex);
+                Dispatch(SavedOrderAction(neworder));
             }
             navigation.navigate("ViewStore", { id: 2 })
         }
@@ -217,7 +214,7 @@ export const ViewProduct = (props: Props) => {
             return newProduct
         })
         if (!Product.units) return;
-        if (props.selectedProduct.units !== Product.units + 1 && props.selectedProduct.units) {
+        if (selectedProduct.units !== Product.units + 1 && selectedProduct.units) {
             setJustChanged(true);
         }
     }
@@ -233,26 +230,28 @@ export const ViewProduct = (props: Props) => {
             })
         }
         if (!Product.units) return;
-        if (props.selectedProduct.units !== Product.units - 1 && props.selectedProduct.units) {
+        if (selectedProduct.units !== Product.units - 1 && selectedProduct.units) {
             setJustChanged(true);
         }
     }
 
     const RemoveFromOrder = async () => {
-        props.setSavedOrder(o => {
-            let order: Order = JSON.parse(JSON.stringify(o));
-            for (let i = 0; i < order.selecedProdcuts.length; i++) {
-                let ps = order.selecedProdcuts[i];
-                if (JSON.stringify(ps) === JSON.stringify(Product)) {
-                    order.selecedProdcuts.splice(i, 1);
+        try{
+        let order: Order = JSON.parse(JSON.stringify(savedOrder));
+        for (let i = 0; i < order.selecedProdcuts.length; i++) {
+            let ps = order.selecedProdcuts[i];
+            if (JSON.stringify(ps) === JSON.stringify(Product)) {
+                order.selecedProdcuts.splice(i, 1);
 
 
-                }
             }
-
-            return order;
-        })
+        }
+        await Dispatch(SavedOrderAction(order));
         navigation.navigate("ViewStore", { id: 2 })
+
+    }catch{
+
+        }
 
     }
 
@@ -261,19 +260,16 @@ export const ViewProduct = (props: Props) => {
             if (selectedProductIndex === -1) {
                 //the Product is not in selectedProduct list and we need to add to the list for the first time
                 //if the product is selected for the first time 
-                props.setSavedOrder(o => {
-                    let order: Order = JSON.parse(JSON.stringify(o));
-                    order.selecedProdcuts.push(Product);
-                    return order;
-                })
+                let order: Order = JSON.parse(JSON.stringify(savedOrder));
+                order.selecedProdcuts.push(Product);
+                Dispatch(SavedOrderAction(order));
             }
             else {
-                props.setSavedOrder(o => {
-                    let newOrder: Order = JSON.parse(JSON.stringify(o));
-                    let NewProduct: Product = JSON.parse(JSON.stringify(Product));
-                    newOrder.selecedProdcuts[selectedProductIndex] = NewProduct;
-                    return newOrder
-                })
+                
+                let newOrder: Order = JSON.parse(JSON.stringify(savedOrder));
+                let NewProduct: Product = JSON.parse(JSON.stringify(Product));
+                newOrder.selecedProdcuts[selectedProductIndex] = NewProduct;
+                Dispatch(SavedOrderAction(newOrder));
             }
             navigation.navigate("ViewStore", { id: 2 });
         }
@@ -313,7 +309,7 @@ export const ViewProduct = (props: Props) => {
                             selectedProduct={Product}
                             setSelectedProduct={setProduct}
                             option={option}
-                            store={props.Store} />)
+                            store={selectedStore} />)
                     })}
                 </View>
             </ScrollView>
@@ -326,10 +322,10 @@ export const ViewProduct = (props: Props) => {
                     <Text style={styles.buttonText}>-</Text>
                 </Pressable>
             </View>
-            {((props.selectedProduct.units === 0) && !justChanged) && <Pressable onPress={addToOrder} style={styles.PressableAdd}>
+            {((selectedProduct.units === 0) && !justChanged) && <Pressable onPress={addToOrder} style={styles.PressableAdd}>
                 <Text style={styles.buttonText}>Add to order</Text><Text style={styles.buttonPrice}>{productPrice}</Text>
             </Pressable>}
-            {(props.selectedProduct.units !== undefined && props.selectedProduct.units !== 0) && (Product.units !== undefined && Product.units > 0 && !justChanged) && <Pressable onPress={RemoveFromOrder} style={[styles.PressableAdd, { backgroundColor: "#fa3737" }]}>
+            {(selectedProduct.units !== undefined && selectedProduct.units !== 0) && (Product.units !== undefined && Product.units > 0 && !justChanged) && <Pressable onPress={RemoveFromOrder} style={[styles.PressableAdd, { backgroundColor: "#fa3737" }]}>
                 <Text style={styles.buttonText}>{(Product.units > 1) ? "Remove all" : "Remove"}</Text><Text style={styles.buttonPrice}>{"- " + productPrice}</Text>
             </Pressable>}
             {justChanged && <Pressable onPress={saveOrder} style={styles.PressableAdd}>

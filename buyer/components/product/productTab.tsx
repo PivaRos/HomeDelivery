@@ -5,19 +5,21 @@ import { useNavigation } from '@react-navigation/native';
 import { uri } from '../../envVars';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { PriceString, getPricePerUnit, getTotalUnits } from '../../functions';
+import { useDispatch, useSelector } from 'react-redux';
+import { SelectedProductAction } from '../../redux/actions/SelectedProductAction';
 
 
 interface Props {
     Product: Product;
     selectedOptions?: selectedOption[];
-    setSelectedProduct: React.Dispatch<React.SetStateAction<Product | undefined>>
-    thelocation: LocationObject;
-    savedOrder: Order | undefined | null;
-    setSelectedOrder: React.Dispatch<React.SetStateAction<Order | undefined | null>>
 }
 
 
 const ProductTab = (props: Props) => {
+    const Dispatch = useDispatch();
+
+    const savedOrder = useSelector((state:any) => state.savedOrder);
+
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const [priceString, setPriceString] = useState("");
     const [glowing, setGlowing] = useState(false);
@@ -30,7 +32,7 @@ const ProductTab = (props: Props) => {
 
     
     useEffect(() => {
-        if (props.savedOrder) {
+        if (savedOrder) {
             const number = props.Product.units;
             if (number && number > 0) {
                 setGlowing(true);
@@ -57,9 +59,13 @@ const ProductTab = (props: Props) => {
     }, [])
 
 
-    const ProductPressed = () => {
-        props.setSelectedProduct(JSON.parse(JSON.stringify(props.Product)));
-        navigation.navigate("ViewProduct", { id: 3 });
+    const ProductPressed = async () => {
+        try{
+            await Dispatch(SelectedProductAction(JSON.parse(JSON.stringify(props.Product))));
+            navigation.navigate("ViewProduct", { id: 3 });
+        }catch{
+
+        }
 
     }
 

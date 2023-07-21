@@ -6,10 +6,6 @@ import StoreTab from './storeTab';
 interface Props {
     title:string;
     displayStores:Store[] | null | undefined;
-    setSelectedStore:React.Dispatch<React.SetStateAction<Store | undefined>>;
-    thelocation:LocationObject;
-    setSavedOrder:React.Dispatch<React.SetStateAction<Order | undefined | null>>;    
-    savedOrder:Order| undefined| null;
 }
 const StoresGrid = (props:Props) => {
     
@@ -35,7 +31,7 @@ const StoresGrid = (props:Props) => {
                 <Text style={styles.title}>{props.title}</Text>
                 <ScrollView showsHorizontalScrollIndicator={false}  snapToOffsets={arr} decelerationRate="fast" horizontal={true} style={styles.view}>
                 {props.displayStores && props.displayStores.map((store, index) => {
-                    return <StoreTab savedOrder={props.savedOrder} setSavedOrder={props.setSavedOrder} thelocation={props.thelocation} setSelectedStore={props.setSelectedStore} key={index} Store={store}/>
+                    return <StoreTab key={index} Store={store}/>
                 })}
                 </ScrollView>
                 </View>); 

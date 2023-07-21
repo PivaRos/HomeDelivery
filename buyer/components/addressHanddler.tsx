@@ -8,14 +8,12 @@ import { savedAddress } from '../interfaces';
 import { addAddress } from '../addressesFunctions';
 import { AdpterToGeocodedAddress } from '../functions';
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { useDispatch, useSelector } from 'react-redux';
+import { StartLoadingAction, StopLoadingAction } from '../redux/actions/LoadingActions';
 
 interface Props {
     address: LocationGeocodedAddress | undefined;
-    deliveryLoction: Location.LocationObject | undefined;
-    currentLocation: Location.LocationObject | undefined;
-    setDeliveryLoction: React.Dispatch<React.SetStateAction<Location.LocationObject | undefined>>
     setAddress: React.Dispatch<React.SetStateAction<Location.LocationGeocodedAddress | undefined>>
-    setLoading:React.Dispatch<React.SetStateAction<boolean>>;
     toggleOpenAddressList:boolean;
     setToggleOpenAddressList:React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -23,15 +21,17 @@ interface Props {
 export const AddressHanddler = ({ 
 
         address,
-        currentLocation,
-        deliveryLoction, 
-        setDeliveryLoction, 
         setAddress, 
-        setLoading, 
         toggleOpenAddressList, 
         setToggleOpenAddressList 
     }: Props) => {
-    const [usingCurrent, setUsingCurrent] = useState(currentLocation === deliveryLoction);
+
+    const Dispatch = useDispatch();
+
+    const currentLocation = useSelector((state:any) => state.currentLocation) as Location.LocationObject;
+    const deliveryLocation = useSelector((state:any) => state.deliveryLocation) as Location.LocationObject
+
+    const [usingCurrent, setUsingCurrent] = useState(currentLocation === deliveryLocation);
     const [listOpened, setListOpened] = useState(toggleOpenAddressList);
     const [savedAddresses, setSavedAddresses] = useState<savedAddress[]>([]);
     const [query, setQuery ] = useState("");
@@ -67,7 +67,7 @@ export const AddressHanddler = ({
     const animatedToggle = new Animated.Value(0);
 
     useEffect(() => {
-        setUsingCurrent(currentLocation === deliveryLoction);
+        setUsingCurrent(currentLocation === deliveryLocation);
     }, [address])
 
     const AddressPressed = () => {
@@ -140,7 +140,7 @@ export const AddressHanddler = ({
 
 
     const addressChoosen = (address:Location.LocationGeocodedAddress) => {
-        setLoading(true);
+        Dispatch(StartLoadingAction());
         setAddress(address);
         //!!
         setSavedAddresses(savedAddresses => {
@@ -148,7 +148,7 @@ export const AddressHanddler = ({
         });
         // !!
         AddressPressed();
-        setLoading(false);
+        Dispatch(StopLoadingAction());
 
     }
 

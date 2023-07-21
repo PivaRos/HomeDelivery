@@ -4,16 +4,17 @@ import ProductSumTab from "../../components/product/productSumTab";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useEffect } from "react";
+import { useSelector } from "react-redux";
 
 
 
 interface props {
     setHideAddressHanddler: React.Dispatch<React.SetStateAction<boolean>>;
-    Order: Order;
 }
 
 export const ViewOrder = (props: props) => {
 
+    const savedOrder = useSelector((state:any) => state.savedOrder) as Order;
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const BackPress = () => {
         navigation.navigate("ViewStore", { id: 2 })
@@ -31,7 +32,7 @@ export const ViewOrder = (props: props) => {
             </Text>
         </View>
         <ScrollView>
-            {props.Order.selecedProdcuts.map((Product, index) => {
+            {savedOrder.selecedProdcuts.map((Product, index) => {
                 return <ProductSumTab Product={Product} key={index} />
             })}
         </ScrollView>

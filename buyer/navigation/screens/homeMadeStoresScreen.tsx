@@ -5,55 +5,55 @@ import StoresGrid from '../../components/store/stores_grid';
 import { useEffect, useState } from 'react';
 import { storeActions } from '../../network_services/stores';
 import * as Location from 'expo-location';
+import { useDispatch, useSelector } from 'react-redux';
+import { HomeMadeStoresAction } from '../../redux/actions/HomeMadeStoresAction';
 
 
 interface Props {
-    deliveryLocation:Location.LocationObject;
-    homeMadeStores:availableStores | null | undefined;
-    setHomeMadeStores:React.Dispatch<React.SetStateAction<availableStores | null | undefined>>;
-    setSelectedStore:React.Dispatch<React.SetStateAction<Store | undefined>>;
-    refreshing:boolean;
-    setSavedOrder:React.Dispatch<React.SetStateAction<Order | undefined | null>>;
-    savedOrder:Order| undefined| null;
-  }
+}
 const HomeMadeStores = (props:Props) => {
+    const Dispatch = useDispatch();
 
+    const refreshing = useSelector((state:any) => state.refreshing);
+    const homeMadeStores = useSelector((state:any) => state.homeMadeStores);
+    const deliveryLocation = useSelector((state:any) => state.deliveryLocation);
     const [loading, setLoading] = useState(true);
 
     const load = async () => {
-        props.setHomeMadeStores(await storeActions.GetStores(props.deliveryLocation, store_category.homeMade));
+        const Stores = await storeActions.GetStores(deliveryLocation, store_category.homeMade);
+        Dispatch(HomeMadeStoresAction(Stores));
     }
 
 
     useEffect(() => {
         
         load();
-        if (props.homeMadeStores)
+        if (homeMadeStores)
         {
             setLoading(false);
         }
     }, [])
     
     useEffect(() => {
-        if (props.refreshing)
+        if (refreshing)
         {
-         setLoading(true);
-         props.setHomeMadeStores(null);
-         load();
+            setLoading(true);
+            Dispatch(HomeMadeStoresAction(null));
+            load();
         }
         else
         {
             setLoading(false);
         }
-    }, [props.refreshing]) 
+    }, [refreshing]) 
 
     const getContent = () => {
 
         return ( <View style={style.view}>
             <Text style={style.title}>Creativity Place .</Text>
             <ScrollView>
-             <StoresGrid savedOrder={props.savedOrder} setSavedOrder={props.setSavedOrder} thelocation={props.deliveryLocation} setSelectedStore={props.setSelectedStore}  title='New On HomeDelivery' displayStores={props.homeMadeStores?.Open} />
-             <StoresGrid  savedOrder={props.savedOrder} setSavedOrder={props.setSavedOrder} thelocation={props.deliveryLocation} setSelectedStore={props.setSelectedStore}  title='Closed Stores' displayStores={props.homeMadeStores?.Closed} />
+             <StoresGrid  title='New On HomeDelivery' displayStores={homeMadeStores?.Open} />
+             <StoresGrid  title='Closed Stores' displayStores={homeMadeStores?.Closed} />
              
             
             </ScrollView>

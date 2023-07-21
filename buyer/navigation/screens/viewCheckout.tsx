@@ -7,20 +7,21 @@ import MapView, { Marker } from 'react-native-maps';
 import { getDistance } from "../../functions";
 import { useEffect } from "react";
 import { AddressComponent } from "../../components/addressComponent";
+import { useSelector } from "react-redux";
 
 interface CheckoutPops {
-    order: Order;
-    setOrder: React.Dispatch<React.SetStateAction<Order | null | undefined>>
-    selectedStore: Store | undefined
-    setDeliveryLocation: React.Dispatch<React.SetStateAction<Location.LocationObject | undefined>>
-    deliveryLocation: Location.LocationObject | undefined
     savedAddresses:savedAddress[] |undefined;
 }
 
 
-export const ViewCheckout = ({ order, setOrder, selectedStore, deliveryLocation, setDeliveryLocation, savedAddresses }: CheckoutPops) => {
+export const ViewCheckout = ({savedAddresses }: CheckoutPops) => {
 
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+
+    const deliveryLocation = useSelector((state:any) => state.deliveryLocation) as Location.LocationObject;
+    const selectedStore = useSelector((state:any) => state.selectedStore) as Store;
+    const savedOrder = useSelector((state:any) => state.savedOrder);
+
     const BackPress = () => {
         navigation.navigate("ViewOrder", { id: 4 })
     }
@@ -46,7 +47,7 @@ export const ViewCheckout = ({ order, setOrder, selectedStore, deliveryLocation,
                     <View style={{ backgroundColor: 'white', height: 20, width: 20, borderRadius: 50, justifyContent: 'center', flexDirection: 'row' }}>
                         {/* this is Store Marker */}
                         <Text style={{ fontWeight: 'bold' }}>
-                            {(selectedStore.avgDelivery && order.distance) && selectedStore.avgDelivery*order.distance || "0"}
+                            {(selectedStore.avgDelivery && savedOrder.distance) && selectedStore.avgDelivery*savedOrder.distance || "0"}
                         </Text>
                     </View>
                 </Marker>}

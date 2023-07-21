@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { View, Text, Button, Pressable, StyleSheet, ScrollView, Image, Animated } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Order, Product, RootStackParamList, Store } from "../../interfaces";
+import { LocationObject, Order, Product, RootStackParamList, Store } from "../../interfaces";
 import { uri } from "../../envVars";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { DeliveryFee, PriceString, getDistance, getPricePerUnit, toDateTime } from "../../functions";
@@ -12,16 +12,14 @@ import ShakeText from "react-native-shake-text";
 import * as Location from 'expo-location';
 import Entypo from 'react-native-vector-icons/Entypo';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useDispatch, useSelector } from "react-redux";
+import { SavedOrderAction } from "../../redux/actions/SavedOrderAction";
 
 
 
 
 interface Props {
     Store: Store;
-    deliveryLocation: Location.LocationObject;
-    setSelectedProduct: React.Dispatch<React.SetStateAction<Product | undefined>>;
-    savedOrder: Order | null | undefined;
-    setSavedOrder: React.Dispatch<React.SetStateAction<Order | undefined | null>>;
     Address:Location.LocationGeocodedAddress | undefined,
     setHideAddressHanddler: React.Dispatch<React.SetStateAction<boolean>>
     
@@ -41,13 +39,18 @@ const DistanceSvg = '<svg fill="black" xmlns="http://www.w3.org/2000/svg" height
 
 const imageUri = uri + "data/file/";
 export const ViewStore = (props: Props) => {
+    const Dispatch = useDispatch();
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+
     const [OpenDateString, setOpenDateString] = useState("");
     const [CloseDateString, setCloseDateString] = useState("");
     const [displayProducts, setDisplayProducts] = useState<Product[]>(props.Store.products);
     const [arrayOfProducts, setArrayOfProducts] = useState<string[]>([]);
 
-    const DistanceKm: number = getDistance(props.Store.location, props.deliveryLocation);
+    const savedOrder = useSelector((state:any) => state.savedOrder) as Order;
+    const deliveryLocation = useSelector((state:any) => state.deliveryLocation) as LocationObject;
+
+    const DistanceKm: number = getDistance(props.Store.location, deliveryLocation);
 
     let ShakeRef = useRef<ShakeText>();
     let shakeLayoutY = 0;
@@ -122,7 +125,7 @@ export const ViewStore = (props: Props) => {
 
 
 
-        if ((!props.savedOrder || JSON.stringify(props.savedOrder.seller) !== JSON.stringify(props.Store._id) ) && props.Address) {
+        if ((!savedOrder || JSON.stringify(savedOrder.seller) !== JSON.stringify(props.Store._id) ) && props.Address) {
             //Create new order
 
             let neworder: Order = {
@@ -131,7 +134,7 @@ export const ViewStore = (props: Props) => {
                     date: new Date(),
                     timestamp: Math.floor(Date.now() / 1000)
                 },
-                location: props.deliveryLocation,
+                location: deliveryLocation,
                 selecedProdcuts: [],
                 seller: props.Store._id,
                 status: 1,
@@ -143,7 +146,8 @@ export const ViewStore = (props: Props) => {
                 distance:DistanceKm
             }
 
-            props.setSavedOrder(neworder);
+            Dispatch(SavedOrderAction(neworder));
+            
         }
         else {
         }
@@ -160,9 +164,9 @@ export const ViewStore = (props: Props) => {
 
     useEffect(() => {
         let newDisplayProducts: Product[] = JSON.parse(JSON.stringify(props.Store.products));
-        let selectedProductOrder: Product[] = JSON.parse(JSON.stringify(props.savedOrder?.selecedProdcuts || []))
+        let selectedProductOrder: Product[] = JSON.parse(JSON.stringify(savedOrder?.selecedProdcuts || []))
         setDisplayProducts(newDisplayProducts.concat(selectedProductOrder))
-    }, [JSON.stringify(props.savedOrder?.selecedProdcuts)])
+    }, [JSON.stringify(savedOrder?.selecedProdcuts)])
 
 
 
@@ -172,7 +176,7 @@ export const ViewStore = (props: Props) => {
 
     const TotalPrice = () => {
         let price = 0;
-        props.savedOrder?.selecedProdcuts.map((p) => {
+        savedOrder?.selecedProdcuts.map((p) => {
             price += getPricePerUnit(p) * (p.units || 1)
         });
         return price
@@ -254,8 +258,8 @@ export const ViewStore = (props: Props) => {
 
 
                         <Animated.View style={[styles.storeInfo, { opacity: opacityOff }]}>
-                            {DistanceKm > 1 && <View style={styles.detailsView}><Text style={styles.detailsText}><Entypo color={"green"} size={20} name="back-in-time" /> {" " + OpenDateString + " - " + CloseDateString}</Text><Text style={styles.detailsText}><MaterialCommunityIcons color={"green"} name='map-marker-distance' size={20}/> {" " + Math.round(getDistance(props.Store.location, props.deliveryLocation)) + " km"}</Text></View>}
-                            {DistanceKm < 1 && <View style={styles.detailsView}><Text style={styles.detailsText}><Entypo color={"green"} size={20} name="back-in-time" />{OpenDateString + " - " + CloseDateString}</Text><Text style={styles.detailsText}><MaterialCommunityIcons color={"green"} name='map-marker-distance' size={20}/>  {" " + Math.round(getDistance(props.Store.location, props.deliveryLocation)) * 1000 + " m"}</Text></View>}
+                            {DistanceKm > 1 && <View style={styles.detailsView}><Text style={styles.detailsText}><Entypo color={"green"} size={20} name="back-in-time" /> {" " + OpenDateString + " - " + CloseDateString}</Text><Text style={styles.detailsText}><MaterialCommunityIcons color={"green"} name='map-marker-distance' size={20}/> {" " + Math.round(getDistance(props.Store.location, deliveryLocation)) + " km"}</Text></View>}
+                            {DistanceKm < 1 && <View style={styles.detailsView}><Text style={styles.detailsText}><Entypo color={"green"} size={20} name="back-in-time" />{OpenDateString + " - " + CloseDateString}</Text><Text style={styles.detailsText}><MaterialCommunityIcons color={"green"} name='map-marker-distance' size={20}/>  {" " + Math.round(getDistance(props.Store.location, deliveryLocation)) * 1000 + " m"}</Text></View>}
                         </Animated.View>
                     </View>
                     {arrayOfProducts.map((categoryname, index) => {
@@ -267,17 +271,14 @@ export const ViewStore = (props: Props) => {
                             }
                         }
                         return <ProductsGrid
-                            savedOrder={props.savedOrder}
-                            setSavedOrder={props.setSavedOrder}
                             key={index}
                             title={categoryname}
-                            thelocation={props.deliveryLocation}
                             displayProducts={localproducts}
-                            setSelectedProduct={props.setSelectedProduct} />
+                            />
                     })}
                 </ScrollView>
             </View>
-            {(props.savedOrder && (props.savedOrder.selecedProdcuts.length > 0)) &&
+            {(savedOrder && (savedOrder.selecedProdcuts.length > 0)) &&
                 <Pressable onPress={canViewOrder} style={styles.ViewOrderButton}>
                     <Text style={{ width: '100%', textAlign: 'center', top: 6, fontSize: 16, fontWeight: 'bold' }}>View Order</Text>
                 </Pressable>}
