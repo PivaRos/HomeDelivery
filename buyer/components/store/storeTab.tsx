@@ -16,6 +16,8 @@ const StoreTab = (props:Props) => {
     const Dispatch = useDispatch();
 
     const selectedStore = useSelector((state:any) => state.selectedStore);
+
+    
     const StorePressed = async () => {
         console.log("heere")
         try{

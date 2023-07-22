@@ -23,9 +23,9 @@ export const ViewProduct = (props: Props) => {
 
     const Dispatch = useDispatch();
     const savedOrder = useSelector((state:any) => state.savedOrder) as Order;
-    const selectedProduct = useSelector((state:any) => state.selecedProdcut) as Product;
+    const selectedProduct = useSelector((state:any) => state.selectedProdcut) as Product;
     const selectedStore = useSelector((state:any) => state.selectedStore) as Store;
-
+    console.log("selectedProduct is :" +selectedProduct);
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const [productPrice, setProductPrice] = useState("");
     const [justChanged, setJustChanged] = useState(false);
