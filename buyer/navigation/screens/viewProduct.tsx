@@ -30,7 +30,7 @@ export const ViewProduct = (props: Props) => {
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const [productPrice, setProductPrice] = useState("");
     const [justChanged, setJustChanged] = useState(false);
-    const [Product, setProduct] = useState<Product>(selectedProduct);
+    const [Product, setProduct] = useState<Product>(JSON.parse(JSON.stringify(selectedProduct)));
     const [price, setPrice] = useState(Product.price.price);
     const [selectedProductIndex, setSelectedProductIndex] = useState(-1);
 
@@ -163,7 +163,14 @@ export const ViewProduct = (props: Props) => {
         return true;
     }
 
-
+    useEffect(() => {
+        if (!selectedProduct.options) return;
+        console.log(JSON.stringify(selectedProduct.options.map((o) => {
+            return o.selectedOptionProducts?.map((s) => {
+                return s.selected;
+            })
+        }), null, 2))
+    }, [selectedProduct])
 
 
     const addToOrder = async () => {

@@ -61,7 +61,7 @@ const ProductTab = (props: Props) => {
 
     const ProductPressed = async () => {
         try{
-            console.log("from ProductTab the local Product is : " +  JSON.stringify(props.Product.options?.map((option) => {
+            console.log("from ProductTab the local Product selectedOptions is : " +  JSON.stringify(props.Product.options?.map((option) => {
                 return option.selectedOptionProducts;
             }), null, 2));
             await Dispatch(SelectedProductAction(JSON.parse(JSON.stringify(props.Product))));
