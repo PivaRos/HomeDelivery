@@ -17,7 +17,7 @@ const ProductsGrid = (props:Props) => {
             <Text style={styles.title}>{props.title}</Text>
             <ScrollView style={styles.view}>
             {(props.displayProducts) && props.displayProducts.map((product, index) => {
-                return <ProductTab savedOrder={props.savedOrder} setSelectedOrder={props.setSavedOrder} thelocation={props.thelocation} setSelectedProduct={props.setSelectedProduct} key={index} Product={product}/>
+                return <ProductTab key={index} Product={product}/>
             })}
             </ScrollView>
             </View>); 

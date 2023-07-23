@@ -19,16 +19,12 @@ export const registerForPushNotificationsAsync = async () => {
       finalStatus = status;
     }
     if (finalStatus !== 'granted') {
-      console.log("final is not granted");
       return;
     }
     token = (await Notifications.getExpoPushTokenAsync()).data;
-    console.log(token);
 
     return token;
   } catch (e) {
-    console.log("his is error");
-    console.log(e);
     return token;
   }
 }

@@ -38,7 +38,6 @@ const FoodStores = (props:Props) => {
 
 
     useEffect(() => {
-        console.log(JSON.stringify(foodStores, null, 2));
     }, [foodStores])
 
     useEffect(() => {

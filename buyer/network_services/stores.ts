@@ -9,7 +9,6 @@ let url = uri;
 
 export const storeActions =  {
     GetStores : (async (location:Location.LocationObject, store_category:store_category) => {
-      console.log(location);
     try{
       const response = await fetch(url+"publicbuyer/get/stores", {
         headers: {
@@ -24,12 +23,10 @@ export const storeActions =  {
       let data:dataObject = await response.json();
       if (data)
       {
-      console.log(data);
         return data.data;
       }
 
     }catch(e){
-        console.log(e);
     }
     }),
 
@@ -51,7 +48,6 @@ export const storeActions =  {
         }
   
       }catch(e){
-          console.log(e);
       }
     })
 };

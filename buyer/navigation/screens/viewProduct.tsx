@@ -22,14 +22,15 @@ const imageUri = uri + "data/file/";
 export const ViewProduct = (props: Props) => {
 
     const Dispatch = useDispatch();
+
     const savedOrder = useSelector((state:any) => state.savedOrder) as Order;
-    const selectedProduct = useSelector((state:any) => state.selectedProdcut) as Product;
+    const selectedProduct = useSelector((state:any) => state.selectedProduct) as Product;
     const selectedStore = useSelector((state:any) => state.selectedStore) as Store;
-    console.log("selectedProduct is :" +selectedProduct);
+
     const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
     const [productPrice, setProductPrice] = useState("");
     const [justChanged, setJustChanged] = useState(false);
-    const [Product, setProduct] = useState<Product>(JSON.parse(JSON.stringify(selectedProduct)));
+    const [Product, setProduct] = useState<Product>(selectedProduct);
     const [price, setPrice] = useState(Product.price.price);
     const [selectedProductIndex, setSelectedProductIndex] = useState(-1);
 
@@ -52,7 +53,6 @@ export const ViewProduct = (props: Props) => {
         //price string
         calculatePriceString();
         if (!Product.units) {
-            console.log("changed Units");
             setProduct(p => {
                 p.units = 0;
                 return p
@@ -68,6 +68,13 @@ export const ViewProduct = (props: Props) => {
         let found = false;
         let tempindex = -1;
         savedOrder.selecedProdcuts.map((p, index) => {
+            
+            console.log( "selectedProduct :" + JSON.stringify(selectedProduct.options?.map((option) => {
+                return option.selectedOptionProducts;
+            }), null, 2));
+            console.log( "savedProductOnOrder :" + JSON.stringify(p.options?.map((option) => {
+                return option.selectedOptionProducts;
+            }), null, 2));
             let pClone: Product = JSON.parse(JSON.stringify(p));
             let currentProductClone: Product = JSON.parse(JSON.stringify(selectedProduct));
             if (JSON.stringify(pClone) === JSON.stringify(currentProductClone)) {
@@ -113,7 +120,9 @@ export const ViewProduct = (props: Props) => {
     }, [Product.units, JSON.stringify(Product)])
 
     const checkIfNeedUpdate = () => {
-        let same = JSON.stringify(selectedProduct) === JSON.stringify(Product)
+        let same = (JSON.stringify(selectedProduct) === JSON.stringify(Product))
+        
+        console.log("checkifneedto update is the products same: "+ (JSON.stringify(selectedProduct) === JSON.stringify(Product)));
         if (selectedProduct.units && !same) {
 
             setJustChanged(true);
@@ -240,14 +249,13 @@ export const ViewProduct = (props: Props) => {
         let order: Order = JSON.parse(JSON.stringify(savedOrder));
         for (let i = 0; i < order.selecedProdcuts.length; i++) {
             let ps = order.selecedProdcuts[i];
-            if (JSON.stringify(ps) === JSON.stringify(Product)) {
-                order.selecedProdcuts.splice(i, 1);
-
+            if (selectedProductIndex !== -1) {
+                order.selecedProdcuts.splice(selectedProductIndex, 1);
+                await Dispatch(SavedOrderAction(order));
+                navigation.navigate("ViewStore", { id: 2 })
 
             }
         }
-        await Dispatch(SavedOrderAction(order));
-        navigation.navigate("ViewStore", { id: 2 })
 
     }catch{
 
@@ -260,6 +268,7 @@ export const ViewProduct = (props: Props) => {
             if (selectedProductIndex === -1) {
                 //the Product is not in selectedProduct list and we need to add to the list for the first time
                 //if the product is selected for the first time 
+                if (!Product.options) return;
                 let order: Order = JSON.parse(JSON.stringify(savedOrder));
                 order.selecedProdcuts.push(Product);
                 Dispatch(SavedOrderAction(order));

@@ -139,8 +139,6 @@ const [toLocation, setToLocation] = useState<Location.LocationGeocodedLocation>(
   const setAddressCurrent = async () => {
     try {
       if (currentLocation) {
-        //const adresscheck =  await Location.geocodeAsync("ברודצקי 43 תל אביב");
-        //console.log(adresscheck);
         const { latitude, longitude } = currentLocation.coords
         let response = await Location.reverseGeocodeAsync({
           latitude,
@@ -227,7 +225,6 @@ const [toLocation, setToLocation] = useState<Location.LocationGeocodedLocation>(
       const address = await AsyncStorage.getItem("address")
       setSessionid(sessionid);
       if (address) setAddress(JSON.parse(address));
-     address && console.log(JSON.parse(address));
     } catch {
 
     }

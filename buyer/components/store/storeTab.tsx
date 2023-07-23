@@ -17,15 +17,12 @@ const StoreTab = (props:Props) => {
 
     const selectedStore = useSelector((state:any) => state.selectedStore);
 
-    
+
     const StorePressed = async () => {
-        console.log("heere")
         try{
         await Dispatch(SelectedStoreAction(props.Store));
-        console.log(selectedStore);
         navigation.navigate("ViewStore", {id:2});
         }catch(e){
-            console.log(e);
         }
 
     }   
