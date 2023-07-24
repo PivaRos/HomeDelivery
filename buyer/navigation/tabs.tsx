@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {View } from 'react-native';
+import { StyleSheet, Text, View, StatusBar, Platform, SafeAreaView, ActivityIndicator, Button, ScrollView, RefreshControl, Dimensions, Pressable } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { availableStores, Order, Pages, Store } from '../interfaces';
 import HomeMadeStores from './screens/homeMadeStoresScreen';
@@ -12,8 +12,9 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { SavedOrderAction } from '../redux/actions/SavedOrderAction';
+import { StartRefreshingAction, StopRefreshingAction } from '../redux/actions/RefreshingActions';
 
 
 interface Props {
@@ -30,6 +31,7 @@ interface Props {
 
 const Tabs = (props:Props) => {
 
+  const refreshing = useSelector((state:any) => state.refreshing) as boolean;
   const Dispatch = useDispatch();
   const Tab = createBottomTabNavigator();
 
@@ -38,9 +40,19 @@ const Tabs = (props:Props) => {
   }, [])
 
 
+  
+  const onRefresh = React.useCallback(async () => {
+    Dispatch(StartRefreshingAction());
+    setTimeout(() => {
+    Dispatch(StopRefreshingAction());
+    }, 1500)
+  }, []);
+
+
     return (
+      <ScrollView contentContainerStyle={styles.container} refreshControl={<RefreshControl colors={['#2874ed']} title='Refresh' refreshing={refreshing} onRefresh={onRefresh} />}>
     <Tab.Navigator
-        initialRouteName={Pages.Stores}
+        initialRouteName={Pages.Orders}
         screenOptions={({route}) => ({
           tabBarIcon:({focused, color, size}) => {
             let iconName = ""
@@ -60,14 +72,28 @@ const Tabs = (props:Props) => {
           },
           headerShown:false,
           tabBarShowLabel:true,
-          tabBarLabelStyle:{marginTop:2}
+          tabBarLabelStyle:{marginTop:2},
+
         })}>
+          <Tab.Group>       
           <Tab.Screen options={{title:"Food", tabBarActiveTintColor:"black"}} name='Stores' children={() =>  <FoodStores />} />
           <Tab.Screen options={{title:"HomeMade", tabBarActiveTintColor:"black"}} name='Home' children={() => <HomeMadeStores />}  />
           <Tab.Screen options={{title:"MyOrders", tabBarActiveTintColor:"black"}} name='Orders' children={() => <OrdersScreen fromLocation={props.fromLocation} toLocation={props.toLocation} fromDestination={props.fromDestination} toDestination={props.toDestination} setFromDestination={props.setFromDestination} setToDestination={props.setToDestination} setFromLocation={props.setFromLocation} setToLocation={props.setToLocation}  />} />
           <Tab.Screen options={{title:"Account", tabBarActiveTintColor:"black"}} name='Account' children={() => <Account />} />
-        </Tab.Navigator>);
+          </Tab.Group>
+        </Tab.Navigator>
+        </ScrollView>);
 
 }
+
+
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0
+  },
+});
 
 export default Tabs

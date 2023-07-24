@@ -1,6 +1,6 @@
 import { savedAddress } from "../../interfaces";
 
-export const savedAddressesReducer = (state : savedAddress[] | null = null, action:any) => {
+export const savedAddressesReducer = (state : savedAddress[] = [], action:any) => {
     const maxSavedAddresses = 4;
 
 
@@ -34,6 +34,8 @@ export const savedAddressesReducer = (state : savedAddress[] | null = null, acti
             return state
         default : 
             return state
+        case 'setSavedAddresses':
+            return action.payload;
 
     }
 }

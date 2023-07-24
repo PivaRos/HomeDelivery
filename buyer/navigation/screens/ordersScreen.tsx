@@ -65,12 +65,11 @@ const OrdersScreen = ({
         if (fromDestination){
             const PossibleFromLocations = await Location.geocodeAsync(fromDestination.street + " " + fromDestination.streetNumber + " " + fromDestination.city)
             setFromLocation(PossibleFromLocations[0])
-            console.log(PossibleFromLocations[0])
         }
         if (toDestination){
             const PossibleToLocations = await Location.geocodeAsync(toDestination.street + " " + toDestination.streetNumber + " " + toDestination.city)
             setToLocation(PossibleToLocations[0])
-            console.log(PossibleToLocations[0])
+            
         }
     })();
     }, [fromDestination, toDestination])
@@ -311,6 +310,10 @@ return (
         </Pressable></View>}
         <View>
             <MapView
+                zoomEnabled={false}
+                rotateEnabled={false}
+                pitchEnabled={false}
+                scrollEnabled={false}
                 style={{width:"100%", height:windowHeight-435}}
                 ref={(ref) => MapRef.current = ref || undefined}
                 initialCamera={{

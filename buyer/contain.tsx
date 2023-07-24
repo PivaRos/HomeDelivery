@@ -25,6 +25,8 @@ import { CurrentLocationAction } from './redux/actions/CurrentLocationAction';
 import { StartRefreshingAction, StopRefreshingAction } from './redux/actions/RefreshingActions';
 import { StartLoadingAction, StopLoadingAction } from './redux/actions/LoadingActions';
 import { SelectedProductAction } from './redux/actions/SelectedProductAction';
+import { setSavedAddressesAction } from './redux/actions/SavedAddressesActions';
+import { AddressAction } from './redux/actions/AddressAction';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -38,10 +40,10 @@ export default function Container() {
   const savedOrder = useSelector((state:any) => state.savedOrder) as Order;
   const deliveryLocation = useSelector((state:any) => state.deliveryLocation) as Location.LocationObject;
   const currentLocation = useSelector((state:any) => state.currentLocation) as Location.LocationObject;
-
+  const savedAddresses = useSelector((state:any) => state.savedAddresses);
+  const address = useSelector((state:any) => state.address);
   const [sessionid, setSessionid] = useState<null | undefined | string>();
-  const [address, setAddress] = useState<Location.LocationGeocodedAddress>();
-  const [savedAddresses, setSavedAddresses] = useState<savedAddress[]>()
+
   const [hideAddressHanddler, setHideAddressHanddler] = useState(false);
   const [toggleOpenAddressList, setToggleOpenAddressList] = useState(false);
   const Stack = createNativeStackNavigator();
@@ -144,7 +146,7 @@ const [toLocation, setToLocation] = useState<Location.LocationGeocodedLocation>(
           latitude,
           longitude
         });
-        setAddress(response[0]);
+        Dispatch(AddressAction(response[0]));
       }
     }
     catch {
@@ -156,8 +158,7 @@ const [toLocation, setToLocation] = useState<Location.LocationGeocodedLocation>(
     if (!deliveryLocation) return <SafeAreaView><Text style={{ fontWeight: "bold", textAlign: 'center' }}>Please Allow HomeDelivery To Use Location In Order To Continue Using The App</Text><Button onPress={PressLocation} title='Allow Access' /></SafeAreaView>
     return (
       <SafeAreaView style={styles.container}>
-        <ScrollView contentContainerStyle={styles.container} refreshControl={<RefreshControl colors={['#2874ed']} title='Refresh' refreshing={refreshing} onRefresh={onRefresh} />}>
-          {!refreshing && (!hideAddressHanddler && <AddressHanddler toggleOpenAddressList={toggleOpenAddressList} setToggleOpenAddressList={setToggleOpenAddressList} setAddress={setAddress} address={address} />)}
+            {!refreshing && (!hideAddressHanddler && <AddressHanddler toggleOpenAddressList={toggleOpenAddressList} setToggleOpenAddressList={setToggleOpenAddressList}/>)}
           {toggleOpenAddressList && <Pressable 
               onPress={() => setToggleOpenAddressList(false)}
               style={{
@@ -183,23 +184,18 @@ const [toLocation, setToLocation] = useState<Location.LocationGeocodedLocation>(
               <Stack.Screen name='ViewDeliveryLoading' children={() => <ViewDeliveryLoading FromAddress={fromDestination} FromLocation={fromLocation} ToAddress={toDestination} ToLocation={toLocation}/>}/>
             </Stack.Navigator>
           </NavigationContainer>
-        </ScrollView>
       </SafeAreaView>
 
     );
   }
 
   useEffect(() => {
-    firstloadCheck();
+    if (refreshing){
+      firstloadCheck();
+    }
   }, [refreshing])
 
 
-  const onRefresh = useCallback(async () => {
-    Dispatch(StartRefreshingAction());
-    setTimeout(() => {
-    Dispatch(StopRefreshingAction());
-    }, 1500)
-  }, []);
 
   const PressLocation = async () => {
     const result = await CheckLocation()
@@ -224,7 +220,7 @@ const [toLocation, setToLocation] = useState<Location.LocationGeocodedLocation>(
       const sessionid = await AsyncStorage.getItem("@sessionid");
       const address = await AsyncStorage.getItem("address")
       setSessionid(sessionid);
-      if (address) setAddress(JSON.parse(address));
+      if (address) Dispatch(AddressAction(JSON.parse(address)));
     } catch {
 
     }
@@ -240,8 +236,8 @@ const [toLocation, setToLocation] = useState<Location.LocationGeocodedLocation>(
       const savedAddresses = await AsyncStorage.getItem('savedAddresses');
       const address = await AsyncStorage.getItem("address");
       if (!address) setAddressCurrent();
-      else setAddress(JSON.parse(address));
-      if (savedAddresses) setSavedAddresses(JSON.parse(savedAddresses));
+      else Dispatch(AddressAction(JSON.parse(address)));
+      if (savedAddresses) Dispatch(setSavedAddressesAction(JSON.parse(savedAddresses)));
       await UpdateData();
       Dispatch(StopLoadingAction());
     } catch{}
@@ -260,6 +256,7 @@ const [toLocation, setToLocation] = useState<Location.LocationGeocodedLocation>(
     getContent()
   );
 }
+
 
 
 

@@ -5,7 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import * as Location from 'expo-location';
 import MapView, { Marker } from 'react-native-maps';
 import { getDistance } from "../../functions";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { AddressComponent } from "../../components/addressComponent";
 import { useSelector } from "react-redux";
 
@@ -21,10 +21,15 @@ export const ViewCheckout = ({savedAddresses }: CheckoutPops) => {
     const deliveryLocation = useSelector((state:any) => state.deliveryLocation) as Location.LocationObject;
     const selectedStore = useSelector((state:any) => state.selectedStore) as Store;
     const savedOrder = useSelector((state:any) => state.savedOrder);
+    let MapRef = useRef<MapView| null>();
 
     const BackPress = () => {
         navigation.navigate("ViewOrder", { id: 4 })
     }
+
+    useEffect(() => {
+        MapRef.current?.fitToSuppliedMarkers(["deliveryLocation", "selectedStore"], {animated:true})
+    }, [deliveryLocation, selectedStore])
 
     return (<ScrollView>
         <View style={{ backgroundColor: 'white', width: '100%', height: 50, justifyContent: 'center' }}>
@@ -32,7 +37,10 @@ export const ViewCheckout = ({savedAddresses }: CheckoutPops) => {
             <Text style={{ textAlign: 'center', width: "100%", fontSize: 16, position: 'absolute' }}>{selectedStore?.name}</Text>
         </View>
         <View style={{ backgroundColor: "white" }}>
-            {deliveryLocation && selectedStore?.location && <MapView initialCamera={{ heading: 0, altitude: getDistance(selectedStore.location, deliveryLocation) * 1000 * 3, pitch: 1, center: { latitude: (deliveryLocation.coords.latitude + selectedStore.location.coords.latitude) / 2, longitude: (deliveryLocation.coords.longitude + selectedStore.location.coords.longitude) / 2 } }} style={{
+            {deliveryLocation && selectedStore?.location && 
+            <MapView
+             ref={(ref) => MapRef.current = ref}
+             initialCamera={{ heading: 0, altitude: getDistance(selectedStore.location, deliveryLocation) * 1000 * 3, pitch: 1, center: { latitude: (deliveryLocation.coords.latitude + selectedStore.location.coords.latitude) / 2, longitude: (deliveryLocation.coords.longitude + selectedStore.location.coords.longitude) / 2 } }} style={{
                 height: 250, width: '100%',
                 shadowColor: '#000',
                 shadowOffset: { width: 1, height: 3 },
@@ -43,8 +51,18 @@ export const ViewCheckout = ({savedAddresses }: CheckoutPops) => {
                 {(selectedStore?.location !== undefined) && <Marker
                     coordinate={selectedStore.location.coords}
                     title={selectedStore?.name}
+                    identifier="selectedStore"
                 >
-                    <View style={{ backgroundColor: 'white', height: 20, width: 20, borderRadius: 50, justifyContent: 'center', flexDirection: 'row' }}>
+                    <View 
+                    style={{ 
+                        backgroundColor: 'white', 
+                        height: 20, 
+                        width: 20, 
+                        borderRadius: 50, 
+                        justifyContent: 'center', 
+                        flexDirection: 'row' 
+                    }}
+                    >
                         {/* this is Store Marker */}
                         <Text style={{ fontWeight: 'bold' }}>
                             {(selectedStore.avgDelivery && savedOrder.distance) && selectedStore.avgDelivery*savedOrder.distance || "0"}
@@ -54,6 +72,7 @@ export const ViewCheckout = ({savedAddresses }: CheckoutPops) => {
                 <Marker
                     coordinate={{ latitude: deliveryLocation.coords.latitude, longitude: deliveryLocation.coords.longitude }}
                     title={selectedStore?.name}
+                    identifier="deliveryLocation"
                 >
 
                     <View style={{ backgroundColor: 'lightgreen', height: 20, width: 20, borderRadius: 100, borderColor: 'white', borderWidth: 2.3 }}>

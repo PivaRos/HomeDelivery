@@ -68,13 +68,6 @@ export const ViewProduct = (props: Props) => {
         let found = false;
         let tempindex = -1;
         savedOrder.selecedProdcuts.map((p, index) => {
-            
-            console.log( "selectedProduct :" + JSON.stringify(selectedProduct.options?.map((option) => {
-                return option.selectedOptionProducts;
-            }), null, 2));
-            console.log( "savedProductOnOrder :" + JSON.stringify(p.options?.map((option) => {
-                return option.selectedOptionProducts;
-            }), null, 2));
             let pClone: Product = JSON.parse(JSON.stringify(p));
             let currentProductClone: Product = JSON.parse(JSON.stringify(selectedProduct));
             if (JSON.stringify(pClone) === JSON.stringify(currentProductClone)) {
@@ -121,8 +114,6 @@ export const ViewProduct = (props: Props) => {
 
     const checkIfNeedUpdate = () => {
         let same = (JSON.stringify(selectedProduct) === JSON.stringify(Product))
-        
-        console.log("checkifneedto update is the products same: "+ (JSON.stringify(selectedProduct) === JSON.stringify(Product)));
         if (selectedProduct.units && !same) {
 
             setJustChanged(true);
@@ -162,15 +153,6 @@ export const ViewProduct = (props: Props) => {
         }
         return true;
     }
-
-    useEffect(() => {
-        if (!selectedProduct.options) return;
-        console.log(JSON.stringify(selectedProduct.options.map((o) => {
-            return o.selectedOptionProducts?.map((s) => {
-                return s.selected;
-            })
-        }), null, 2))
-    }, [selectedProduct])
 
 
     const addToOrder = async () => {

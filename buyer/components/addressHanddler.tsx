@@ -10,18 +10,15 @@ import { AdpterToGeocodedAddress } from '../functions';
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useDispatch, useSelector } from 'react-redux';
 import { StartLoadingAction, StopLoadingAction } from '../redux/actions/LoadingActions';
+import { AddSavedAddressAction, setSavedAddressesAction } from '../redux/actions/SavedAddressesActions';
+import { AddressAction } from '../redux/actions/AddressAction';
 
 interface Props {
-    address: LocationGeocodedAddress | undefined;
-    setAddress: React.Dispatch<React.SetStateAction<Location.LocationGeocodedAddress | undefined>>
     toggleOpenAddressList:boolean;
     setToggleOpenAddressList:React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const AddressHanddler = ({ 
-
-        address,
-        setAddress, 
         toggleOpenAddressList, 
         setToggleOpenAddressList 
     }: Props) => {
@@ -30,10 +27,11 @@ export const AddressHanddler = ({
 
     const currentLocation = useSelector((state:any) => state.currentLocation) as Location.LocationObject;
     const deliveryLocation = useSelector((state:any) => state.deliveryLocation) as Location.LocationObject
+    const savedAddresses = useSelector((state:any) => state.savedAddresses) as savedAddress[];
+    const address = useSelector((state:any) => state.address);
 
     const [usingCurrent, setUsingCurrent] = useState(currentLocation === deliveryLocation);
     const [listOpened, setListOpened] = useState(toggleOpenAddressList);
-    const [savedAddresses, setSavedAddresses] = useState<savedAddress[]>([]);
     const [query, setQuery ] = useState("");
     
     useEffect(() => {
@@ -56,10 +54,11 @@ export const AddressHanddler = ({
     }, [savedAddresses])
 
     const checkSavedAddresses = async () => {
-            const tryAddresses = await AsyncStorage.getItem("savedAddresses");
-            if (!tryAddresses) return;
-            const savedAddresses:savedAddress[] =  JSON.parse(tryAddresses);
-            if (savedAddresses) setSavedAddresses(savedAddresses)
+        const tryAddresses = await AsyncStorage.getItem("savedAddresses");
+        if (!tryAddresses) return;
+        const savedAddresses:savedAddress[] =  JSON.parse(tryAddresses);
+
+        if (savedAddresses) Dispatch(setSavedAddressesAction(savedAddresses));
     }
 
     const [dataArr, setDataArr] = useState(Array<any>());
@@ -141,11 +140,9 @@ export const AddressHanddler = ({
 
     const addressChoosen = (address:Location.LocationGeocodedAddress) => {
         Dispatch(StartLoadingAction());
-        setAddress(address);
+        Dispatch(AddressAction(address));
         //!!
-        setSavedAddresses(savedAddresses => {
-            return addAddress(savedAddresses, {address:address})
-        });
+        Dispatch(AddSavedAddressAction({address:address}));
         // !!
         AddressPressed();
         Dispatch(StopLoadingAction());
