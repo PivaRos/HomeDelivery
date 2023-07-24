@@ -21,6 +21,7 @@ export const storeActions = {
           store_category: store_category,
         }),
       });
+
       let data: dataObject = await response.json();
       if (data) {
         return data.data;
