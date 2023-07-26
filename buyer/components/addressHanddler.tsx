@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   TextInput,
@@ -27,18 +27,19 @@ import {
 } from "../redux/actions/SavedAddressesActions";
 import { AddressAction } from "../redux/actions/AddressAction";
 import { InternetConnectionAction } from "../redux/actions/InterntConnectionAction";
+import {
+  ToggleCloseAddressListAction,
+  ToggleOpenAddressListAction,
+} from "../redux/actions/ToggleAddressListActions";
 
-interface Props {
-  toggleOpenAddressList: boolean;
-  setToggleOpenAddressList: React.Dispatch<React.SetStateAction<boolean>>;
-}
+interface Props {}
 
-export const AddressHanddler = ({
-  toggleOpenAddressList,
-  setToggleOpenAddressList,
-}: Props) => {
+export const AddressHanddler = ({}: Props) => {
   const Dispatch = useDispatch();
 
+  const toggleOpenAddressList = useSelector(
+    (state: any) => state.toggleOpenAddressList
+  ) as boolean;
   const currentLocation = useSelector(
     (state: any) => state.currentLocation
   ) as Location.LocationObject;
@@ -83,7 +84,14 @@ export const AddressHanddler = ({
     (state: any) => state.internetConnection
   );
 
-  const animatedToggle = new Animated.Value(0);
+  const valueOpen = useRef(new Animated.Value(0)).current; // 0 close 1 open
+  const animatedlist = useRef(new Animated.Value(-500)).current;
+  const animatedsmall = useRef(new Animated.Value(-50)).current;
+
+  const zindexInterpulation = valueOpen.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 101],
+  });
 
   useEffect(() => {
     setUsingCurrent(currentLocation === deliveryLocation);
@@ -94,18 +102,44 @@ export const AddressHanddler = ({
     console.log(internetConnection);
     setListOpened((value) => {
       if (value === false) {
-        animatedToggle.setValue(1);
+        // * opend
+        Animated.timing(animatedsmall, {
+          toValue: -150,
+          useNativeDriver: true,
+          duration: 270,
+        }).start();
+        Animated.timing(animatedlist, {
+          toValue: 250,
+          useNativeDriver: true,
+          duration: 250,
+        }).start();
       } else {
-        animatedToggle.setValue(0);
+        // *not opend
+        Animated.timing(animatedsmall, {
+          toValue: -50,
+          useNativeDriver: true,
+          duration: 250,
+        }).start();
+        Animated.timing(animatedlist, {
+          toValue: -250,
+          useNativeDriver: true,
+          duration: 250,
+        }).start();
       }
       return !value;
     });
   };
 
   useEffect(() => {
-    setToggleOpenAddressList(listOpened);
     if (listOpened) {
+      valueOpen.setValue(1);
+      Dispatch(ToggleOpenAddressListAction());
       setDataArr([]);
+    } else {
+      setTimeout(() => {
+        valueOpen.setValue(0);
+      }, 100);
+      Dispatch(ToggleCloseAddressListAction());
     }
   }, [listOpened]);
 
@@ -113,16 +147,16 @@ export const AddressHanddler = ({
     if (!toggleOpenAddressList) {
       checkSavedAddresses();
       setListOpened(false);
-      animatedToggle.setValue(0);
     }
   }, [toggleOpenAddressList]);
 
-  useEffect(() => {}, [savedAddresses]);
+  useEffect(() => {
+    console.log("listisopened : " + listOpened);
+    if (listOpened) Dispatch(ToggleOpenAddressListAction());
+    else Dispatch(ToggleCloseAddressListAction());
+  }, [listOpened]);
 
-  const heightIntepulation = animatedToggle.interpolate({
-    inputRange: [0, 1],
-    outputRange: [30, 250],
-  });
+  useEffect(() => {}, [savedAddresses]);
 
   const fillter = (query: string): string => {
     var withNoDigits = query.replace(/[0-9]/g, "");
@@ -160,30 +194,32 @@ export const AddressHanddler = ({
 
   return (
     <Animated.View
-      style={[
-        { height: 30, backgroundColor: "lightgreen" },
-        { height: heightIntepulation },
-      ]}
+      style={{
+        height: 300,
+        position: "absolute",
+        zIndex: zindexInterpulation,
+        top: 45,
+      }}
     >
-      <Pressable onPress={AddressPressed} style={styles.view}>
-        <View style={styles.anotherView}>
-          {address && (
-            <Text style={{ textAlign: "center", width: "100%" }}>
-              {address.street + " " + address.streetNumber + " " + address.city}
-            </Text>
-          )}
-          {usingCurrent && (
-            <Text style={{ fontWeight: "bold" }}> (Current Location)</Text>
-          )}
-        </View>
-        {listOpened && (
+      <Animated.View
+        style={{
+          marginTop: -250,
+          height: 300,
+          backgroundColor: "lightgreen",
+          transform: [{ translateY: animatedlist }],
+          zIndex: 51,
+        }}
+      >
+        <Pressable
+          onPress={AddressPressed}
+          style={{ height: 300, width: "100%" }}
+        >
           <View
             style={{
               height: 250,
               width: "100%",
               backgroundColor: "lightgreen",
               zIndex: 10,
-              position: "absolute",
             }}
           >
             <View
@@ -269,8 +305,31 @@ export const AddressHanddler = ({
               </ScrollView>
             </View>
           </View>
-        )}
-      </Pressable>
+        </Pressable>
+      </Animated.View>
+      <Animated.View
+        style={{
+          transform: [{ translateY: animatedsmall }],
+          zIndex: 50,
+        }}
+      >
+        <Pressable style={styles.view} onPress={AddressPressed}>
+          <View style={styles.anotherView}>
+            {address && (
+              <Text style={{ textAlign: "center", width: "100%" }}>
+                {address.street +
+                  " " +
+                  address.streetNumber +
+                  " " +
+                  address.city}
+              </Text>
+            )}
+            {usingCurrent && (
+              <Text style={{ fontWeight: "bold" }}> (Current Location)</Text>
+            )}
+          </View>
+        </Pressable>
+      </Animated.View>
     </Animated.View>
   );
 };
@@ -279,18 +338,13 @@ const styles = StyleSheet.create({
   view: {
     height: 30,
     width: "100%",
+    backgroundColor: "lightgreen",
+    justifyContent: "center",
   },
   anotherView: {
     width: "100%",
-    position: "absolute",
-    left: 5,
-    bottom: 6,
     display: "flex",
     flexDirection: "row",
-  },
-  openedView: {
-    height: 300,
-    width: "100%",
   },
   addressText: {
     padding: 3,

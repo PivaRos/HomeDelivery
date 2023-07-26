@@ -6,12 +6,13 @@ export const SocketServer = (MongoObject: MongoObject) => {
   const server = new WebSocketServer({
     port: process.env.WebSocketPORT ? +process.env.WebSocketPORT : 3000,
     host: process.env.WebSocketHOST ? process.env.WebSocketHOST : "0.0.0.0",
-    verifyClient: (info, callback) => {
-      // ! run authorization logic; need to finish !!
+    verifyClient: async (info, callback) => {
       const sessionid = info.req.headers.authorization;
-      const approved = false;
-      if (approved) {
-        // ! approve connection
+      const Account = await MongoObject.collections.Accounts.findOne({
+        sessionid: sessionid,
+      });
+      if (Account) {
+        // * approve connection
         callback(true);
       } else {
         // ! reject connection
@@ -20,19 +21,17 @@ export const SocketServer = (MongoObject: MongoObject) => {
     },
   });
 
-  server.on("connection", (socket) => {
-    socket.send(
-      JSON.stringify({
-        message: "Hello World!",
-      })
+  server.on("connection", (socket, req) => {
+    MongoObject.collections.Accounts.findOneAndUpdate(
+      { sessionid: req.headers.authorization },
+      { $set: { socket } }
     );
-    console.log("WebSocketConnection is open");
-
-    socket.on("message", (message) => {
-      socket.send(JSON.stringify({ messageReceived: true }));
-    });
-    socket.on("close", () => {
-      console.log("WebSocketConnection is closed");
+    socket.on("message", (message) => {});
+    socket.on("close", async () => {
+      const update = await MongoObject.collections.Accounts.findOneAndUpdate(
+        { sessionid: req.headers.authorization },
+        { $set: { socket: undefined } }
+      );
     });
   });
 };
