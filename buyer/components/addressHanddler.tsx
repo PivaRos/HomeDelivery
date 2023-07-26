@@ -26,6 +26,7 @@ import {
   setSavedAddressesAction,
 } from "../redux/actions/SavedAddressesActions";
 import { AddressAction } from "../redux/actions/AddressAction";
+import { InternetConnectionAction } from "../redux/actions/InterntConnectionAction";
 
 interface Props {
   toggleOpenAddressList: boolean;
@@ -70,9 +71,7 @@ export const AddressHanddler = ({
 
   const checkSavedAddresses = async () => {
     try {
-      const savedAddresses = await AsyncStorage.getItem(
-        "savedAddresses"
-      );
+      const savedAddresses = await AsyncStorage.getItem("savedAddresses");
       if (savedAddresses) {
         Dispatch(setSavedAddressesAction(JSON.parse(savedAddresses)));
       }
@@ -80,6 +79,9 @@ export const AddressHanddler = ({
   };
 
   const [dataArr, setDataArr] = useState(Array<any>());
+  const internetConnection = useSelector(
+    (state: any) => state.internetConnection
+  );
 
   const animatedToggle = new Animated.Value(0);
 
@@ -88,6 +90,8 @@ export const AddressHanddler = ({
   }, [address]);
 
   const AddressPressed = () => {
+    Dispatch(InternetConnectionAction(!internetConnection));
+    console.log(internetConnection);
     setListOpened((value) => {
       if (value === false) {
         animatedToggle.setValue(1);

@@ -11,6 +11,8 @@ import {
   RefreshControl,
   Dimensions,
   Pressable,
+  Animated,
+  useAnimatedValue,
 } from "react-native";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -53,11 +55,17 @@ import {
 import { SelectedProductAction } from "./redux/actions/SelectedProductAction";
 import { setSavedAddressesAction } from "./redux/actions/SavedAddressesActions";
 import { AddressAction } from "./redux/actions/AddressAction";
+import NetInfo from "@react-native-community/netinfo";
+import { InternetConnectionAction } from "./redux/actions/InterntConnectionAction";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function Container() {
   const Dispatch = useDispatch();
+
+  const internetConnection = useSelector(
+    (state: any) => state.internetConnection
+  ) as boolean;
 
   const refreshing = useSelector((state: any) => state.refreshing) as boolean;
   const loading = useSelector((state: any) => state.loading) as boolean;
@@ -76,6 +84,9 @@ export default function Container() {
   ) as Location.LocationObject;
   const savedAddresses = useSelector((state: any) => state.savedAddresses);
   const address = useSelector((state: any) => state.address);
+
+  const hasInternetValue = useAnimatedValue(1);
+
   const [sessionid, setSessionid] = useState<null | undefined | string>();
 
   const [hideAddressHanddler, setHideAddressHanddler] = useState(false);
@@ -116,8 +127,6 @@ export default function Container() {
   const [toLocation, setToLocation] =
     useState<Location.LocationGeocodedLocation>();
 
-  const myLocaton = {};
-
   const windowHeight = Dimensions.get("window").height;
 
   const [fontsLoaded] = useFonts({
@@ -131,6 +140,30 @@ export default function Container() {
   }, [fontsLoaded]);
   onLayoutRootView();
 
+  const intrentFadeIntrepalation = hasInternetValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 0],
+    extrapolate: "clamp",
+  });
+
+  const intrenetTranslateYInterpulation = hasInternetValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 40],
+    extrapolate: "clamp",
+  });
+
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener((state) => {
+      if (!state.isConnected) {
+      } else if (state.isConnected != internetConnection) {
+        Dispatch(InternetConnectionAction(state.isConnected));
+      }
+    });
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
   useEffect(() => {
     if (selectedProduct && !selectedProduct?.units) {
       let p = selectedProduct;
@@ -138,6 +171,11 @@ export default function Container() {
       Dispatch(SelectedProductAction(p));
     }
   }, [selectedProduct]);
+
+  useEffect(() => {
+    if (internetConnection) hasInternetValue.setValue(0);
+    else hasInternetValue.setValue(1);
+  }, [internetConnection]);
 
   useEffect(() => {
     try {
@@ -204,6 +242,20 @@ export default function Container() {
       );
     return (
       <SafeAreaView style={styles.container}>
+        <Animated.View
+          style={{
+            backgroundColor: "grey",
+            width: "100%",
+            height: 40,
+            justifyContent: "center",
+            opacity: intrentFadeIntrepalation,
+            transform: [{ translateY: intrenetTranslateYInterpulation }],
+          }}
+        >
+          <Text style={{ textAlign: "center", fontSize: 14 }}>
+            You Are Currently Offline {"):"}
+          </Text>
+        </Animated.View>
         {!refreshing && !hideAddressHanddler && (
           <AddressHanddler
             toggleOpenAddressList={toggleOpenAddressList}

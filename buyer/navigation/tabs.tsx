@@ -125,39 +125,37 @@ const Tabs = (props: Props) => {
           tabBarLabelStyle: { marginTop: 2 },
         })}
       >
-        <Tab.Group>
-          <Tab.Screen
-            options={{ title: "Food", tabBarActiveTintColor: "black" }}
-            name="Stores"
-            children={() => <FoodStores />}
-          />
-          <Tab.Screen
-            options={{ title: "HomeMade", tabBarActiveTintColor: "black" }}
-            name="Home"
-            children={() => <HomeMadeStores />}
-          />
-          <Tab.Screen
-            options={{ title: "MyOrders", tabBarActiveTintColor: "black" }}
-            name="Orders"
-            children={() => (
-              <OrdersScreen
-                fromLocation={props.fromLocation}
-                toLocation={props.toLocation}
-                fromDestination={props.fromDestination}
-                toDestination={props.toDestination}
-                setFromDestination={props.setFromDestination}
-                setToDestination={props.setToDestination}
-                setFromLocation={props.setFromLocation}
-                setToLocation={props.setToLocation}
-              />
-            )}
-          />
-          <Tab.Screen
-            options={{ title: "Account", tabBarActiveTintColor: "black" }}
-            name="Account"
-            children={() => <Account />}
-          />
-        </Tab.Group>
+        <Tab.Screen
+          options={{ title: "Food", tabBarActiveTintColor: "black" }}
+          name="Stores"
+          children={() => <FoodStores />}
+        />
+        <Tab.Screen
+          options={{ title: "HomeMade", tabBarActiveTintColor: "black" }}
+          name="Home"
+          children={() => <HomeMadeStores />}
+        />
+        <Tab.Screen
+          options={{ title: "MyOrders", tabBarActiveTintColor: "black" }}
+          name="Orders"
+          children={() => (
+            <OrdersScreen
+              fromLocation={props.fromLocation}
+              toLocation={props.toLocation}
+              fromDestination={props.fromDestination}
+              toDestination={props.toDestination}
+              setFromDestination={props.setFromDestination}
+              setToDestination={props.setToDestination}
+              setFromLocation={props.setFromLocation}
+              setToLocation={props.setToLocation}
+            />
+          )}
+        />
+        <Tab.Screen
+          options={{ title: "Account", tabBarActiveTintColor: "black" }}
+          name="Account"
+          children={() => <Account />}
+        />
       </Tab.Navigator>
     </ScrollView>
   );
