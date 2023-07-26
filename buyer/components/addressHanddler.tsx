@@ -98,8 +98,6 @@ export const AddressHanddler = ({}: Props) => {
   }, [address]);
 
   const AddressPressed = () => {
-    Dispatch(InternetConnectionAction(!internetConnection));
-    console.log(internetConnection);
     setListOpened((value) => {
       if (value === false) {
         // * opend
@@ -151,7 +149,6 @@ export const AddressHanddler = ({}: Props) => {
   }, [toggleOpenAddressList]);
 
   useEffect(() => {
-    console.log("listisopened : " + listOpened);
     if (listOpened) Dispatch(ToggleOpenAddressListAction());
     else Dispatch(ToggleCloseAddressListAction());
   }, [listOpened]);

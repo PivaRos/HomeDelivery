@@ -89,8 +89,12 @@ export default function Container() {
     (state: any) => state.toggleOpenAddressList
   );
 
-  const hasInternetValueY = useRef(new Animated.Value(-40)).current;
-  const hasInternetValueYBack = useRef(new Animated.Value(-40)).current;
+  // * internt Animation Variables
+  const internetAnimationsDuration = 300;
+  const backOnlineAppearanceTimer = 3000;
+
+  const hasInternetValueY = useRef(new Animated.Value(-100)).current;
+  const hasInternetValueYBack = useRef(new Animated.Value(-100)).current;
 
   const [sessionid, setSessionid] = useState<null | undefined | string>();
 
@@ -150,9 +154,7 @@ export default function Container() {
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener((state) => {
       if (state.isConnected !== null) {
-        if (state.isConnected != internetConnection) {
-          Dispatch(InternetConnectionAction(state.isConnected));
-        }
+        Dispatch(InternetConnectionAction(state.isConnected));
       }
     });
     return () => {
@@ -170,28 +172,27 @@ export default function Container() {
 
   useEffect(() => {
     if (internetConnection) {
-      Animated.timing(hasInternetValueYBack, {
-        toValue: 0,
-        duration: 250,
+      const greenin = Animated.timing(hasInternetValueYBack, {
+        toValue: 40,
+        duration: internetAnimationsDuration,
+        useNativeDriver: true,
+      });
+
+      greenin.start();
+
+      Animated.timing(hasInternetValueY, {
+        toValue: -100,
+        duration: internetAnimationsDuration,
         useNativeDriver: true,
       }).start();
-      Animated.timing(hasInternetValueYBack, {
-        toValue: -40,
-        duration: 250,
-        useNativeDriver: true,
-        delay: 350,
-      }).start();
+      setTimeout(() => {
+        greenin.reset();
+      }, backOnlineAppearanceTimer);
     } else {
       Animated.timing(hasInternetValueY, {
         toValue: 40,
-        duration: 250,
+        duration: internetAnimationsDuration,
         useNativeDriver: true,
-      }).start();
-      Animated.timing(hasInternetValueY, {
-        toValue: -40,
-        duration: 250,
-        useNativeDriver: true,
-        delay: 350,
       }).start();
     }
   }, [internetConnection]);
@@ -225,10 +226,6 @@ export default function Container() {
       } catch {}
     })();
   }, [address]);
-
-  useEffect(() => {
-    console.log("toggleOpenAddressList : " + toggleOpenAddressList);
-  }, [toggleOpenAddressList]);
 
   const setAddressCurrent = async () => {
     try {
@@ -271,9 +268,9 @@ export default function Container() {
             height: 40,
             justifyContent: "center",
             opacity: 1,
-            transform: [{ translateY: hasInternetValueY }],
             position: "absolute",
-            zIndex: 100,
+            transform: [{ translateY: hasInternetValueY }],
+            zIndex: 201,
           }}
         >
           <Text style={{ textAlign: "center", fontSize: 14 }}>
@@ -290,14 +287,13 @@ export default function Container() {
             opacity: 1,
             transform: [{ translateY: hasInternetValueYBack }],
             position: "absolute",
-            zIndex: 101,
+            zIndex: 201,
           }}
         >
           <Text style={{ textAlign: "center", fontSize: 14 }}>
-            Back To Online {"(:"}
+            Back Online {"(:"}
           </Text>
         </Animated.View>
-
         {!refreshing &&
           !hideAddressHanddler && [
             <View key={1} style={{ height: 30 }}></View>,
@@ -388,7 +384,7 @@ export default function Container() {
                 name="ViewProduct"
                 children={() => (
                   <View>
-                    <Text>asdasd</Text>
+                    <Text></Text>
                   </View>
                 )}
               />
