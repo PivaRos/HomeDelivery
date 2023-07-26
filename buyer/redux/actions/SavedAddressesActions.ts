@@ -1,15 +1,22 @@
 import { savedAddress } from "../../interfaces";
 
-export const AddSavedAddress = (payload:savedAddress) => {
+export const AddSavedAddressAction = (payload:savedAddress) => {
     return {
         type:'addSavedAddress',
         payload:payload  
     };
 }
 
-export const RemoveSavedAddress = (payload:savedAddress) => {
+export const RemoveSavedAddressAction = (payload:savedAddress) => {
     return {
         type:'removeSavedAddress',
         payload:payload
     };
 }
+
+export const setSavedAddressesAction = (payload:savedAddress[]) => {
+    return {
+        type:"setSavedAddresses",
+        payload:payload
+    }
+} 

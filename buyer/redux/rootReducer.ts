@@ -1,4 +1,4 @@
-import { configureStore, createStore } from "@reduxjs/toolkit";
+import { combineReducers } from "redux";
 import { deliveryLocationReducer } from "./reducers/deliveryLocationReducer";
 import { currentLocationReducer } from "./reducers/currentLocationReducer";
 import { loadingReducer } from "./reducers/loadingReducer";
@@ -11,7 +11,20 @@ import { selectedProductReducer } from "./reducers/selectedProductReducer";
 import { savedOrderReducer } from "./reducers/savedOrderReducer";
 import { addressReducer } from "./reducers/addressReducer";
 import { savedAddressesReducer } from "./reducers/savedAddressesReducer";
-import { createStoreHook } from "react-redux";
-import { rootReducer } from "./rootReducer";
+import { internetConnectionReducer } from "./reducers/internetConnectionReducer";
 
- export const Store = createStore(rootReducer)
+export const rootReducer = combineReducers({
+  deliveryLocation: deliveryLocationReducer,
+  currentLocation: currentLocationReducer,
+  loading: loadingReducer,
+  homeMadeStores: homeMadeStoresReducer,
+  foodStores: foodStoresReducer,
+  selectedStore: selectedStoreReducer,
+  refreshing: refreshingReducer,
+  sessionID: sessionIDReducer,
+  selectedProduct: selectedProductReducer,
+  savedOrder: savedOrderReducer,
+  address: addressReducer,
+  savedAddresses: savedAddressesReducer,
+  internetConnection: internetConnectionReducer,
+});
