@@ -51,6 +51,8 @@ export const AddressHanddler = ({}: Props) => {
   ) as savedAddress[];
   const address = useSelector((state: any) => state.address);
 
+  let inputRef = useRef<TextInput>(null).current;
+
   const [usingCurrent, setUsingCurrent] = useState(
     currentLocation === deliveryLocation
   );
@@ -98,6 +100,7 @@ export const AddressHanddler = ({}: Props) => {
   }, [address]);
 
   const AddressPressed = () => {
+    if (inputRef) inputRef.blur();
     setListOpened((value) => {
       if (value === false) {
         // * opend
@@ -227,6 +230,7 @@ export const AddressHanddler = ({}: Props) => {
               }}
             >
               <TextInput
+                ref={(ref) => (inputRef = ref)}
                 onChangeText={(newtext) => setQuery(newtext)}
                 style={{
                   fontSize: 18,

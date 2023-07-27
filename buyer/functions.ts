@@ -5,6 +5,7 @@ import {
   Product,
   StorageData,
   Store,
+  availableStores,
   govAddress,
   optionProduct,
 } from "./interfaces";
@@ -165,3 +166,12 @@ export const AdpterToGeocodedAddress = (
     streetNumber: streetnm ? streetnm : "",
   } as Location.LocationGeocodedAddress;
 }; // converts Gov return data to own Type
+
+// returns true if availableStores object has Stores inside
+export const hasStores = (stores: availableStores) => {
+  if (stores === null) return true;
+  if (stores.Closed.length === 0 && stores.Open.length === 0) {
+    return false;
+  }
+  return true;
+};

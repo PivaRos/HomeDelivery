@@ -13,6 +13,8 @@ import { getDistance } from "../../functions";
 import { useEffect, useRef } from "react";
 import { AddressComponent } from "../../components/addressComponent";
 import { useSelector } from "react-redux";
+import { CheckoutTab } from "../../components/checkoutTab";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 interface CheckoutPops {
   savedAddresses: savedAddress[] | undefined;
@@ -146,6 +148,13 @@ export const ViewCheckout = ({ savedAddresses }: CheckoutPops) => {
         <View style={{ backgroundColor: "white" }}>
           <AddressComponent savedAddresses={savedAddresses} />
         </View>
+        <CheckoutTab
+          IconImage={MaterialCommunityIcons}
+          title="this is title"
+          subTitle="this is subtitle"
+          IconImageSize={32}
+          IconName="map-marker-distance"
+        />
         <View style={{ backgroundColor: "white" }}></View>
       </View>
     </ScrollView>
