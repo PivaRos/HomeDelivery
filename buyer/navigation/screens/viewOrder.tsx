@@ -5,6 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
+import { BackButtonText, StartDeliveryButtonText } from "../../languageConfig";
 
 interface props {
   setHideAddressHanddler: React.Dispatch<React.SetStateAction<boolean>>;
@@ -31,7 +32,7 @@ export const ViewOrder = (props: props) => {
         }}
       >
         <Pressable style={styles.backButton} onPress={BackPress}>
-          <Text style={styles.backButtonText}>Back</Text>
+          <Text style={styles.backButtonText}>{BackButtonText}</Text>
         </Pressable>
         <Text
           style={{
@@ -77,7 +78,7 @@ export const ViewOrder = (props: props) => {
               fontSize: 20,
             }}
           >
-            Start Delivery
+            {StartDeliveryButtonText}
           </Text>
         </Pressable>
       </View>

@@ -22,6 +22,7 @@ import { userActions } from "../../network_services/user";
 import { LocationObject } from "expo-location";
 import { useDispatch, useSelector } from "react-redux";
 import { SavedOrderAction } from "../../redux/actions/SavedOrderAction";
+import { addProductToOrderText } from "../../languageConfig";
 
 interface Props {
   indexinSelectedProduct?: number;
@@ -364,7 +365,7 @@ export const ViewProduct = (props: Props) => {
       </View>
       {selectedProduct.units === 0 && !justChanged && (
         <Pressable onPress={addToOrder} style={styles.PressableAdd}>
-          <Text style={styles.buttonText}>Add to order</Text>
+          <Text style={styles.buttonText}>{addProductToOrderText}</Text>
           <Text style={styles.buttonPrice}>{productPrice}</Text>
         </Pressable>
       )}

@@ -35,6 +35,7 @@ import Entypo from "react-native-vector-icons/Entypo";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useDispatch, useSelector } from "react-redux";
 import { SavedOrderAction } from "../../redux/actions/SavedOrderAction";
+import { BackButtonText, ViewOrderButtonText } from "../../languageConfig";
 
 interface Props {
   Store: Store;
@@ -258,7 +259,7 @@ export const ViewStore = (props: Props) => {
           }}
         ></Animated.View>
         <Pressable style={styles.backButton} onPress={BackPress}>
-          <Text style={styles.backButtonText}>Back</Text>
+          <Text style={styles.backButtonText}>{BackButtonText}</Text>
         </Pressable>
         <Animated.View
           style={[
@@ -405,7 +406,7 @@ export const ViewStore = (props: Props) => {
               fontWeight: "bold",
             }}
           >
-            View Order
+            {ViewOrderButtonText}
           </Text>
         </Pressable>
       )}
