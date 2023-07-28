@@ -3,18 +3,32 @@ import {
   Order,
   RootStackParamList,
   Store,
+  currencyEnum,
   savedAddress,
 } from "../../interfaces";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
 import * as Location from "expo-location";
 import MapView, { Marker } from "react-native-maps";
-import { getDistance } from "../../functions";
+import { DeliveryFee, getDistance } from "../../functions";
 import { useEffect, useRef } from "react";
 import { AddressComponent } from "../../components/addressComponent";
 import { useSelector } from "react-redux";
 import { CheckoutTab } from "../../components/checkoutTab";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import AntDesign from "react-native-vector-icons/AntDesign";
+import {
+  BackButtonText,
+  DeliveryFeeText,
+  ServiceFeeText,
+  SubTotalText,
+  addressText,
+  billingText,
+  directionEnum,
+  paymentText,
+  textDirection,
+} from "../../languageConfig";
+import { BillingTab } from "../../components/billingTab";
 
 interface CheckoutPops {
   savedAddresses: savedAddress[] | undefined;
@@ -29,12 +43,37 @@ export const ViewCheckout = ({ savedAddresses }: CheckoutPops) => {
   const selectedStore = useSelector(
     (state: any) => state.selectedStore
   ) as Store;
-  const savedOrder = useSelector((state: any) => state.savedOrder);
+  const savedOrder = useSelector((state: any) => state.savedOrder) as Order;
   let MapRef = useRef<MapView | null>();
+
+  const subtotalCalculator = () => {
+    const pricearr = savedOrder.selecedProdcuts.map((product, index) => {
+      if (product.units) {
+        return product.price.price * product.units;
+      }
+      return 0;
+    });
+    const sum = pricearr.reduce((a: number, b: number) => {
+      return a + b;
+    }, 0);
+    return sum;
+  };
+
+  const subtotal = subtotalCalculator();
 
   const BackPress = () => {
     navigation.navigate("ViewOrder", { id: 4 });
   };
+  console.log(
+    JSON.stringify(
+      {
+        selectedStore: selectedStore.deliveryDistance,
+        savedOrderDistance: savedOrder.distance,
+      },
+      null,
+      2
+    )
+  );
 
   useEffect(() => {
     MapRef.current?.fitToSuppliedMarkers(
@@ -44,7 +83,7 @@ export const ViewCheckout = ({ savedAddresses }: CheckoutPops) => {
   }, [deliveryLocation, selectedStore]);
 
   return (
-    <ScrollView>
+    <View>
       <View
         style={{
           backgroundColor: "white",
@@ -54,7 +93,7 @@ export const ViewCheckout = ({ savedAddresses }: CheckoutPops) => {
         }}
       >
         <Pressable style={styles.backButton} onPress={BackPress}>
-          <Text style={styles.backButtonText}>Back</Text>
+          <Text style={styles.backButtonText}>{BackButtonText}</Text>
         </Pressable>
         <Text
           style={{
@@ -67,7 +106,7 @@ export const ViewCheckout = ({ savedAddresses }: CheckoutPops) => {
           {selectedStore?.name}
         </Text>
       </View>
-      <View style={{ backgroundColor: "white" }}>
+      <ScrollView style={{ backgroundColor: "white", height: "100%" }}>
         {deliveryLocation && selectedStore?.location && (
           <MapView
             ref={(ref) => (MapRef.current = ref)}
@@ -145,19 +184,83 @@ export const ViewCheckout = ({ savedAddresses }: CheckoutPops) => {
             </Marker>
           </MapView>
         )}
-        <View style={{ backgroundColor: "white" }}>
-          <AddressComponent savedAddresses={savedAddresses} />
-        </View>
         <CheckoutTab
+          ok={savedOrder.distance <= selectedStore.deliveryDistance}
           IconImage={MaterialCommunityIcons}
-          title="this is title"
-          subTitle="this is subtitle"
-          IconImageSize={32}
+          title={addressText}
+          subTitle={
+            savedOrder.address.street +
+            " " +
+            savedOrder.address.streetNumber +
+            " " +
+            savedOrder.address.city
+          }
+          IconImageSize={28}
           IconName="map-marker-distance"
+          IconColor="green"
         />
-        <View style={{ backgroundColor: "white" }}></View>
-      </View>
-    </ScrollView>
+        <CheckoutTab
+          ok={false}
+          IconImage={AntDesign}
+          IconName="creditcard"
+          IconImageSize={28}
+          title={paymentText}
+          subTitle={"כרטיס אשראי"}
+          IconColor="green"
+        />
+        <View
+          style={[
+            { backgroundColor: "white", marginTop: 15, width: "100%" },
+            textDirection === directionEnum.RTL
+              ? {
+                  direction: "rtl",
+                }
+              : {},
+          ]}
+        >
+          <Text
+            style={[
+              {
+                padding: 20,
+                fontWeight: "bold",
+                fontSize: 20,
+              },
+              textDirection === directionEnum.RTL
+                ? {
+                    textAlign: "left",
+                  }
+                : {},
+            ]}
+          >
+            {billingText}.
+          </Text>
+          <BillingTab
+            amount={subtotal}
+            currency={savedOrder.totalPrice.currency}
+            description={SubTotalText}
+          />
+          <BillingTab
+            amount={2000}
+            currency={currencyEnum.ILS}
+            description={ServiceFeeText}
+          />
+          <BillingTab
+            amount={DeliveryFee(savedOrder.distance)}
+            currency={currencyEnum.ILS}
+            description={DeliveryFeeText}
+            additionalText={
+              savedOrder.distance > 1
+                ? "(" + " " + Math.round(savedOrder.distance) + " km" + ")"
+                : "(" +
+                  " " +
+                  Math.round(savedOrder.distance * 1000) +
+                  " m" +
+                  ")"
+            }
+          />
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 

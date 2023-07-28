@@ -30,7 +30,7 @@ import * as Location from "expo-location";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
 import { userActions } from "./network_services/user";
-import { CheckLocation } from "./functions";
+import { CheckLocation, getDistance } from "./functions";
 import { storeActions } from "./network_services/stores";
 import Stores from "./navigation/screens/foodStoresScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -58,6 +58,7 @@ import { AddressAction } from "./redux/actions/AddressAction";
 import NetInfo from "@react-native-community/netinfo";
 import { InternetConnectionAction } from "./redux/actions/InterntConnectionAction";
 import { ToggleCloseAddressListAction } from "./redux/actions/ToggleAddressListActions";
+import { SavedOrderAction } from "./redux/actions/SavedOrderAction";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -98,8 +99,9 @@ export default function Container() {
 
   const [sessionid, setSessionid] = useState<null | undefined | string>();
 
-  const [hideAddressHanddler, setHideAddressHanddler] = useState(false);
-
+  const hideAddressHanddler = useSelector(
+    (state: any) => state.hideAddressHanddler
+  );
   const Stack = createNativeStackNavigator();
 
   const [fromDestination, setFromDestination] =
@@ -206,7 +208,7 @@ export default function Container() {
         const date = new Date();
         const location = (
           await Location.geocodeAsync(
-            address?.street + " " + address?.streetNumber + " " + address?.city
+            address?.city + " " + address?.street + " " + address?.streetNumber
           )
         )[0];
         Dispatch(
@@ -223,6 +225,29 @@ export default function Container() {
             timestamp: date.getDate(),
           })
         );
+        if (savedOrder) {
+          Dispatch(
+            SavedOrderAction({
+              ...savedOrder,
+              distance: getDistance(
+                {
+                  coords: {
+                    accuracy: location.accuracy || null,
+                    altitude: location.altitude || null,
+                    altitudeAccuracy: null,
+                    latitude: location.latitude,
+                    longitude: location.longitude,
+                    speed: null,
+                    heading: null,
+                  },
+                  timestamp: date.getDate(),
+                },
+                selectedStore.location
+              ),
+              address: address,
+            })
+          );
+        }
       } catch {}
     })();
   }, [address]);
@@ -339,11 +364,7 @@ export default function Container() {
               <Stack.Screen
                 name="ViewStore"
                 children={() => (
-                  <ViewStore
-                    Address={address}
-                    setHideAddressHanddler={setHideAddressHanddler}
-                    Store={selectedStore}
-                  />
+                  <ViewStore Address={address} Store={selectedStore} />
                 )}
               />
             )}
@@ -364,12 +385,7 @@ export default function Container() {
               />
             )}
             {savedOrder && (
-              <Stack.Screen
-                name="ViewOrder"
-                children={() => (
-                  <ViewOrder setHideAddressHanddler={setHideAddressHanddler} />
-                )}
-              />
+              <Stack.Screen name="ViewOrder" children={() => <ViewOrder />} />
             )}
             {savedOrder && (
               <Stack.Screen

@@ -4,21 +4,22 @@ import ProductSumTab from "../../components/product/productSumTab";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { BackButtonText, StartDeliveryButtonText } from "../../languageConfig";
+import { HideAddressHandlerAction } from "../../redux/actions/HideAddressHandlerActions";
 
-interface props {
-  setHideAddressHanddler: React.Dispatch<React.SetStateAction<boolean>>;
-}
+interface props {}
 
 export const ViewOrder = (props: props) => {
+  const Dispatch = useDispatch();
+
   const savedOrder = useSelector((state: any) => state.savedOrder) as Order;
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const BackPress = () => {
     navigation.navigate("ViewStore", { id: 2 });
   };
   useEffect(() => {
-    props.setHideAddressHanddler(false);
+    Dispatch(HideAddressHandlerAction());
   }, []);
 
   return (

@@ -36,11 +36,14 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { useDispatch, useSelector } from "react-redux";
 import { SavedOrderAction } from "../../redux/actions/SavedOrderAction";
 import { BackButtonText, ViewOrderButtonText } from "../../languageConfig";
+import {
+  HideAddressHandlerAction,
+  ShowAddressHandler,
+} from "../../redux/actions/HideAddressHandlerActions";
 
 interface Props {
   Store: Store;
   Address: Location.LocationGeocodedAddress | undefined;
-  setHideAddressHanddler: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 enum Extarpolate {
@@ -121,10 +124,10 @@ export const ViewStore = (props: Props) => {
   });
 
   useEffect(() => {
-    props.setHideAddressHanddler(true);
+    Dispatch(HideAddressHandlerAction());
 
     return () => {
-      props.setHideAddressHanddler(false);
+      Dispatch(ShowAddressHandler());
     };
   }, []);
 

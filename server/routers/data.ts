@@ -32,8 +32,7 @@ const Router = (MongoObject: {
 
   console.log(process.env.localData);
   const conn = mongoose.createConnection(
-    process.env.data || process.env.localData || "",
-    {}
+    process.env.data || process.env.localData || ""
   );
 
   // init gfs
@@ -47,7 +46,7 @@ const Router = (MongoObject: {
   console.log("GridFS connected");
 
   const storage = new GridFsStorage({
-    url: process.env.data,
+    url: process.env.data || process.env.localData || "",
     file: async (req: Request, file: Express.Multer.File) => {
       return await new Promise((resolve, reject) => {
         crypto.randomBytes(16, (err, buf: Buffer) => {

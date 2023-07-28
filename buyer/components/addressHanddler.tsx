@@ -12,9 +12,9 @@ import * as Location from "expo-location";
 import { LocationGeocodedAddress } from "expo-location";
 import { GovAddressUri } from "../envVars";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { savedAddress } from "../interfaces";
+import { Order, savedAddress } from "../interfaces";
 import { addAddress } from "../addressesFunctions";
-import { AdpterToGeocodedAddress } from "../functions";
+import { AdpterToGeocodedAddress, getDistance } from "../functions";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -31,6 +31,7 @@ import {
   ToggleCloseAddressListAction,
   ToggleOpenAddressListAction,
 } from "../redux/actions/ToggleAddressListActions";
+import { SavedOrderAction } from "../redux/actions/SavedOrderAction";
 
 interface Props {}
 
@@ -50,6 +51,8 @@ export const AddressHanddler = ({}: Props) => {
     (state: any) => state.savedAddresses
   ) as savedAddress[];
   const address = useSelector((state: any) => state.address);
+
+  const savedOrder = useSelector((state: any) => state.savedOrder) as Order;
 
   let inputRef = useRef<TextInput>(null).current;
 

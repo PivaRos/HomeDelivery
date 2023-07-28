@@ -13,6 +13,37 @@ export interface availableStores {
   Open: Store[];
 }
 
+export enum currencyEnum {
+  ILS = "ILS",
+  USD = "USD",
+  GBP = "GBP",
+  EUR = "EUR",
+  JPY = "JPY",
+  CNY = "CNY",
+  KRW = "KRW",
+  THB = "THB",
+  MYR = "MYR",
+  INR = "INR",
+  ZAR = "ZAR",
+  HKD = "HKD",
+  VND = "VND",
+  PLN = "PLN",
+  RUB = "RUB",
+  HUF = "HUF",
+  CAD = "CAD",
+  CHF = "CHF",
+  SEK = "SEK",
+  NOK = "NOK",
+  NZD = "NZD",
+  AUD = "AUD",
+  BGN = "BGN",
+  BRL = "BRL",
+  CZK = "CZK",
+  DKK = "DKK",
+  ISK = "ISK",
+  MXN = "MXN",
+}
+
 export type RootStackParamList = {
   ViewStore: { id: number } | undefined;
   ViewCheckout: { id: number } | undefined;
