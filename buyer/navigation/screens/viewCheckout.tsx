@@ -10,8 +10,8 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
 import * as Location from "expo-location";
 import MapView, { Marker } from "react-native-maps";
-import { DeliveryFee, getDistance } from "../../functions";
-import { useEffect, useRef } from "react";
+import { DeliveryFee, getDistance, getPricePerUnit } from "../../functions";
+import { useEffect, useRef, useState } from "react";
 import { AddressComponent } from "../../components/addressComponent";
 import { useSelector } from "react-redux";
 import { CheckoutTab } from "../../components/checkoutTab";
@@ -27,8 +27,11 @@ import {
   directionEnum,
   paymentText,
   textDirection,
+  totalText,
 } from "../../languageConfig";
 import { BillingTab } from "../../components/billingTab";
+import { CheckoutBotton } from "../../components/checkoutButton";
+import { useDeliveryFeeAmount } from "../../hooks/useDeliveryFeeAmount";
 
 interface CheckoutPops {
   savedAddresses: savedAddress[] | undefined;
@@ -46,10 +49,13 @@ export const ViewCheckout = ({ savedAddresses }: CheckoutPops) => {
   const savedOrder = useSelector((state: any) => state.savedOrder) as Order;
   let MapRef = useRef<MapView | null>();
 
+  const ServiceFeeAmount = 5000;
+  const deliveryFeeAmount = useDeliveryFeeAmount(savedOrder);
+
   const subtotalCalculator = () => {
     const pricearr = savedOrder.selecedProdcuts.map((product, index) => {
       if (product.units) {
-        return product.price.price * product.units;
+        return getPricePerUnit(product) * product.units;
       }
       return 0;
     });
@@ -106,7 +112,7 @@ export const ViewCheckout = ({ savedAddresses }: CheckoutPops) => {
           {selectedStore?.name}
         </Text>
       </View>
-      <ScrollView style={{ backgroundColor: "white", height: "100%" }}>
+      <ScrollView style={{ backgroundColor: "white" }}>
         {deliveryLocation && selectedStore?.location && (
           <MapView
             ref={(ref) => (MapRef.current = ref)}
@@ -240,12 +246,12 @@ export const ViewCheckout = ({ savedAddresses }: CheckoutPops) => {
             description={SubTotalText}
           />
           <BillingTab
-            amount={2000}
+            amount={ServiceFeeAmount}
             currency={currencyEnum.ILS}
             description={ServiceFeeText}
           />
           <BillingTab
-            amount={DeliveryFee(savedOrder.distance)}
+            amount={deliveryFeeAmount}
             currency={currencyEnum.ILS}
             description={DeliveryFeeText}
             additionalText={
@@ -258,6 +264,19 @@ export const ViewCheckout = ({ savedAddresses }: CheckoutPops) => {
                   ")"
             }
           />
+          <BillingTab
+            amount={deliveryFeeAmount + subtotal + ServiceFeeAmount}
+            currency={currencyEnum.ILS}
+            description={totalText}
+          />
+          <View style={{ height: 150 }}>
+            <CheckoutBotton
+              mainText="this is pay button"
+              onPress={() => {
+                console.log("clicked");
+              }}
+            />
+          </View>
         </View>
       </ScrollView>
     </View>

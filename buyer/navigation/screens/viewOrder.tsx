@@ -5,7 +5,11 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { BackButtonText, StartDeliveryButtonText } from "../../languageConfig";
+import {
+  BackButtonText,
+  StartDeliveryButtonText,
+  myOrderText,
+} from "../../languageConfig";
 import { HideAddressHandlerAction } from "../../redux/actions/HideAddressHandlerActions";
 
 interface props {}
@@ -44,7 +48,7 @@ export const ViewOrder = (props: props) => {
             fontWeight: "bold",
           }}
         >
-          My Order
+          {myOrderText}
         </Text>
       </View>
       <ScrollView>

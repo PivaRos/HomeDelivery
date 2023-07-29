@@ -501,7 +501,7 @@ const OrdersScreen = ({
                 style={{
                   height: 10,
                   width: 10,
-                  backgroundColor: "#00ff00",
+                  backgroundColor: "#ffcccb",
                   borderRadius: 10,
                 }}
               ></View>
@@ -522,7 +522,7 @@ const OrdersScreen = ({
                 style={{
                   height: 10,
                   width: 10,
-                  backgroundColor: "#00ff00",
+                  backgroundColor: "#ffcccb",
                   borderRadius: 10,
                 }}
               ></View>
@@ -542,7 +542,7 @@ const OrdersScreen = ({
                 }, // optional
               ]}
               strokeWidth={4}
-              strokeColor="white"
+              strokeColor="grey"
             />
           )}
         </MapView>

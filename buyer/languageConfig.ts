@@ -11,6 +11,8 @@ let billingText = "";
 let ServiceFeeText = "";
 let SubTotalText = "";
 let DeliveryFeeText = "";
+let totalText = "";
+let myOrderText = "";
 
 export enum languageEnum {
   ENGLISH = "en",
@@ -30,6 +32,8 @@ language = languageEnum.HEBREW; // ! change this in order to switch language
 switch (language) {
   case languageEnum.HEBREW:
     textDirection = directionEnum.RTL;
+    myOrderText = "ההזמנה שלי";
+    totalText = "סה''כ";
     DeliveryFeeText = "משלוח";
     SubTotalText = "סכום ביניים";
     ServiceFeeText = "עמלת שירות";
@@ -46,7 +50,9 @@ switch (language) {
     break;
 
   case languageEnum.ENGLISH:
+    totalText = "Total";
     textDirection = directionEnum.LTR;
+    myOrderText = "My order";
     DeliveryFeeText = "Delivery fee";
     SubTotalText = "Sub total";
     ServiceFeeText = "Service Fee";
@@ -79,4 +85,6 @@ export {
   ServiceFeeText,
   SubTotalText,
   DeliveryFeeText,
+  totalText,
+  myOrderText,
 };
