@@ -3,6 +3,7 @@ import type mongodb from 'mongodb'
 import { ObjectId } from 'mongodb'
 import { type Account, type Order, type Store } from '../interfaces'
 import { getDistance, isOpen } from '../functions'
+import { processPayment } from '../middleware'
 
 const Router = (MongoObject: {
   databases: {
@@ -19,6 +20,28 @@ const Router = (MongoObject: {
   }
 }) => {
   const PublicbuyerRouter = express.Router()
+
+  PublicbuyerRouter.post('/payment/test', (req:Request, res:Response, next) => {
+    res.locals.CreditCard_Number = req.body.CreditCard_Number
+    res.locals.CreditCard_ExpirationMonth = req.body.CreditCard_ExpirationMonth
+    res.locals.CreditCard_ExpirationYear = req.body.CreditCard_ExpirationYear
+    res.locals.CreditCard_CVV = req.body.CreditCard_CVV
+    res.locals.CreditCard_CitizenID = req.body.CreditCard_CitizenID
+    
+    res.locals.UnitPrice = req.body.UnitPrice 
+
+    console.log("here");
+    next();
+  }, processPayment,
+  (req:Request, res:Response) => {
+    res.json({
+      respon:res.locals.respon
+      
+    })
+  }
+  )
+
+  
 
   PublicbuyerRouter.post('/get/stores', async (req: Request, res: Response) => {
     const buyerLocation = req.body.location

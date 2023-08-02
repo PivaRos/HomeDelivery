@@ -50,12 +50,12 @@ export const CheckLocation = async () => {
   try {
     let result = await Location.requestForegroundPermissionsAsync();
     if (result.status !== "granted") {
-      return;
+      return null;
     }
     let location = await Location.getCurrentPositionAsync();
     return location;
   } catch {
-    return;
+    return null;
   }
 };
 

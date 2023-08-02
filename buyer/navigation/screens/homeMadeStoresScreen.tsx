@@ -79,7 +79,6 @@ const style = StyleSheet.create({
     fontSize: 22,
     marginLeft: 10,
     marginTop: 10,
-    fontFamily: "AmericanTypewriter",
     fontWeight: "bold",
   },
 });

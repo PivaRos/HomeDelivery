@@ -24,6 +24,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { SavedOrderAction } from "../../redux/actions/SavedOrderAction";
 import {
   addProductToOrderText,
+  directionEnum,
   removeAllText,
   removeText,
   updateOrderText,
@@ -370,8 +371,36 @@ export const ViewProduct = (props: Props) => {
       </View>
       {selectedProduct.units === 0 && !justChanged && (
         <Pressable onPress={addToOrder} style={styles.PressableAdd}>
-          <Text style={styles.buttonText}>{addProductToOrderText}</Text>
-          <Text style={styles.buttonPrice}>{productPrice}</Text>
+          <View
+            style={{
+              justifyContent: "center",
+              width: "100%",
+              height: "100%",
+            }}
+          >
+            <View
+              style={{
+                width: "100%",
+                padding: 15,
+              }}
+            >
+              <Text style={{ textAlign: "right" }}>
+                {addProductToOrderText}
+              </Text>
+
+              <Text
+                style={{
+                  textAlign: "left",
+                  left: 10,
+                  top: 15,
+                  position: "absolute",
+                  width: "100%",
+                }}
+              >
+                {productPrice}
+              </Text>
+            </View>
+          </View>
         </Pressable>
       )}
       {selectedProduct.units !== undefined &&
@@ -383,10 +412,26 @@ export const ViewProduct = (props: Props) => {
             onPress={RemoveFromOrder}
             style={[styles.PressableAdd, { backgroundColor: "#fa3737" }]}
           >
-            <Text style={styles.buttonText}>
-              {Product.units > 1 ? removeAllText : removeText}
-            </Text>
-            <Text style={styles.buttonPrice}>{"- " + productPrice}</Text>
+            <View style={{ justifyContent: "center", height: "100%" }}>
+              <View
+                style={{
+                  width: "100%",
+                  position: "absolute",
+                  justifyContent: "center",
+                  direction: directionEnum.RTL ? "rtl" : "ltr",
+                  flexDirection: "row",
+                }}
+              >
+                <Text>
+                  <Text style={[styles.buttonText]}>
+                    {Product.units > 1 ? removeAllText : removeText}
+                  </Text>
+                  <Text style={[styles.buttonPrice]}>
+                    {"- " + productPrice}
+                  </Text>
+                </Text>
+              </View>
+            </View>
           </Pressable>
         )}
       {justChanged && (

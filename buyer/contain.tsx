@@ -60,7 +60,6 @@ import { InternetConnectionAction } from "./redux/actions/InterntConnectionActio
 import { ToggleCloseAddressListAction } from "./redux/actions/ToggleAddressListActions";
 import { SavedOrderAction } from "./redux/actions/SavedOrderAction";
 
-SplashScreen.preventAutoHideAsync();
 
 export default function Container() {
   const Dispatch = useDispatch();
@@ -68,7 +67,7 @@ export default function Container() {
   const internetConnection = useSelector(
     (state: any) => state.internetConnection
   ) as boolean;
-
+  SplashScreen.preventAutoHideAsync();
   const refreshing = useSelector((state: any) => state.refreshing) as boolean;
   const loading = useSelector((state: any) => state.loading) as boolean;
   const selectedStore = useSelector(
@@ -140,18 +139,7 @@ export default function Container() {
 
   const windowHeight = Dimensions.get("window").height;
 
-  const [fontsLoaded] = useFonts({
-    "Inter-Black": require("./assets/fonts/Inter-Black.otf"),
-  });
 
-  const onLayoutRootView = useCallback(async () => {
-    try {
-      if (fontsLoaded) {
-        await SplashScreen.hideAsync();
-      }
-    } catch {}
-  }, [fontsLoaded]);
-  onLayoutRootView();
 
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener((state) => {
@@ -266,16 +254,9 @@ export default function Container() {
   };
 
   const getContent = () => {
-    if (loading)
-      return (
-        <ActivityIndicator
-          size="small"
-          style={{ opacity: 1, marginTop: "100%" }}
-        />
-      );
     if (!deliveryLocation)
       return (
-        <SafeAreaView>
+        <SafeAreaView style={styles.container}>
           <Text style={{ fontWeight: "bold", textAlign: "center" }}>
             Please Allow HomeDelivery To Use Location In Order To Continue Using
             The App
@@ -321,7 +302,7 @@ export default function Container() {
         </Animated.View>
         {!refreshing &&
           !hideAddressHanddler && [
-            <View key={1} style={{ height: 30 }}></View>,
+            <View key={1} style={{ height: 30, }}></View>,
             <AddressHanddler key={2} />,
           ]}
         {toggleOpenAddressList && (
@@ -448,30 +429,33 @@ export default function Container() {
       const sessionid = await AsyncStorage.getItem("@sessionid");
       const address = await AsyncStorage.getItem("address");
       setSessionid(sessionid);
-      if (address) Dispatch(AddressAction(JSON.parse(address)));
+      if (address) Dispatch(AddressAction(JSON.parse(address) as Location.LocationGeocodedAddress));
     } catch {}
   };
 
   const firstloadCheck = async () => {
     try {
-      Dispatch(StartLoadingAction());
-      const result = await CheckLocation();
-      if (result) {
-        Dispatch(CurrentLocationAction(result));
-      }
+      const location = await CheckLocation();
+      console.log(location);
+      Dispatch(CurrentLocationAction(location));
+      Dispatch(DeliveryLocationAction(location));
       const savedAddresses = await AsyncStorage.getItem("savedAddresses");
       const address = await AsyncStorage.getItem("address");
       if (!address) setAddressCurrent();
+      
       else Dispatch(AddressAction(JSON.parse(address)));
-      if (savedAddresses)
-        Dispatch(setSavedAddressesAction(JSON.parse(savedAddresses)));
+      if (savedAddresses) Dispatch(setSavedAddressesAction(JSON.parse(savedAddresses)));
       await UpdateData();
+      await SplashScreen.hideAsync();
+    } catch(e) {
+      console.log(e);
       Dispatch(StopLoadingAction());
-    } catch {}
+    }
   };
 
   useEffect(() => {
     firstloadCheck();
+    
   }, []);
 
   useEffect(() => {}, [deliveryLocation]);
@@ -483,6 +467,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    paddingTop:  StatusBar.currentHeight
   },
 });

@@ -6,38 +6,101 @@ export const processPayment = async (req: Request, res: Response, next: NextFunc
   try{
   // make api call to privider of services
 
-  const CreditCard_Number = res.locals.CreditCard_Number;
-  const CreditCard_ExpirationMonth = res.locals.CreditCard_ExpirationMonth;
-  const CreditCard_ExpirationYear = res.locals.CreditCard_ExpirationYear;
-  const CreditCard_CVV = res.locals.CreditCard_CVV;
-  const CreditCard_CitizenID = res.locals.CreditCard_CitizenID
+  const CreditCard_Number = res.locals.CreditCard_Number; // string
+  const CreditCard_ExpirationMonth = res.locals.CreditCard_ExpirationMonth; //int
+  const CreditCard_ExpirationYear = res.locals.CreditCard_ExpirationYear; // int
+  const CreditCard_CVV = res.locals.CreditCard_CVV; // string 
+  const CreditCard_CitizenID = res.locals.CreditCard_CitizenID // string
 
   const UnitPrice = res.locals.UnitPrice;
   const ProviderUri = "https://api.sumit.co.il/billing/payments/charge/"
   const ProviderSecret = process.env.SumitProvierSecretKey;
   const CompanyID = process.env.CompanyID;
-  const data = {
-    Credentials:{
-      APIKey:ProviderSecret,
-      CompanyID:CompanyID
-    },
-    Customer:{
-      Name:'לקוח כללי'
-    },
-    Items:{
-      Quantity:1,
-      UnitPrice:UnitPrice,
-      Currency:"NIS",
-    },
-    PaymentMethod:{
-      CreditCard_Number,
-      CreditCard_ExpirationMonth,
-      CreditCard_ExpirationYear,
-      CreditCard_CVV,
-      CreditCard_CitizenID,
-      Type:'CreditCard'
+    const data = {
+      "Customer": {
+        "ExternalIdentifier": null,
+        "NoVAT": null,
+        "SearchMode": 0,
+        "Name": "general",
+        "Phone": null,
+        "EmailAddress": null,
+        "City": null,
+        "Address": null,
+        "ZipCode": null,
+        "CompanyNumber": null,
+        "ID": null,
+        "Folder": null
+      },
+      "PaymentMethod": {
+        "ID": null,
+        "CustomerID": null,
+        "CreditCard_Number": CreditCard_Number,
+        "CreditCard_LastDigits": null,
+        "CreditCard_ExpirationMonth": CreditCard_ExpirationMonth,
+        "CreditCard_ExpirationYear": CreditCard_ExpirationYear,
+        "CreditCard_CVV": CreditCard_CVV,
+        "CreditCard_Track2": null,
+        "CreditCard_CitizenID": CreditCard_CitizenID,
+        "CreditCard_CardMask": null,
+        "CreditCard_Token": null,
+        "DirectDebit_Bank": null,
+        "DirectDebit_Branch": null,
+        "DirectDebit_Account": null,
+        "DirectDebit_ExpirationDate": null,
+        "DirectDebit_MaximumAmount": null,
+        "Type": 1
+      },
+      "SingleUseToken": null,
+      "CreditCardAuthNumber": null,
+      "Items": [
+        {
+          "Item": {
+            "ID": null,
+            "Name": "My Product",
+            "Description": null,
+            "Price": null,
+            "Currency": null,
+            "Cost": null,
+            "ExternalIdentifier": null,
+            "SKU": null,
+            "SearchMode": null
+          },
+          "Quantity": 1,
+          "UnitPrice": UnitPrice,
+          "Total": UnitPrice,
+          "Currency": null,
+          "Description": null
+        }
+      ],
+      "Payments_Credit": null,
+      "Payments_Count": null,
+      "Payments_FirstAmount": null,
+      "Payments_NonFirstAmount": null,
+      "UpdateCustomerByEmail": null,
+      "UpdateCustomerByEmail_AttachDocument": null,
+      "UpdateCustomerByEmail_Language": null,
+      "SendDocumentByEmail": true,
+      "SendDocumentByEmail_Language": null,
+      "DocumentLanguage": null,
+      "DocumentDescription": null,
+      "VATIncluded": true,
+      "VATRate": null,
+      "AuthoriseOnly": null,
+      "DraftDocument": null,
+      "DocumentType": null,
+      "SupportCredit": null,
+      "MerchantNumber": null,
+      "SendCopyToOrganization": null,
+      "CardTokenNotNeeded": null,
+      "AutoCapture": null,
+      "AuthorizeAmount": null,
+      "PreventStandingOrder": null,
+      "Credentials": {
+        "CompanyID": 196125877,
+        "APIKey": "Ej5UA8CTYHWbTWZDLv2yPcgueVxWQJ6ymTQwkzGNMruFHNofEB"
+      },
+      "ResponseLanguage": null
     }
-  };
   HttpsRequest({
     uri:ProviderUri,
     body:JSON.stringify(data),
@@ -46,6 +109,10 @@ export const processPayment = async (req: Request, res: Response, next: NextFunc
     'Content-Type': 'application/json'
     },
 
+  }, (Response:Response) => {
+    console.log(Response)
+    res.locals.Response = Response;
+    next();
   })
   // get responce of 200
   res.locals.PaymentLog = {
@@ -54,7 +121,6 @@ export const processPayment = async (req: Request, res: Response, next: NextFunc
     priceCharged: 0 // the price
   }
   // and then call next()
-  next();
   }
   catch(e){
     console.log(e);

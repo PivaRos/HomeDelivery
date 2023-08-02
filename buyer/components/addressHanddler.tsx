@@ -7,6 +7,7 @@ import {
   Pressable,
   Animated,
   ScrollView,
+  Platform,
 } from "react-native";
 import * as Location from "expo-location";
 import { LocationGeocodedAddress } from "expo-location";
@@ -15,8 +16,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Order, savedAddress } from "../interfaces";
 import { addAddress } from "../addressesFunctions";
 import { AdpterToGeocodedAddress, getDistance } from "../functions";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useDispatch, useSelector } from "react-redux";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import AntDesign from "react-native-vector-icons/AntDesign";
 import {
   StartLoadingAction,
   StopLoadingAction,
@@ -201,7 +203,8 @@ export const AddressHanddler = ({}: Props) => {
         height: 300,
         position: "absolute",
         zIndex: zindexInterpulation,
-        top: 45,
+        top: Platform.OS === "android" ? 25 : 45,
+        width:"100%"
       }}
     >
       <Animated.View
@@ -232,17 +235,21 @@ export const AddressHanddler = ({}: Props) => {
                 flexDirection: "column",
               }}
             >
+              <View style={{justifyContent:'center', flexDirection:'row'}}>
+                <View style={{justifyContent:'center'}}>
+                <AntDesign name="search1" size={24}/>
+                </View>
               <TextInput
                 ref={(ref) => (inputRef = ref)}
                 onChangeText={(newtext) => setQuery(newtext)}
                 style={{
                   fontSize: 18,
                   padding: 10,
-                  direction: "rtl",
-                  width: "100%",
+                  textAlign:"center",
                 }}
                 placeholder="חפש כתובות"
               />
+              </View>
               <ScrollView keyboardShouldPersistTaps="handled">
                 {(query !== "" &&
                   query !== undefined &&

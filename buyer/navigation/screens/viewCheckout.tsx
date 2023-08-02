@@ -47,7 +47,7 @@ export const ViewCheckout = ({ savedAddresses }: CheckoutPops) => {
     (state: any) => state.selectedStore
   ) as Store;
   const savedOrder = useSelector((state: any) => state.savedOrder) as Order;
-  let MapRef = useRef<MapView | null>();
+  let MapRef = useRef<MapView | null>(null).current;
 
   const ServiceFeeAmount = 5000;
   const deliveryFeeAmount = useDeliveryFeeAmount(savedOrder);
@@ -82,10 +82,10 @@ export const ViewCheckout = ({ savedAddresses }: CheckoutPops) => {
   );
 
   useEffect(() => {
-    MapRef.current?.fitToSuppliedMarkers(
-      ["deliveryLocation", "selectedStore"],
-      { animated: true }
-    );
+    if (!MapRef) return;
+    MapRef.fitToSuppliedMarkers(["deliveryLocation", "selectedStore"], {
+      animated: true,
+    });
   }, [deliveryLocation, selectedStore]);
 
   return (
@@ -115,8 +115,8 @@ export const ViewCheckout = ({ savedAddresses }: CheckoutPops) => {
       <ScrollView style={{ backgroundColor: "white" }}>
         {deliveryLocation && selectedStore?.location && (
           <MapView
-            ref={(ref) => (MapRef.current = ref)}
-            initialCamera={{
+            ref={(ref) => (MapRef = ref)}
+            camera={{
               heading: 0,
               altitude:
                 getDistance(selectedStore.location, deliveryLocation) *

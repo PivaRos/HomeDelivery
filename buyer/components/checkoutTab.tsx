@@ -1,4 +1,4 @@
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, TextStyle, Platform } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import ShakeText from "react-native-shake-text";
 import { useEffect, useRef } from "react";
@@ -13,6 +13,7 @@ interface CheckoutTabProps {
   IconName: string;
   ok: boolean;
   IconColor?: string;
+  IconStyle?: TextStyle;
 }
 
 export const CheckoutTab = ({
@@ -23,6 +24,7 @@ export const CheckoutTab = ({
   IconName,
   IconColor,
   ok,
+  IconStyle,
 }: CheckoutTabProps) => {
   const navigation = useNavigation();
 
@@ -83,11 +85,21 @@ export const CheckoutTab = ({
           }}
         >
           <IconImage
-            style={{
-              padding: 33,
-              paddingRight: textDirection === directionEnum.RTL ? 10 : 10,
-              paddingLeft: textDirection === directionEnum.RTL ? 10 : 10,
-            }}
+            style={[
+              IconStyle ? { ...IconStyle } : {},
+              Platform.OS === "android"
+                ? {
+                    padding: 15,
+                    paddingTop: 25,
+                  }
+                : {
+                    padding: 33,
+                    margin: 0,
+
+                    paddingRight: textDirection === directionEnum.RTL ? 10 : 10,
+                    paddingLeft: textDirection === directionEnum.RTL ? 10 : 10,
+                  },
+            ]}
             size={IconImageSize}
             name={IconName}
             color={IconColor || "black"}
@@ -124,7 +136,6 @@ export const CheckoutTab = ({
             <Text>{subTitle}</Text>
           </View>
         </View>
-        <IconImage />
         <AntDesign
           style={{
             position: "absolute",

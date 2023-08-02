@@ -7,6 +7,7 @@ import {
   NativeUIEvent,
   ScrollView,
   Dimensions,
+  Platform,
 } from "react-native";
 import * as React from "react";
 import {
@@ -74,11 +75,10 @@ const OrdersScreen = ({
   >([]);
   const [toResults, setToResults] = useState<
     Location.LocationGeocodedAddress[]
-  >([]);
-
-  const MapRef = useRef<MapView>();
-  const FromMarkerRef = useRef<MapMarker>();
-  const ToMarkerRef = useRef<MapMarker>();
+  >([])
+  let MapRef = useRef<MapView>(null).current;
+  let FromMarkerRef = useRef<MapMarker>(null).current;
+  let ToMarkerRef = useRef<MapMarker>(null).current;
 
   //when user picks address from list
   useEffect(() => {
@@ -129,15 +129,9 @@ const OrdersScreen = ({
   };
 
   useEffect(() => {
-    if (!MapRef.current || !fromLocation || !toLocation) return;
+    if (!MapRef || !fromLocation || !toLocation) return;
     let LatMiddle = (+fromLocation.latitude + toLocation.latitude) / 2;
     let lonMiddle = (+fromLocation.longitude + toLocation.longitude) / 2;
-    // MapRef.current.animateToRegion({
-    //     latitude:LatMiddle,
-    //     longitude:lonMiddle,
-    //     latitudeDelta:0,
-    //     longitudeDelta:0
-    // }, 2200)
     const distance = getDistance(
       {
         coords: {
@@ -163,22 +157,13 @@ const OrdersScreen = ({
         },
         timestamp: Date.now(),
       }
-    );
-    setDistance(distance);
+      );
+      setDistance(distance);
 
-    MapRef.current.fitToSuppliedMarkers(["toMarker", "fromMarker"], {
+    MapRef.fitToSuppliedMarkers(["toMarker", "fromMarker"], {
       animated: true,
     });
 
-    MapRef.current.animateCamera(
-      {
-        altitude: distance * 2500,
-        center: { latitude: LatMiddle, longitude: lonMiddle },
-      },
-      {
-        duration: 2200,
-      }
-    );
   }, [fromLocation, toLocation]);
 
   const fillter = (query: string): string => {
@@ -474,22 +459,22 @@ const OrdersScreen = ({
       )}
       <View>
         <MapView
-          zoomEnabled={false}
-          rotateEnabled={false}
-          pitchEnabled={false}
-          scrollEnabled={false}
+
           style={{ width: "100%", height: windowHeight - 435 }}
-          ref={(ref) => (MapRef.current = ref || undefined)}
-          initialCamera={{
-            center: { latitude: 32.0461, longitude: 34.8516 },
-            altitude: 30000,
-            heading: 1,
-            pitch: 1,
+          ref={(ref) => (MapRef = ref)}
+          mapType={Platform.OS == "android" ? "none" : "standard"}
+          camera={{
+            center:{latitude: 32.0461, 
+              longitude: 34.8516,} , 
+              heading:0,
+              pitch:0,
+              altitude:10000
           }}
+          
         >
           {fromLocation && (
             <Marker
-              ref={(ref) => (FromMarkerRef.current = ref || undefined)}
+              ref={(ref) => (FromMarkerRef = ref)}
               coordinate={{
                 latitude: fromLocation.latitude,
                 longitude: fromLocation.longitude,
@@ -510,7 +495,7 @@ const OrdersScreen = ({
 
           {toLocation && (
             <Marker
-              ref={(ref) => (ToMarkerRef.current = ref || undefined)}
+              ref={(ref) => (ToMarkerRef = ref)}
               coordinate={{
                 latitude: toLocation.latitude,
                 longitude: toLocation.longitude,
@@ -556,7 +541,6 @@ const styles = StyleSheet.create({
     fontSize: 22,
     marginLeft: 10,
     marginTop: 10,
-    fontFamily: "AmericanTypewriter",
     fontWeight: "bold",
   },
   TextInputStyle: {
