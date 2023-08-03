@@ -1,45 +1,28 @@
-import { View, Text, Pressable, TextStyle, Platform } from "react-native";
-import AntDesign from "react-native-vector-icons/AntDesign";
-import ShakeText from "react-native-shake-text";
-import { useEffect, useRef } from "react";
-import { useNavigation } from "@react-navigation/native";
+import React from "react";
+import { Platform, Pressable, TextStyle, View, Text } from "react-native";
 import { directionEnum, textDirection } from "../languageConfig";
 
-interface CheckoutTabProps {
+interface MultiTabProps {
   title: string;
   subTitle: string;
   IconImage: any;
   IconImageSize: number;
   IconName: string;
-  ok: boolean;
   onPress?: () => void;
   IconColor?: string;
   IconStyle?: TextStyle;
 }
 
-export const CheckoutTab = ({
+export const MultiTab = ({
   IconImage,
   title,
   subTitle,
   IconImageSize,
   IconName,
   IconColor,
-  ok,
   IconStyle,
   onPress,
-}: CheckoutTabProps) => {
-  const navigation = useNavigation();
-
-  let shakeRef = useRef<ShakeText>(null).current;
-
-  useEffect(() => {
-    if (!ok) {
-      setTimeout(() => {
-        if (shakeRef) shakeRef.startShakeAnimation();
-      }, 800);
-    }
-  }, [shakeRef]);
-
+}: MultiTabProps) => {
   const TabClicked = () => {
     console.log("checkoutTab : clicked");
     if (onPress) {
@@ -48,12 +31,7 @@ export const CheckoutTab = ({
   };
 
   return (
-    <ShakeText
-      TextComponent={View}
-      duration={120}
-      animationValue={12}
-      ref={(ref) => (shakeRef = ref)}
-    >
+    <View>
       <Pressable
         onPress={() => TabClicked()}
         style={[
@@ -141,19 +119,7 @@ export const CheckoutTab = ({
             <Text>{subTitle}</Text>
           </View>
         </View>
-        <AntDesign
-          style={{
-            position: "absolute",
-            right: 0,
-            padding: 33,
-            paddingRight: textDirection === directionEnum.RTL ? 15 : 5,
-            paddingLeft: textDirection === directionEnum.RTL ? 5 : 15,
-          }}
-          name={ok ? "checkcircle" : "pluscircle"}
-          color={ok ? "green" : "grey"}
-          size={24}
-        />
       </Pressable>
-    </ShakeText>
+    </View>
   );
 };

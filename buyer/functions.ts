@@ -8,6 +8,7 @@ import {
   availableStores,
   govAddress,
   optionProduct,
+  savedAddress,
 } from "./interfaces";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
@@ -58,6 +59,14 @@ export const CheckLocation = async () => {
     return null;
   }
 };
+
+export const savedAddressToString = (address:savedAddress):string => {
+  return (address.address.street +
+    " " +
+    address.address.streetNumber +
+    " " +
+    address.address.city)
+}
 
 export const toDateTime = (secs: number) => {
   var t = new Date(1970, 0, 1); // Epoch

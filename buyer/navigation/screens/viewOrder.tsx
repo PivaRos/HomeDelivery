@@ -1,4 +1,11 @@
-import { View, Text, ScrollView, Pressable, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  Pressable,
+  StyleSheet,
+  Platform,
+} from "react-native";
 import { Order, RootStackParamList } from "../../interfaces";
 import ProductSumTab from "../../components/product/productSumTab";
 import { useNavigation } from "@react-navigation/native";
@@ -69,10 +76,10 @@ export const ViewOrder = (props: props) => {
             justifyContent: "center",
             width: "85%",
             backgroundColor: "lightgreen",
-            position: "absolute",
             height: 50,
             bottom: 0,
             borderRadius: 10,
+            margin: Platform.OS === "android" ? 10 : 0,
           }}
         >
           <Text

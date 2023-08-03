@@ -157,6 +157,7 @@ export interface savedAddress {
   address: Location.LocationGeocodedAddress;
   addressDetailsType?: addressDetailsType;
   addressDetails?: addressDetails;
+  title:string
 }
 export interface addressDetails {
   notes: string;

@@ -10,9 +10,8 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
 import * as Location from "expo-location";
 import MapView, { Marker } from "react-native-maps";
-import { DeliveryFee, getDistance, getPricePerUnit } from "../../functions";
+import { getDistance, getPricePerUnit } from "../../functions";
 import { useEffect, useRef, useState } from "react";
-import { AddressComponent } from "../../components/addressComponent";
 import { useSelector } from "react-redux";
 import { CheckoutTab } from "../../components/checkoutTab";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -32,6 +31,11 @@ import {
 import { BillingTab } from "../../components/billingTab";
 import { CheckoutBotton } from "../../components/checkoutButton";
 import { useDeliveryFeeAmount } from "../../hooks/useDeliveryFeeAmount";
+import BottomDrawer, {
+  BottomDrawerMethods,
+} from "react-native-animated-bottom-drawer";
+import { CreditCardsGrid } from "../../components/creditCard/creditCardsGrid";
+import { AddressesGrid } from "../../components/checkoutAddress/addressesGrid";
 
 interface CheckoutPops {
   savedAddresses: savedAddress[] | undefined;
@@ -48,6 +52,8 @@ export const ViewCheckout = ({ savedAddresses }: CheckoutPops) => {
   ) as Store;
   const savedOrder = useSelector((state: any) => state.savedOrder) as Order;
   let MapRef = useRef<MapView | null>(null).current;
+  let AddressDrawerRef = useRef<BottomDrawerMethods>(null).current;
+  let PaymentDrawerRef = useRef<BottomDrawerMethods>(null).current;
 
   const ServiceFeeAmount = 5000;
   const deliveryFeeAmount = useDeliveryFeeAmount(savedOrder);
@@ -204,7 +210,16 @@ export const ViewCheckout = ({ savedAddresses }: CheckoutPops) => {
           IconImageSize={28}
           IconName="map-marker-distance"
           IconColor="green"
+          onPress={() => {
+            AddressDrawerRef?.open();
+          }}
         />
+        <BottomDrawer
+          initialHeight={400}
+          ref={(ref) => (AddressDrawerRef = ref)}
+        >
+          <AddressesGrid style={[styles.drawer]} />
+        </BottomDrawer>
         <CheckoutTab
           ok={false}
           IconImage={AntDesign}
@@ -213,7 +228,16 @@ export const ViewCheckout = ({ savedAddresses }: CheckoutPops) => {
           title={paymentText}
           subTitle={"כרטיס אשראי"}
           IconColor="green"
+          onPress={() => {
+            PaymentDrawerRef?.open();
+          }}
         />
+        <BottomDrawer
+          initialHeight={400}
+          ref={(ref) => (PaymentDrawerRef = ref)}
+        >
+          <CreditCardsGrid style={[styles.drawer]} />
+        </BottomDrawer>
         <View
           style={[
             { backgroundColor: "white", marginTop: 15, width: "100%" },
@@ -284,6 +308,9 @@ export const ViewCheckout = ({ savedAddresses }: CheckoutPops) => {
 };
 
 const styles = StyleSheet.create({
+  drawer: {
+    height: "100%",
+  },
   ViewOrderButton: {
     flexDirection: "row",
     height: 50,

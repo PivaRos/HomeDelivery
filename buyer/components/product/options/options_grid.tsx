@@ -177,6 +177,7 @@ export const ProductOptionsList = forwardRef(
 const styles = StyleSheet.create({
   mainGrid: {
     width: "100%",
+    padding: 10,
   },
   ChooseText: {
     top: -7,

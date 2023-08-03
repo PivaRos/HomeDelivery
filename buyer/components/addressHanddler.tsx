@@ -106,6 +106,7 @@ export const AddressHanddler = ({}: Props) => {
 
   const AddressPressed = () => {
     if (inputRef) inputRef.blur();
+    inputRef?.focus();
     setListOpened((value) => {
       if (value === false) {
         // * opend
@@ -121,6 +122,7 @@ export const AddressHanddler = ({}: Props) => {
         }).start();
       } else {
         // *not opend
+        inputRef?.blur();
         Animated.timing(animatedsmall, {
           toValue: -50,
           useNativeDriver: true,
@@ -204,7 +206,7 @@ export const AddressHanddler = ({}: Props) => {
         position: "absolute",
         zIndex: zindexInterpulation,
         top: Platform.OS === "android" ? 25 : 45,
-        width:"100%"
+        width: "100%",
       }}
     >
       <Animated.View
@@ -235,20 +237,20 @@ export const AddressHanddler = ({}: Props) => {
                 flexDirection: "column",
               }}
             >
-              <View style={{justifyContent:'center', flexDirection:'row'}}>
-                <View style={{justifyContent:'center'}}>
-                <AntDesign name="search1" size={24}/>
+              <View style={{ justifyContent: "center", flexDirection: "row" }}>
+                <View style={{ justifyContent: "center" }}>
+                  <AntDesign name="search1" size={24} />
                 </View>
-              <TextInput
-                ref={(ref) => (inputRef = ref)}
-                onChangeText={(newtext) => setQuery(newtext)}
-                style={{
-                  fontSize: 18,
-                  padding: 10,
-                  textAlign:"center",
-                }}
-                placeholder="חפש כתובות"
-              />
+                <TextInput
+                  ref={(ref) => (inputRef = ref)}
+                  onChangeText={(newtext) => setQuery(newtext)}
+                  style={{
+                    fontSize: 18,
+                    padding: 10,
+                    textAlign: "center",
+                  }}
+                  placeholder="חפש כתובות"
+                />
               </View>
               <ScrollView keyboardShouldPersistTaps="handled">
                 {(query !== "" &&

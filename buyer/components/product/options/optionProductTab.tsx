@@ -119,6 +119,9 @@ const OptionProductTab = (props: Props) => {
         });
       }
     }
+    if (units === 1) {
+      CheckBoxPressed(false);
+    }
   };
 
   const comp = (
@@ -169,12 +172,21 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   PressableUnits: {
-    right: 50,
+    right: 30,
     width: 70,
     flexDirection: "row",
     position: "absolute",
-    borderWidth: 1,
-    borderColor: "black",
+    backgroundColor: "white",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    shadowOpacity: 0.44,
+    shadowRadius: 10.32,
+
+    elevation: 16,
+    borderRadius: 3,
   },
   unitText: {
     fontSize: 16,
