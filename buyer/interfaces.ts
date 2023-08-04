@@ -155,10 +155,15 @@ export enum addressDetailsType {
 
 export interface savedAddress {
   address: Location.LocationGeocodedAddress;
+}
+
+export interface UserAddress {
+  address: Location.LocationGeocodedAddress;
   addressDetailsType?: addressDetailsType;
   addressDetails?: addressDetails;
-  title:string
+  title: string;
 }
+
 export interface addressDetails {
   notes: string;
   entrance?: string;

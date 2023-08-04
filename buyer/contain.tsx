@@ -60,7 +60,6 @@ import { InternetConnectionAction } from "./redux/actions/InterntConnectionActio
 import { ToggleCloseAddressListAction } from "./redux/actions/ToggleAddressListActions";
 import { SavedOrderAction } from "./redux/actions/SavedOrderAction";
 
-
 export default function Container() {
   const Dispatch = useDispatch();
 
@@ -138,8 +137,6 @@ export default function Container() {
     useState<Location.LocationGeocodedLocation>();
 
   const windowHeight = Dimensions.get("window").height;
-
-
 
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener((state) => {
@@ -302,7 +299,7 @@ export default function Container() {
         </Animated.View>
         {!refreshing &&
           !hideAddressHanddler && [
-            <View key={1} style={{ height: 30, }}></View>,
+            <View key={1} style={{ height: 30 }}></View>,
             <AddressHanddler key={2} />,
           ]}
         {toggleOpenAddressList && (
@@ -429,7 +426,10 @@ export default function Container() {
       const sessionid = await AsyncStorage.getItem("@sessionid");
       const address = await AsyncStorage.getItem("address");
       setSessionid(sessionid);
-      if (address) Dispatch(AddressAction(JSON.parse(address) as Location.LocationGeocodedAddress));
+      if (address)
+        Dispatch(
+          AddressAction(JSON.parse(address) as Location.LocationGeocodedAddress)
+        );
     } catch {}
   };
 
@@ -442,20 +442,18 @@ export default function Container() {
       const savedAddresses = await AsyncStorage.getItem("savedAddresses");
       const address = await AsyncStorage.getItem("address");
       if (!address) setAddressCurrent();
-      
       else Dispatch(AddressAction(JSON.parse(address)));
-      if (savedAddresses) Dispatch(setSavedAddressesAction(JSON.parse(savedAddresses)));
+      if (savedAddresses)
+        Dispatch(setSavedAddressesAction(JSON.parse(savedAddresses)));
       await UpdateData();
       await SplashScreen.hideAsync();
-    } catch(e) {
-      console.log(e);
+    } catch {
       Dispatch(StopLoadingAction());
     }
   };
 
   useEffect(() => {
     firstloadCheck();
-    
   }, []);
 
   useEffect(() => {}, [deliveryLocation]);
@@ -467,6 +465,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
-    paddingTop:  StatusBar.currentHeight
+    paddingTop: StatusBar.currentHeight,
   },
 });

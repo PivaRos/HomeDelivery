@@ -15,9 +15,11 @@ export const AddressesGrid = ({ ...props }: AddressesGridProps) => {
     (state: any) => state.savedAddress
   ) as savedAddress[];
 
+  console.log(savedAddresses);
+
   return (
     <>
-      <ScrollView style={[{ backgroundColor: "red", padding: 10 }]}>
+      <ScrollView style={[{ padding: 10 }]}>
         <Text style={{ fontSize: 26, padding: 15 }}>{addressesGridText}</Text>
         <View style={{ marginTop: 20, height: "100%" }}>
           {savedAddresses ? (
