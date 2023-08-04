@@ -3,7 +3,11 @@ import { addressesGridText } from "../../languageConfig";
 import { MultiTab } from "../multiTab";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { useSelector } from "react-redux";
-import { addressDetailsType, savedAddress } from "../../interfaces";
+import {
+  UserAddress,
+  addressDetailsType,
+  savedAddress,
+} from "../../interfaces";
 import { savedAddressToString } from "../../functions";
 
 interface AddressesGridProps {
@@ -11,19 +15,17 @@ interface AddressesGridProps {
 }
 
 export const AddressesGrid = ({ ...props }: AddressesGridProps) => {
-  const savedAddresses = useSelector(
-    (state: any) => state.savedAddress
-  ) as savedAddress[];
-
-  console.log(savedAddresses);
+  const userAddresses = useSelector(
+    (state: any) => state.userAddresses
+  ) as UserAddress[];
 
   return (
     <>
       <ScrollView style={[{ padding: 10 }]}>
         <Text style={{ fontSize: 26, padding: 15 }}>{addressesGridText}</Text>
         <View style={{ marginTop: 20, height: "100%" }}>
-          {savedAddresses ? (
-            savedAddresses.map((address, index) => {
+          {userAddresses ? (
+            userAddresses.map((address, index) => {
               if (address.addressDetailsType) {
                 return (
                   <MultiTab
