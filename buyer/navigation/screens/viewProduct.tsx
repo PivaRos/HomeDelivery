@@ -30,13 +30,9 @@ import {
   updateOrderText,
 } from "../../languageConfig";
 
-interface Props {
-  indexinSelectedProduct?: number;
-}
-
 const imageUri = uri + "data/file/";
 
-export const ViewProduct = (props: Props) => {
+export const ViewProduct = () => {
   const Dispatch = useDispatch();
 
   const savedOrder = useSelector((state: any) => state.savedOrder) as Order;
@@ -57,8 +53,6 @@ export const ViewProduct = (props: Props) => {
   const [selectedProductIndex, setSelectedProductIndex] = useState(-1);
 
   const [dataSourceCords, setDataSourceCords] = useState([] as number[]);
-
-  const scrollAnimationValue = useRef(new Animated.Value(0)).current;
 
   let scrollViewRef = useRef<ScrollView | null>(null);
   const itemsRef = useRef<unknown[]>([]);

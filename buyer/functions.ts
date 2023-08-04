@@ -60,13 +60,15 @@ export const CheckLocation = async () => {
   }
 };
 
-export const savedAddressToString = (address:savedAddress):string => {
-  return (address.address.street +
+export const savedAddressToString = (address: savedAddress): string => {
+  return (
+    address.address.street +
     " " +
     address.address.streetNumber +
     " " +
-    address.address.city)
-}
+    address.address.city
+  );
+};
 
 export const toDateTime = (secs: number) => {
   var t = new Date(1970, 0, 1); // Epoch
@@ -183,4 +185,17 @@ export const hasStores = (stores: availableStores) => {
     return false;
   }
   return true;
+};
+
+export const subtotalCalculator = (savedOrder: Order) => {
+  const pricearr = savedOrder.selecedProdcuts.map((product, index) => {
+    if (product.units) {
+      return getPricePerUnit(product) * product.units;
+    }
+    return 0;
+  });
+  const sum = pricearr.reduce((a: number, b: number) => {
+    return a + b;
+  }, 0);
+  return sum;
 };

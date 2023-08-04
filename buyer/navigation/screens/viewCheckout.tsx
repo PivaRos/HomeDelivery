@@ -10,7 +10,11 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
 import * as Location from "expo-location";
 import MapView, { Marker } from "react-native-maps";
-import { getDistance, getPricePerUnit } from "../../functions";
+import {
+  getDistance,
+  getPricePerUnit,
+  subtotalCalculator,
+} from "../../functions";
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { CheckoutTab } from "../../components/checkoutTab";
@@ -58,34 +62,11 @@ export const ViewCheckout = ({ savedAddresses }: CheckoutPops) => {
   const ServiceFeeAmount = 5000;
   const deliveryFeeAmount = useDeliveryFeeAmount(savedOrder);
 
-  const subtotalCalculator = () => {
-    const pricearr = savedOrder.selecedProdcuts.map((product, index) => {
-      if (product.units) {
-        return getPricePerUnit(product) * product.units;
-      }
-      return 0;
-    });
-    const sum = pricearr.reduce((a: number, b: number) => {
-      return a + b;
-    }, 0);
-    return sum;
-  };
-
-  const subtotal = subtotalCalculator();
+  const subtotal = subtotalCalculator(savedOrder);
 
   const BackPress = () => {
     navigation.navigate("ViewOrder", { id: 4 });
   };
-  console.log(
-    JSON.stringify(
-      {
-        selectedStore: selectedStore.deliveryDistance,
-        savedOrderDistance: savedOrder.distance,
-      },
-      null,
-      2
-    )
-  );
 
   useEffect(() => {
     if (!MapRef) return;
