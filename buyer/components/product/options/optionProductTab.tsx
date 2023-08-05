@@ -1,13 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { StyleSheet, View, Text, Pressable } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
-import {
-  Option,
-  RootStackParamList,
-  Store,
-  optionProduct,
-} from "../../../interfaces";
+import { Option, optionProduct } from "../../../interfaces";
 import BouncyCheckbox from "react-native-bouncy-checkbox";
 import { getTotalUnits } from "../../../functions";
 
@@ -67,14 +60,14 @@ const OptionProductTab = (props: Props) => {
     if (isChecked === false) {
       setUnits(0);
       props.setOptionProductUnits((realoptionProductUnits) => {
-        let Tunits = JSON.parse(JSON.stringify(realoptionProductUnits));
+        let Tunits = [...realoptionProductUnits];
         Tunits[props.index] = 0;
         return Tunits;
       });
     } else {
       setUnits(1);
       props.setOptionProductUnits((realoptionProductUnits) => {
-        let Tunits = JSON.parse(JSON.stringify(realoptionProductUnits));
+        let Tunits = [...realoptionProductUnits];
         Tunits[props.index] = 1;
         return Tunits;
       });
@@ -94,7 +87,7 @@ const OptionProductTab = (props: Props) => {
         return realunits + 1;
       });
       props.setOptionProductUnits((realoptionProductUnits) => {
-        let Tunits = JSON.parse(JSON.stringify(realoptionProductUnits));
+        let Tunits = [...realoptionProductUnits];
         Tunits[props.index] = Tunits[props.index] + 1;
         return Tunits;
       });
@@ -113,7 +106,7 @@ const OptionProductTab = (props: Props) => {
           return currentValue - 1;
         });
         props.setOptionProductUnits((value) => {
-          let Tunits = JSON.parse(JSON.stringify(value));
+          let Tunits = [...value];
           Tunits[props.index] = units - 1;
           return Tunits;
         });

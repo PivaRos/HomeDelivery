@@ -4,9 +4,7 @@ export const addAddress = (
   savedAddressArray: savedAddress[],
   addressToAdd: savedAddress
 ): savedAddress[] => {
-  const tempAddresses = JSON.parse(
-    JSON.stringify(savedAddressArray)
-  ) as savedAddress[];
+  const tempAddresses = { ...savedAddressArray } as savedAddress[];
   const maxSavedAddresses = 4;
 
   if (tempAddresses.length < maxSavedAddresses) {

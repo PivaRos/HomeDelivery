@@ -67,9 +67,7 @@ const ProductTab = (props: Props) => {
 
   const ProductPressed = async () => {
     try {
-      await Dispatch(
-        SelectedProductAction(JSON.parse(JSON.stringify(props.Product)))
-      );
+      await Dispatch(SelectedProductAction({ ...props.Product }));
       navigation.navigate("ViewProduct", { id: 3 });
     } catch {}
   };

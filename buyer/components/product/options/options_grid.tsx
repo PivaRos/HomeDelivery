@@ -129,7 +129,7 @@ export const ProductOptionsList = forwardRef(
         style={styles.mainGrid}
         onLayout={(event) => {
           const layout = event.nativeEvent.layout;
-          let array = JSON.parse(JSON.stringify(props.positionsArray));
+          let array = [...props.positionsArray];
           array[props.optionIndex] = layout.y;
           props.setPositionsArray(array);
           layout.y;

@@ -46,9 +46,7 @@ export const ViewProduct = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const [productPrice, setProductPrice] = useState("");
   const [justChanged, setJustChanged] = useState(false);
-  const [Product, setProduct] = useState<Product>(
-    JSON.parse(JSON.stringify(selectedProduct))
-  );
+  const [Product, setProduct] = useState<Product>({ ...selectedProduct });
   const [price, setPrice] = useState(Product.price.price);
   const [selectedProductIndex, setSelectedProductIndex] = useState(-1);
 
@@ -78,10 +76,8 @@ export const ViewProduct = () => {
     let found = false;
     let tempindex = -1;
     savedOrder.selecedProdcuts.map((p, index) => {
-      let pClone: Product = JSON.parse(JSON.stringify(p));
-      let currentProductClone: Product = JSON.parse(
-        JSON.stringify(selectedProduct)
-      );
+      let pClone = { ...p } as Product;
+      let currentProductClone = { ...selectedProduct } as Product;
       if (JSON.stringify(pClone) === JSON.stringify(currentProductClone)) {
         tempindex = index;
         found = true;
@@ -174,9 +170,9 @@ export const ViewProduct = () => {
       let theindex = -1;
       //check if the prodcut exists in the current order
       savedOrder.selecedProdcuts.map((p, index) => {
-        let pClone = JSON.parse(JSON.stringify(p));
+        let pClone = { ...p } as Product;
         pClone.units = 0;
-        let currentProductClone = JSON.parse(JSON.stringify(Product));
+        let currentProductClone = { ...Product } as Product;
         currentProductClone.units = 0;
         if (JSON.stringify(pClone) === JSON.stringify(currentProductClone)) {
           theindex = index;
@@ -223,7 +219,7 @@ export const ViewProduct = () => {
 
   const changeUnitsUp = async () => {
     setProduct((Product) => {
-      let newProduct: Product = JSON.parse(JSON.stringify(Product));
+      let newProduct = { ...Product } as Product;
       if (newProduct.units !== undefined) {
         newProduct.units = newProduct.units + 1;
       } else {
@@ -240,7 +236,8 @@ export const ViewProduct = () => {
   const changeUnitsDown = async () => {
     if (Product.units !== undefined && Product.units > 0) {
       setProduct((Product) => {
-        let newProduct: Product = JSON.parse(JSON.stringify(Product));
+        let newProduct = { ...Product } as Product;
+
         if (newProduct.units !== undefined) {
           newProduct.units = newProduct.units - 1;
         }
@@ -255,7 +252,7 @@ export const ViewProduct = () => {
 
   const RemoveFromOrder = async () => {
     try {
-      let order: Order = JSON.parse(JSON.stringify(savedOrder));
+      let order = { ...savedOrder } as Order;
       for (let i = 0; i < order.selecedProdcuts.length; i++) {
         let ps = order.selecedProdcuts[i];
         if (selectedProductIndex !== -1) {
@@ -273,12 +270,12 @@ export const ViewProduct = () => {
         //the Product is not in selectedProduct list and we need to add to the list for the first time
         //if the product is selected for the first time
         if (!Product.options) return;
-        let order: Order = JSON.parse(JSON.stringify(savedOrder));
+        let order = { ...savedOrder } as Order;
         order.selecedProdcuts.push(Product);
         Dispatch(SavedOrderAction(order));
       } else {
-        let newOrder: Order = JSON.parse(JSON.stringify(savedOrder));
-        let NewProduct: Product = JSON.parse(JSON.stringify(Product));
+        let newOrder: Order = { ...savedOrder } as Order;
+        let NewProduct = { ...Product } as Product;
         newOrder.selecedProdcuts[selectedProductIndex] = NewProduct;
         Dispatch(SavedOrderAction(newOrder));
       }

@@ -127,7 +127,7 @@ export const setOrderSelectedProductByIndex = (
   product: Product,
   index: number
 ): Order => {
-  let newOrder: Order = JSON.parse(JSON.stringify(order));
+  let newOrder = { ...order } as Order;
   newOrder.selecedProdcuts = order.selecedProdcuts.map((p, theIndex) => {
     if (index !== theIndex) {
       return p;
