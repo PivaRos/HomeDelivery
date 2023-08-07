@@ -6,7 +6,6 @@ import {
   StyleSheet,
   ScrollView,
   Image,
-  Animated,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Order, Product, RootStackParamList, Store } from "../../interfaces";
@@ -16,6 +15,7 @@ import { ProductOptionsList } from "../../components/product/options/options_gri
 import {
   PriceString,
   getTotalUnits,
+  savedAddressToString,
   setOrderSelectedProductByIndex,
 } from "../../functions";
 import { userActions } from "../../network_services/user";
@@ -29,6 +29,8 @@ import {
   removeText,
   updateOrderText,
 } from "../../languageConfig";
+import { useProductPrice } from "../../hooks/useProductPrice";
+import { useSelectedProductIndex } from "../../hooks/useSelectedProductIndex";
 
 const imageUri = uri + "data/file/";
 
@@ -44,16 +46,19 @@ export const ViewProduct = () => {
   ) as Store;
 
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
-  const [productPrice, setProductPrice] = useState("");
+
   const [justChanged, setJustChanged] = useState(false);
   const [Product, setProduct] = useState<Product>({ ...selectedProduct });
   const [price, setPrice] = useState(Product.price.price);
-  const [selectedProductIndex, setSelectedProductIndex] = useState(-1);
+
+  const selectedProductIndex = useSelectedProductIndex(savedOrder, Product);
+  const productPrice = useProductPrice(price, Product.price.currency);
 
   const [dataSourceCords, setDataSourceCords] = useState([] as number[]);
 
   let scrollViewRef = useRef<ScrollView | null>(null);
   const itemsRef = useRef<unknown[]>([]);
+
   // you can access the elements with itemsRef.current[n]
   useEffect(() => {
     if (!Product.options) return;
@@ -62,7 +67,6 @@ export const ViewProduct = () => {
 
   useEffect(() => {
     //price string
-    calculatePriceString();
     if (!Product.units) {
       setProduct((p) => {
         p.units = 0;
@@ -70,32 +74,6 @@ export const ViewProduct = () => {
       });
     }
   }, []);
-
-  useEffect(() => {
-    //if the Product is in selectedProducts list then we update the selectedProductIndex
-    let found = false;
-    let tempindex = -1;
-    savedOrder.selecedProdcuts.map((p, index) => {
-      let pClone = { ...p } as Product;
-      let currentProductClone = { ...selectedProduct } as Product;
-      if (JSON.stringify(pClone) === JSON.stringify(currentProductClone)) {
-        tempindex = index;
-        found = true;
-      }
-    });
-    if (found) {
-      setSelectedProductIndex(tempindex);
-    }
-  }, []);
-
-  const calculatePriceString = () => {
-    //price string
-    setProductPrice(PriceString(price, Product.price.currency));
-  };
-
-  useEffect(() => {
-    calculatePriceString();
-  }, [price]);
 
   useEffect(() => {
     //calculates price
@@ -158,6 +136,13 @@ export const ViewProduct = () => {
         }
       }
     });
+
+    // ! to be donee !!
+    const ProductClone = { ...Product, units: undefined } as Product;
+    if (JSON.stringify(selectedProduct) === JSON.stringify(ProductClone)) {
+      console.log("no changes made");
+      cantAdd = true;
+    }
     if (cantAdd) {
       return false;
     }
@@ -166,20 +151,7 @@ export const ViewProduct = () => {
 
   const addToOrder = async () => {
     if (canSave()) {
-      let foundInOrder = false;
-      let theindex = -1;
-      //check if the prodcut exists in the current order
-      savedOrder.selecedProdcuts.map((p, index) => {
-        let pClone = { ...p } as Product;
-        pClone.units = 0;
-        let currentProductClone = { ...Product } as Product;
-        currentProductClone.units = 0;
-        if (JSON.stringify(pClone) === JSON.stringify(currentProductClone)) {
-          theindex = index;
-          foundInOrder = true;
-        }
-      });
-      if (!foundInOrder) {
+      if (selectedProductIndex === -1) {
         //if the product is selected for the first time
         if (Product.units == 0) {
           await setProduct((p) => {
@@ -198,7 +170,7 @@ export const ViewProduct = () => {
           });
         }
         let currentProduct: Product = JSON.parse(
-          JSON.stringify(savedOrder.selecedProdcuts[theindex])
+          JSON.stringify(savedOrder.selecedProdcuts[selectedProductIndex])
         );
         if (currentProduct.units === undefined || Product.units === undefined)
           return;
@@ -209,7 +181,7 @@ export const ViewProduct = () => {
         let neworder = setOrderSelectedProductByIndex(
           order,
           currentProduct,
-          theindex
+          selectedProductIndex
         );
         Dispatch(SavedOrderAction(neworder));
       }

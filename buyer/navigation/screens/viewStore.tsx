@@ -74,6 +74,20 @@ export const ViewStore = (props: Props) => {
     deliveryLocation
   );
 
+  useEffect(() => {
+    if (savedOrder !== null && savedOrder.selecedProdcuts) {
+      console.log(
+        savedOrder.selecedProdcuts?.map((p: Product) => {
+          return p.options?.map((op) => {
+            return op.selectedOptionProducts?.map((opp) => {
+              return opp.selected;
+            });
+          });
+        })
+      );
+    }
+  }, [savedOrder]);
+
   let ShakeRef = useRef<ShakeText>();
   let shakeLayoutY = 0;
 
