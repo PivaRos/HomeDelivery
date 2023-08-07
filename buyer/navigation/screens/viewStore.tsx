@@ -40,6 +40,7 @@ import {
   HideAddressHandlerAction,
   ShowAddressHandler,
 } from "../../redux/actions/HideAddressHandlerActions";
+import { useCloseOpen } from "../../hooks/useCloseOpen";
 
 interface Props {
   Store: Store;
@@ -57,8 +58,6 @@ export const ViewStore = (props: Props) => {
   const Dispatch = useDispatch();
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
-  const [OpenDateString, setOpenDateString] = useState("");
-  const [CloseDateString, setCloseDateString] = useState("");
   const [displayProducts, setDisplayProducts] = useState<Product[]>(
     props.Store.products
   );
@@ -73,6 +72,7 @@ export const ViewStore = (props: Props) => {
     props.Store.location,
     deliveryLocation
   );
+  const { OpenDateString, CloseDateString } = useCloseOpen(props.Store);
 
   let ShakeRef = useRef<ShakeText>();
   let shakeLayoutY = 0;
@@ -132,19 +132,6 @@ export const ViewStore = (props: Props) => {
   }, []);
 
   useEffect(() => {
-    const OpenDate = toDateTime(props.Store.openHoursObject.openFrom)
-      .toLocaleTimeString()
-      .split(":");
-
-    if (props.Store.openHoursObject.closedFrom > 86400)
-      props.Store.openHoursObject.closedFrom -= 86400;
-    const CloseDate = toDateTime(props.Store.openHoursObject.closedFrom)
-      .toLocaleTimeString()
-      .split(":");
-
-    setOpenDateString(OpenDate[0] + ":" + OpenDate[1]);
-    setCloseDateString(CloseDate[0] + ":" + CloseDate[1]);
-
     if (
       (!savedOrder ||
         JSON.stringify(savedOrder.seller) !==
