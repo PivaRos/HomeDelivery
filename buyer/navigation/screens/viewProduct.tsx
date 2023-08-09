@@ -29,6 +29,7 @@ import {
   removeText,
   updateOrderText,
 } from "../../languageConfig";
+import { useProductPrice } from "../../hooks/useProductPrice";
 
 const imageUri = uri + "data/file/";
 
@@ -44,12 +45,11 @@ export const ViewProduct = () => {
   ) as Store;
 
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
-  const [productPrice, setProductPrice] = useState("");
   const [justChanged, setJustChanged] = useState(false);
   const [Product, setProduct] = useState<Product>(
     JSON.parse(JSON.stringify(selectedProduct))
   );
-  const [price, setPrice] = useState(Product.price.price);
+  const { productPrice, price, setPrice } = useProductPrice(Product);
   const [selectedProductIndex, setSelectedProductIndex] = useState(-1);
 
   const [dataSourceCords, setDataSourceCords] = useState([] as number[]);
@@ -63,8 +63,6 @@ export const ViewProduct = () => {
   }, [Product.options]);
 
   useEffect(() => {
-    //price string
-    calculatePriceString();
     if (!Product.units) {
       setProduct((p) => {
         p.units = 0;
@@ -91,39 +89,6 @@ export const ViewProduct = () => {
       setSelectedProductIndex(tempindex);
     }
   }, []);
-
-  const calculatePriceString = () => {
-    //price string
-    setProductPrice(PriceString(price, Product.price.currency));
-  };
-
-  useEffect(() => {
-    calculatePriceString();
-  }, [price]);
-
-  useEffect(() => {
-    //calculates price
-    let pricePerUnit = +Product.price.price;
-    if (Product.options) {
-      for (let i = 0; i < Product.options?.length; i++) {
-        if (Product.options[i].additionalAllowed) {
-          let option = Product.options[i];
-          let maxPicks = +Product.options[i].maxPicks;
-          let OptionTotalPicks = +getTotalUnits(
-            option.selectedOptionProducts?.map((v) => {
-              return v.units;
-            }) || []
-          );
-          if (OptionTotalPicks - maxPicks > 0) {
-            pricePerUnit +=
-              (OptionTotalPicks - maxPicks) *
-              option.additionalPricePerUnit.price;
-          }
-        }
-      }
-    }
-    setPrice(+pricePerUnit * (Product.units || 1));
-  }, [Product.units, JSON.stringify(Product)]);
 
   const checkIfNeedUpdate = () => {
     let same = JSON.stringify(selectedProduct) === JSON.stringify(Product);
