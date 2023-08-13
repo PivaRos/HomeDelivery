@@ -35,6 +35,7 @@ const imageUri = uri + "data/file/";
 
 export const ViewProduct = () => {
   const Dispatch = useDispatch();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
 
   const savedOrder = useSelector((state: any) => state.savedOrder) as Order;
   const selectedProduct = useSelector(
@@ -44,7 +45,6 @@ export const ViewProduct = () => {
     (state: any) => state.selectedStore
   ) as Store;
 
-  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const [justChanged, setJustChanged] = useState(false);
   const [Product, setProduct] = useState<Product>(
     JSON.parse(JSON.stringify(selectedProduct))

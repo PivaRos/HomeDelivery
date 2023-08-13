@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import { useStores } from "../../hooks/useStores";
 import { SvgXml } from "react-native-svg";
 import { hasStores } from "../../functions";
+import { StoresSkeleton } from "../../components/store/StoresSkeleton";
 
 const HomeMadeStoresScreen = () => {
   const deliveryLocation = useSelector((state: any) => state.deliveryLocation);
@@ -34,8 +35,7 @@ const HomeMadeStoresScreen = () => {
             />
             <StoresGrid title="Closed Stores" displayStores={Stores?.Closed} />
           </ScrollView>
-        ) : (
-          !loading &&
+        ) : !loading ? (
           Stores !== undefined && (
             <Text
               style={[
@@ -67,6 +67,8 @@ const HomeMadeStoresScreen = () => {
               </View>
             </Text>
           )
+        ) : (
+          <StoresSkeleton />
         )}
       </View>
     );

@@ -6,6 +6,8 @@ import { SvgXml } from "react-native-svg";
 import { useSelector } from "react-redux";
 import { hasStores } from "../../functions";
 import { useStores } from "../../hooks/useStores";
+import { StoresSkeleton } from "../../components/store/StoresSkeleton";
+import { useQuery } from "react-query";
 
 const foodStoresScreen = () => {
   const deliveryLocation = useSelector(
@@ -32,8 +34,7 @@ const foodStoresScreen = () => {
           />
           <StoresGrid title="Closed Stores" displayStores={Stores?.Closed} />
         </ScrollView>
-      ) : (
-        !loading &&
+      ) : !loading ? (
         Stores !== undefined && (
           <Text
             style={[
@@ -65,6 +66,8 @@ const foodStoresScreen = () => {
             </View>
           </Text>
         )
+      ) : (
+        <StoresSkeleton />
       )}
     </View>
   );
