@@ -14,6 +14,8 @@ let DeliveryFeeText = "";
 let totalText = "";
 let myOrderText = "";
 let addressesGridText = "";
+let noSavedAddressesText = "";
+let addAddressText = "";
 
 export enum languageEnum {
   ENGLISH = "en",
@@ -33,7 +35,7 @@ language = languageEnum.HEBREW; // ! change this in order to switch language
 switch (language) {
   case languageEnum.HEBREW:
     textDirection = directionEnum.RTL;
-    addressesGridText = "הכתובות שלי"
+    addressesGridText = "הכתובות שלי";
     myOrderText = "ההזמנה שלי";
     totalText = "סה''כ";
     DeliveryFeeText = "משלוח";
@@ -49,12 +51,14 @@ switch (language) {
     removeAllText = "הסר הכל";
     removeText = "הסר";
     addressText = "כתובת";
+    noSavedAddressesText = "אין כתובות שמורות";
+    addAddressText = "הוסף כתובת";
     break;
 
   case languageEnum.ENGLISH:
     totalText = "Total";
     textDirection = directionEnum.LTR;
-    addressesGridText = "My Addresses"
+    addressesGridText = "My Addresses";
     myOrderText = "My order";
     DeliveryFeeText = "Delivery fee";
     SubTotalText = "Sub total";
@@ -69,6 +73,8 @@ switch (language) {
     removeAllText = "Remove all";
     removeText = "Remove";
     addressText = "Address";
+    noSavedAddressesText = "No Saved Addresses";
+    addAddressText = "Add Address";
     break;
 }
 
@@ -91,4 +97,6 @@ export {
   totalText,
   myOrderText,
   addressesGridText,
+  noSavedAddressesText,
+  addAddressText,
 };

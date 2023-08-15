@@ -10,7 +10,6 @@ import {
   Platform,
 } from "react-native";
 import * as Location from "expo-location";
-import { LocationGeocodedAddress } from "expo-location";
 import { GovAddressUri } from "../envVars";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Order, savedAddress } from "../interfaces";
@@ -28,12 +27,10 @@ import {
   setSavedAddressesAction,
 } from "../redux/actions/SavedAddressesActions";
 import { AddressAction } from "../redux/actions/AddressAction";
-import { InternetConnectionAction } from "../redux/actions/InterntConnectionAction";
 import {
   ToggleCloseAddressListAction,
   ToggleOpenAddressListAction,
 } from "../redux/actions/ToggleAddressListActions";
-import { SavedOrderAction } from "../redux/actions/SavedOrderAction";
 
 interface Props {}
 

@@ -37,7 +37,9 @@ import { CheckoutBotton } from "../../components/checkoutButton";
 import { useDeliveryFeeAmount } from "../../hooks/useDeliveryFeeAmount";
 import { CreditCardsGrid } from "../../components/creditCard/creditCardsGrid";
 import { AddressesGrid } from "../../components/checkoutAddress/addressesGrid";
-import BottomSheet from "@gorhom/bottom-sheet";
+import BottomDrawer, {
+  BottomDrawerMethods,
+} from "react-native-animated-bottom-drawer";
 
 interface CheckoutPops {
   savedAddresses: savedAddress[] | undefined;
@@ -45,6 +47,9 @@ interface CheckoutPops {
 
 export const ViewCheckout = ({ savedAddresses }: CheckoutPops) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+
+  const addressDrawerRef = useRef<BottomDrawerMethods>(null);
+  const creditDrawerRef = useRef<BottomDrawerMethods>(null);
 
   const deliveryLocation = useSelector(
     (state: any) => state.deliveryLocation
@@ -54,26 +59,6 @@ export const ViewCheckout = ({ savedAddresses }: CheckoutPops) => {
   ) as Store;
   const savedOrder = useSelector((state: any) => state.savedOrder) as Order;
   let MapRef = useRef<MapView | null>(null).current;
-
-  const addressDrawerRef = useRef<BottomSheet>(null);
-  const creditCardDrawerRef = useRef<BottomSheet>(null);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-
-  useEffect(() => {
-    addressDrawerRef.current?.forceClose();
-    creditCardDrawerRef.current?.forceClose();
-  }, [addressDrawerRef.current, creditCardDrawerRef.current]);
-
-  useEffect(() => {
-    if (!drawerOpen) {
-      if (addressDrawerRef.current) {
-        addressDrawerRef.current.close();
-      }
-      if (creditCardDrawerRef.current) {
-        creditCardDrawerRef.current.close();
-      }
-    }
-  }, [drawerOpen]);
 
   const deliveryFeeAmount = useDeliveryFeeAmount(savedOrder);
 
@@ -209,9 +194,22 @@ export const ViewCheckout = ({ savedAddresses }: CheckoutPops) => {
           IconName="map-marker-distance"
           IconColor="green"
           onPress={() => {
-            addressDrawerRef.current?.expand();
+            addressDrawerRef.current?.open();
           }}
         />
+        <BottomDrawer initialHeight={500} ref={addressDrawerRef}>
+          <View
+            style={{
+              height: 500,
+              top: 5,
+              padding: 10,
+              width: "100%",
+              position: "absolute",
+            }}
+          >
+            <AddressesGrid />
+          </View>
+        </BottomDrawer>
         <CheckoutTab
           ok={false}
           IconImage={AntDesign}
@@ -221,9 +219,20 @@ export const ViewCheckout = ({ savedAddresses }: CheckoutPops) => {
           subTitle={"כרטיס אשראי"}
           IconColor="green"
           onPress={() => {
-            creditCardDrawerRef.current?.expand();
+            creditDrawerRef.current?.open();
           }}
         />
+        <BottomDrawer initialHeight={500} ref={creditDrawerRef}>
+          <View
+            style={{
+              height: 500,
+              top: 5,
+              padding: 10,
+              position: "absolute",
+              width: "100%",
+            }}
+          ></View>
+        </BottomDrawer>
 
         <View
           style={[
@@ -290,27 +299,6 @@ export const ViewCheckout = ({ savedAddresses }: CheckoutPops) => {
           </View>
         </View>
       </ScrollView>
-      <BottomSheet
-        enablePanDownToClose
-        snapPoints={["50%"]}
-        ref={addressDrawerRef}
-      >
-        <AddressesGrid />
-      </BottomSheet>
-      <BottomSheet
-        footerComponent={() => (
-          <Pressable
-            style={{ backgroundColor: "lightgreen", height: 140, width: "95%" }}
-          ></Pressable>
-        )}
-        enablePanDownToClose
-        snapPoints={["50%"]}
-        ref={creditCardDrawerRef}
-      >
-        <View style={{ height: 500, width: "100%", backgroundColor: "grey" }}>
-          <Text>creditcard</Text>
-        </View>
-      </BottomSheet>
     </View>
   );
 };
