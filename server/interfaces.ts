@@ -31,6 +31,16 @@ export interface AvailableStores {
   Open: Store[];
 }
 
+export enum WSMessageType {
+  ACCEPT_DELIVERY = "accept-delivery",
+  REJECT_DELIVERY = "reject-delivery",
+}
+
+export interface WSMessage {
+  type: WSMessageType;
+  data: Object;
+}
+
 export interface RootStackParamList {
   ViewStore: { id: number } | undefined;
   tabs: { id: number } | undefined;

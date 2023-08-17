@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StorePermissions = exports.store_category = exports.LocationType = exports.OrderStatus = exports.StoreCategory = exports.AccountType = exports.Pages = void 0;
+exports.StorePermissions = exports.store_category = exports.LocationType = exports.OrderStatus = exports.StoreCategory = exports.AccountType = exports.WSMessageType = exports.Pages = void 0;
 var Pages;
 (function (Pages) {
     Pages["Stores"] = "Stores";
@@ -8,6 +8,11 @@ var Pages;
     Pages["Account"] = "Account";
     Pages["Home"] = "Home";
 })(Pages = exports.Pages || (exports.Pages = {}));
+var WSMessageType;
+(function (WSMessageType) {
+    WSMessageType["ACCEPT_DELIVERY"] = "accept-delivery";
+    WSMessageType["REJECT_DELIVERY"] = "reject-delivery";
+})(WSMessageType = exports.WSMessageType || (exports.WSMessageType = {}));
 var AccountType;
 (function (AccountType) {
     AccountType[AccountType["Seller"] = 2] = "Seller";

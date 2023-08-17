@@ -13,11 +13,7 @@ import { Order, Product, RootStackParamList, Store } from "../../interfaces";
 import { uri } from "../../envVars";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { ProductOptionsList } from "../../components/product/options/options_grid";
-import {
-  PriceString,
-  getTotalUnits,
-  setOrderSelectedProductByIndex,
-} from "../../functions";
+import { getTotalUnits, setOrderSelectedProductByIndex } from "../../functions";
 import { userActions } from "../../network_services/user";
 import { LocationObject } from "expo-location";
 import { useDispatch, useSelector } from "react-redux";
