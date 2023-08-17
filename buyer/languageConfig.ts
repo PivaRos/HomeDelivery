@@ -16,6 +16,8 @@ let myOrderText = "";
 let addressesGridText = "";
 let noSavedAddressesText = "";
 let addAddressText = "";
+let emailText = "";
+let passwordText = "";
 
 export enum languageEnum {
   ENGLISH = "en",
@@ -35,6 +37,8 @@ language = languageEnum.HEBREW; // ! change this in order to switch language
 switch (language) {
   case languageEnum.HEBREW:
     textDirection = directionEnum.RTL;
+    passwordText = "סיסמה";
+    emailText = "אימייל";
     addressesGridText = "הכתובות שלי";
     myOrderText = "ההזמנה שלי";
     totalText = "סה''כ";
@@ -75,10 +79,14 @@ switch (language) {
     addressText = "Address";
     noSavedAddressesText = "No Saved Addresses";
     addAddressText = "Add Address";
+    emailText = "email";
+    passwordText = "password";
     break;
 }
 
 export {
+  passwordText,
+  emailText,
   addProductToOrderText,
   BackButtonText,
   StartDeliveryButtonText,
