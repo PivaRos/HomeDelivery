@@ -1,6 +1,6 @@
 import { View, Text, Pressable, TextStyle, Platform } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
-import ShakeText from "react-native-shake-text";
+import ShakeText from "./ShakeText";
 import { useEffect, useRef } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { directionEnum, textDirection } from "../languageConfig";

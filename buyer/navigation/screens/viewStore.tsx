@@ -29,7 +29,7 @@ import {
 import ProductsGrid from "../../components/product/products_grid";
 import getSymbolFromCurrency from "currency-symbol-map";
 import { SvgXml } from "react-native-svg";
-import ShakeText from "react-native-shake-text";
+import ShakeText from "../../components/ShakeText";
 import * as Location from "expo-location";
 import Entypo from "react-native-vector-icons/Entypo";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";

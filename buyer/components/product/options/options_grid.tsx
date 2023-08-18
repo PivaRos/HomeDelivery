@@ -13,7 +13,7 @@ import {
   PriceString,
   getTotalUnits,
 } from "../../../functions";
-import ShakeText from "react-native-shake-text";
+import ShakeText from "../../ShakeText";
 
 interface Props {
   option: Option;
