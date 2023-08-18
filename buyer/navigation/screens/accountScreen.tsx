@@ -1,27 +1,22 @@
 import { Dimensions, Pressable, StyleSheet, Text, View } from "react-native";
 import { useEffect, useRef, useState } from "react";
-import { availableStores, Pages } from "../../interfaces";
 import LoginScreen from "react-native-login-screen";
 import BottomDrawer, {
   BottomDrawerMethods,
 } from "react-native-animated-bottom-drawer";
-import {
-  directionEnum,
-  emailText,
-  passwordText,
-  textDirection,
-} from "../../languageConfig";
-import { FcGoogle } from "react-icons/fc";
+import { emailText, passwordText } from "../../languageConfig";
 import { SvgXml } from "react-native-svg";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
-
-interface Props {
-  Stores: availableStores | null | undefined;
-}
+import { StackNavigationProp } from "@react-navigation/stack";
+import { RootStackParamList } from "../../interfaces";
+import { useIsFocused } from "@react-navigation/native";
 
 const Account = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  const [Account, setAccount] = useState(null);
+
+  const Focused = useIsFocused();
 
   const LoginDrawerRef = useRef<BottomDrawerMethods>(null);
   const [username, setUsername] = useState("");
@@ -36,12 +31,17 @@ const Account = () => {
   };
 
   useEffect(() => {
-    CheckIfNeedToOpen();
-  }, []);
+    if (Focused) {
+      CheckIfNeedToOpen();
+    }
+  }, [Focused]);
 
   return (
     <View style={{ width: "100%", height: "100%", justifyContent: "center" }}>
       <BottomDrawer
+        onClose={
+          !Account ? () => navigation.navigate("Orders", { id: 8 }) : undefined
+        }
         initialHeight={Dimensions.get("screen").height - 100}
         ref={LoginDrawerRef}
       >

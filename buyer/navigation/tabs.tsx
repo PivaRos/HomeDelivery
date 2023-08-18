@@ -1,22 +1,14 @@
 import * as React from "react";
 import {
   StyleSheet,
-  Text,
-  View,
   StatusBar,
   Platform,
-  SafeAreaView,
-  ActivityIndicator,
-  Button,
   ScrollView,
   RefreshControl,
-  Dimensions,
-  Pressable,
 } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { availableStores, Order, Pages, Store } from "../interfaces";
+import { Pages } from "../interfaces";
 import HomeMadeStores from "./screens/homeMadeStoresScreen";
-import Navicon from "../components/navicon";
 import FoodStores from "./screens/foodStoresScreen";
 import Account from "./screens/accountScreen";
 import OrdersScreen from "./screens/ordersScreen";

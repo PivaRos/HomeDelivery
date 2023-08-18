@@ -51,6 +51,7 @@ export type RootStackParamList = {
   ViewProduct: { id: number } | undefined;
   tabs: { id: number } | undefined;
   ViewDeliveryLoading: { id: number } | undefined;
+  Orders:{id:number}| undefined
 };
 
 export enum account_type {
