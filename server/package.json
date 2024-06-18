@@ -23,7 +23,7 @@
     "request": "^2.88.2",
     "socket.io": "^4.7.1",
     "uuid": "^9.0.0",
-    "ws": "^8.13.0"
+    "ws": "^8.17.1"
   },
   "devDependencies": {
     "@types/dotenv": "^8.2.0",
