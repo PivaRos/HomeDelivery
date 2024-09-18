@@ -16,7 +16,7 @@
   "dependencies": {
     "dotenv": "^16.3.1",
     "expo-location": "^15.1.1",
-    "express": "^4.18.2",
+    "express": "^4.20.0",
     "express-validator": "^6.15.0",
     "moment": "^2.29.4",
     "mongodb": "^5.0.1",
